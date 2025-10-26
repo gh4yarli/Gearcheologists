@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp
-
+@Disabled
 public class Forward5SecondsBackwards5Seconds extends LinearOpMode {
     private DcMotor motorTest;
     private Servo servoTest;
