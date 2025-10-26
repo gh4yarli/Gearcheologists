@@ -13,7 +13,6 @@ android {
         jniLibs.useLegacyPackaging true
     }
 }
-
 repositories {
     maven {
         url = 'https://maven.brott.dev/'  // ✅ Road Runner Maven repo
@@ -21,12 +20,8 @@ repositories {
 }
 dependencies {
     implementation project(':FtcRobotController')
-
-    // ✅ Road Runner 1.0+ (new API)
+    implementation "com.acmerobotics.roadrunner:ftc:0.1.25"
     implementation "com.acmerobotics.roadrunner:core:1.0.1"
-    implementation "com.acmerobotics.roadrunner:ftc:1.0.1"
     implementation "com.acmerobotics.roadrunner:actions:1.0.1"
-
-    // ✅ FTC Dashboard (optional but useful)
     implementation "com.acmerobotics.dashboard:dashboard:0.5.0"
 }
