@@ -57,10 +57,14 @@ public class FieldCentricTest extends OpMode {
         double forward = -gamepad1.left_stick_y;
         double strafe = -gamepad1.left_stick_x;
         double rotate = gamepad1.right_stick_x;
-
+        //Switched X and Y
         double rotX = strafe * Math.cos(heading) - forward * Math.sin(heading);
         double rotY = strafe * Math.sin(heading) + forward * Math.cos(heading);
 
+        /*double pfl = -rotX + rotY + rotate;
+        double pfr = -rotX - rotY - rotate;
+        double pbl = -rotX - rotY + rotate;
+        double pbr = -rotX + rotY - rotate;*/
         double pfl = rotY - rotX + rotate;
         double pfr = rotY + rotX - rotate;
         double pbl = rotY + rotX + rotate;

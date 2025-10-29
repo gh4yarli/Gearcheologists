@@ -34,7 +34,7 @@ public class ControllerDrive extends LinearOpMode {
     DcMotor launcher, front_left_drive, front_right_drive, back_left_drive, back_right_drive;
     double forward, strafe, turn;
     public void shootBalls(){
-        launcher.setPower(-0.55);
+        launcher.setPower(-0.6);
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         while (timer.milliseconds() < 2000){
             sleep(1);
