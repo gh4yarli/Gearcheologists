@@ -10,28 +10,29 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
+
 @TeleOp
 public class FieldCentricTest extends OpMode {
 
-    GoBildaPinpointDriver odo;
+    GoBildaPinpointDriver pinpoint;
     DcMotorEx bl, fl, fr, br;
     @Override
     public void init() {
 
-        odo = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Params.ODOMETRY_COMPUTER);
 
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(
-                GoBildaPinpointDriver.EncoderDirection.FORWARD,
-                GoBildaPinpointDriver.EncoderDirection.FORWARD
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(
+                GoBildaPinpointDriver.EncoderDirection.REVERSED,
+                GoBildaPinpointDriver.EncoderDirection.REVERSED
         );
-        odo.setOffsets(83.0, -115.0, DistanceUnit.MM);
-        odo.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.RADIANS, 0));
+        pinpoint.setOffsets(83.0, -115.0, DistanceUnit.MM);
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.RADIANS, 0));
 
-        bl = hardwareMap.get(DcMotorEx.class, "left_back");
-        fl = hardwareMap.get(DcMotorEx.class, "left_front");
-        fr = hardwareMap.get(DcMotorEx.class, "right_front");
-        br = hardwareMap.get(DcMotorEx.class, "right_back");
+        bl = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Params.BACK_LEFT_DRIVE_MOTOR);
+        fl = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Params.FRONT_LEFT_DRIVE_MOTOR);
+        fr = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Params.FRONT_RIGHT_DRIVE_MOTOR);
+        br = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Params.BACK_RIGHT_DRIVE_MOTOR);
 
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -43,32 +44,25 @@ public class FieldCentricTest extends OpMode {
     }
     @Override
     public void loop(){
-        odo.update();
+        pinpoint.update();
         if (gamepad1.a) {
-            double x = odo.getPosX(DistanceUnit.MM);
-            double y = odo.getPosY(DistanceUnit.MM);
-            odo.resetPosAndIMU();
-            odo.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.RADIANS, 0));
+            pinpoint.resetPosAndIMU();
         }
 
-        Pose2D pos = odo.getPosition();
-        double heading = -odo.getHeading(AngleUnit.RADIANS);
+        Pose2D pos = pinpoint.getPosition();
+        double heading = -pinpoint.getHeading(AngleUnit.RADIANS);
 
         double forward = -gamepad1.left_stick_y;
-        double strafe = -gamepad1.left_stick_x;
+        double strafe = gamepad1.left_stick_x;
         double rotate = gamepad1.right_stick_x;
         //Switched X and Y
         double rotX = strafe * Math.cos(heading) - forward * Math.sin(heading);
         double rotY = strafe * Math.sin(heading) + forward * Math.cos(heading);
 
-        /*double pfl = -rotX + rotY + rotate;
-        double pfr = -rotX - rotY - rotate;
-        double pbl = -rotX - rotY + rotate;
-        double pbr = -rotX + rotY - rotate;*/
-        double pfl = rotY - rotX + rotate;
-        double pfr = rotY + rotX - rotate;
-        double pbl = rotY + rotX + rotate;
-        double pbr = rotY - rotX - rotate;
+        double pfl = rotY + rotX + rotate;
+        double pfr = rotY - rotX - rotate;
+        double pbl = rotY - rotX + rotate;
+        double pbr = rotY + rotX - rotate;
 
         fl.setPower(pfl / 2);
         fr.setPower(pfr / 2);
@@ -76,7 +70,7 @@ public class FieldCentricTest extends OpMode {
         br.setPower(pbr / 2);
         telemetry.addData("Position", "x: %.1f  y: %.1f  h: %.1f°",
                 pos.getX(DistanceUnit.INCH), pos.getY(DistanceUnit.INCH), pos.getHeading(AngleUnit.DEGREES));
-        telemetry.addData("Encoders", "X: %d  Y: %d", odo.getEncoderX(), odo.getEncoderY());
+        telemetry.addData("Encoders", "X: %d  Y: %d", pinpoint.getEncoderX(), pinpoint.getEncoderY());
         telemetry.update();
     }
 }

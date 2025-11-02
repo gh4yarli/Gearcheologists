@@ -17,6 +17,8 @@ public final class ConfigurationConstants {
         public static final String LEFT_FEEDER_SERVO = "left_feeder";
         public static final String RIGHT_FEEDER_SERVO = "right_feeder";
 
+        public static final String DISTANCE_SENSOR = "distance";
+
         public static final String ODOMETRY_COMPUTER = "pinpoint";
     }
 }
