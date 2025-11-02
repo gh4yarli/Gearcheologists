@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -18,189 +18,116 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/*
- * This OpMode illustrates using a camera to locate and drive towards a specific AprilTag.
- * The code assumes a Holonomic (Mecanum or X Drive) Robot.
- *
- * For an introduction to AprilTags, see the ftc-docs link below:
- * https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html
- *
- * When an AprilTag in the TagLibrary is detected, the SDK provides location and orientation of the tag, relative to the camera.
- * This information is provided in the "ftcPose" member of the returned "detection", and is explained in the ftc-docs page linked below.
- * https://ftc-docs.firstinspires.org/apriltag-detection-values
- *
- * The drive goal is to rotate to keep the Tag centered in the camera, while strafing to be directly in front of the tag, and
- * driving towards the tag to achieve the desired distance.
- * To reduce any motion blur (which will interrupt the detection process) the Camera exposure is reduced to a very low value (5mS)
- * You can determine the best Exposure and Gain values by using the ConceptAprilTagOptimizeExposure OpMode in this Samples folder.
- *
- * This OpMode now uses the MecanumDrive class for driving the robot.
- * Make sure your robot configuration has motors named: "leftFront", "rightFront", "leftBack", "rightBack".
- * It also assumes an IMU named "imu" is configured.
- *
- * Under manual control, the left stick will move forward/back & left/right.  The right stick will rotate the robot.
- * Manually drive the robot until it displays Target data on the Driver Station.
- *
- * Press and hold the *Left Bumper* to enable the automatic "Drive to target" mode.
- * Release the Left Bumper to return to manual driving mode.
- *
- * Under "Drive To Target" mode, the robot has three goals:
- * 1) Turn the robot to always keep the Tag centered on the camera frame. (Use the Target Bearing to turn the robot.)
- * 2) Strafe the robot towards the centerline of the Tag, so it approaches directly in front  of the tag.  (Use the Target Yaw to strafe the robot)
- * 3) Drive towards the Tag to get to the desired distance.  (Use Tag Range to drive the robot forward/backward)
- *
- * Use DESIRED_DISTANCE to set how close you want the robot to get to the target.
- * Speed and Turn sensitivity can be adjusted using the SPEED_GAIN, STRAFE_GAIN and TURN_GAIN constants.
- *
- * Use Android Studio to Copy this Class, and Paste it into the TeamCode/src/main/java/org/firstinspires/ftc/teamcode folder.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
- *
- */
-
-@TeleOp
+@Autonomous
 public class AutonomousDriveTest extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 12.0; //  this is how close the camera should get to the target (inches)
-
-    //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
-    //  applied to the drive motors to correct the error.
-    //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-
-    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double DESIRED_DISTANCE = 45.0; //  this is how close the camera should get to the target (inches)
 
     private MecanumDrive drive;
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
-    private static final int DESIRED_TAG_ID = 24;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
     @Override public void runOpMode()
     {
-        boolean targetFound     = false;    // Set to true when an AprilTag target is detected
-        double  drivePower      = 0;        // Desired forward power/speed (-1 to +1)
-        double  strafePower     = 0;        // Desired strafe power/speed (-1 to +1)
-        double  turnPower       = 0;        // Desired turning power/speed (-1 to +1)
-
         // Initialize the Apriltag Detection process
         initAprilTag();
 
         // Initialize the MecanumDrive class.
-        // This class handles all drivetrain control, including motor initialization and direction.
-        // You may need to adjust the initial pose depending on your robot's starting position.
         drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
         if (USE_WEBCAM)
             setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
 
-        // Wait for driver to press start
-        telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch START to start OpMode");
         telemetry.update();
         waitForStart();
 
-        while (opModeIsActive())
-        {
-            targetFound = false;
-            desiredTag  = null;
+        if (isStopRequested()) return;
 
-            // Step through the list of detected tags and look for a matching tag
+        TelemetryPacket packet = new TelemetryPacket();
+
+        // 1. Move forward 20 inches
+        Action moveForward = drive.actionBuilder(drive.localizer.getPose())
+                .lineToX(20)
+                .build();
+        while(opModeIsActive() && moveForward.run(packet));
+
+        // 2. Scan for target by rotating
+        boolean targetFound = false;
+        double totalRotation = 0;
+        int foundTagId = -1;
+        double turnIncrement = Math.toRadians(10);
+
+        while(opModeIsActive() && !targetFound && totalRotation < (2 * Math.PI)) {
+            // See if there are any tags visible
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             for (AprilTagDetection detection : currentDetections) {
-                // Look to see if we have size info on this tag.
-                if (detection.metadata != null) {
-                    //  Check to see if we want to track towards this tag.
-                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
-                        // Yes, we want to use this tag.
-                        targetFound = true;
-                        desiredTag = detection;
-                        break;  // don't look any further.
-                    } else {
-                        // This tag is in the library, but we do not want to track it right now.
-                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
-                    }
-                } else {
-                    // This tag is NOT in the library, so we don't have enough information to track to it.
-                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+                if (detection.metadata != null && (detection.id == 20 || detection.id == 24)) {
+                    targetFound = true;
+                    desiredTag = detection;
+                    foundTagId = detection.id;
+                    break;
                 }
             }
 
-            // Tell the driver what we see, and what to do.
             if (targetFound) {
-                telemetry.addData("\n>","HOLD Left-Bumper to Drive to Target\n");
                 telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
-                telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
-                telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
-                telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
-            } else {
-                telemetry.addData("\n>","Drive using joysticks to find valid target\n");
+                telemetry.update();
+                break; // Exit search loop
             }
 
-            // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
-            if (gamepad1.left_bumper && targetFound) {
+            // If not found, turn a bit and re-scan
+            Action turnAction = drive.actionBuilder(drive.localizer.getPose())
+                    .turn(turnIncrement)
+                    .build();
+            while(opModeIsActive() && turnAction.run(packet));
+            totalRotation += turnIncrement;
+        }
 
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-                double  headingError    = desiredTag.ftcPose.bearing;
-                double  yawError        = desiredTag.ftcPose.yaw;
+        // 3. Move to desired position in front of the tag
+        if (targetFound) {
+            // Calculate the tag's position in the world frame
+            Pose2d robotPose = drive.localizer.getPose();
+            // Note: ftcPose Z is forward, X is right. Roadrunner X is forward, Y is left.
+            Vector2d tagPosRobotFrame = new Vector2d(desiredTag.ftcPose.z, -desiredTag.ftcPose.x);
+            Vector2d tagPosWorldFrame = robotPose.position.plus(robotPose.heading.times(tagPosRobotFrame));
 
-                // Use the speed and turn "gains" to calculate how we want the robot to move.
-                drivePower  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                turnPower   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
-                strafePower = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            // Calculate the desired robot position
+            Vector2d robotToTagWorld = tagPosWorldFrame.minus(robotPose.position);
+            double desiredHeading = Math.atan2(robotToTagWorld.y, robotToTagWorld.x);
 
-                telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drivePower, strafePower, turnPower);
-            } else {
+            // Create a new vector by calculating the rotated components manually
+            Vector2d offset = new Vector2d(
+                    DESIRED_DISTANCE * Math.cos(desiredHeading),
+                    DESIRED_DISTANCE * Math.sin(desiredHeading)
+            );
 
-                // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
-                drivePower  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
-                strafePower = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
-                turnPower   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
-                telemetry.addData("Manual","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drivePower, strafePower, turnPower);
-            }
+            Vector2d desiredRobotPos = tagPosWorldFrame.minus(offset);
+
+            Pose2d targetPose = new Pose2d(desiredRobotPos, desiredHeading);
+
+            // Build a trajectory to the desired pose
+            // Build a trajectory to the desired pose
+            Action goToTag = drive.actionBuilder(robotPose)
+                    .splineToLinearHeading(targetPose, targetPose.heading) // <-- CORRECTED LINE
+                    .build();
+
+            while(opModeIsActive() && goToTag.run(packet));
+
+        } else {
+            telemetry.addData("Status", "Could not find target tag after 360-degree scan.");
             telemetry.update();
-
-            // Apply desired axes motions to the drivetrain using MecanumDrive class.
-            // The inputs are forward, strafe (left positive), and turn (CCW positive).
-            drive.setDrivePowers(new PoseVelocity2d(new Vector2d(drivePower, strafePower), turnPower));
-            sleep(10);
+            sleep(2000);
         }
     }
 
-    /**
-     * Initialize the AprilTag processor.
-     */
     private void initAprilTag() {
-        // Create the AprilTag processor.
-        aprilTag = new AprilTagProcessor.Builder()
-            //.setDrawAxes(false)
-            //.setDrawCubeProjection(false)
-            //.setDrawTagOutline(true)
-            //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-            //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-            //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-
-            // == CAMERA CALIBRATION ==
-            // If you do not manually specify calibration parameters, the SDK will attempt
-            // to load a predefined calibration for your camera.
-            //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
-
-            // ... these parameters are fx, fy, cx, cy.
-
-            .build();
-
-        // Adjust Image Decimation to trade-off detection-range for frame-rate.
-        // Initially, increase frame-rate to help faster tracking.
+        aprilTag = new AprilTagProcessor.Builder().build();
         aprilTag.setDecimation(2);
-
-        // Create the vision portal by passing owner, camera item, and processor.
         if (USE_WEBCAM) {
             visionPortal = VisionPortal.easyCreateWithDefaults(
                 hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
@@ -210,36 +137,19 @@ public class AutonomousDriveTest extends LinearOpMode
         }
     }
 
-    /*
-     Manually set the camera gain and exposure.
-     This can only be called AFTER calling initAprilTag(), and only works for Webcams.
-    */
-    private void    setManualExposure(int exposureMS, int gain) {
-        // Wait for the camera to be open, then use the controls
-        if (visionPortal == null) {
-            return;
-        }
-
-        // Make sure camera is streaming before we try to set the exposure controls
+    private void setManualExposure(int exposureMS, int gain) {
+        if (visionPortal == null) return;
         if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            telemetry.addData("Camera", "Waiting");
-            telemetry.update();
             while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
                 sleep(20);
             }
-            telemetry.addData("Camera", "Ready");
-            telemetry.update();
         }
-
-        // Set camera controls unless we are stopping.
-        if (!isStopRequested())
-        {
+        if (!isStopRequested()) {
             ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
             if (exposureControl.isModeSupported(ExposureControl.Mode.Manual)) {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
                 exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
             }
-
             GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
             gainControl.setGain(gain);
         }
