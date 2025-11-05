@@ -19,7 +19,7 @@ public class FieldCentricTest extends OpMode {
     @Override
     public void init() {
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Params.ODOMETRY_COMPUTER);
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Names.ODOMETRY_COMPUTER);
 
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(
@@ -29,10 +29,10 @@ public class FieldCentricTest extends OpMode {
         pinpoint.setOffsets(83.0, -115.0, DistanceUnit.MM);
         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.RADIANS, 0));
 
-        bl = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Params.BACK_LEFT_DRIVE_MOTOR);
-        fl = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Params.FRONT_LEFT_DRIVE_MOTOR);
-        fr = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Params.FRONT_RIGHT_DRIVE_MOTOR);
-        br = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Params.BACK_RIGHT_DRIVE_MOTOR);
+        bl = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
+        fl = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
+        fr = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
+        br = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
 
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fl.setDirection(DcMotorSimple.Direction.REVERSE);

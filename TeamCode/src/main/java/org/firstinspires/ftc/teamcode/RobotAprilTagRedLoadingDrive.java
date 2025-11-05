@@ -1,5 +1,3 @@
-
-
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Action;
@@ -18,8 +16,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -69,15 +65,15 @@ public class RobotAprilTagRedLoadingDrive extends LinearOpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must match the names assigned during the robot configuration.
         // step (using the FTC Robot Controller app on the phone).
-        GoBildaPinpointDriver pinpointDriver = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Params.ODOMETRY_COMPUTER);
-        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.FRONT_LEFT_DRIVE_MOTOR);
-        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.FRONT_RIGHT_DRIVE_MOTOR);
-        backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.BACK_LEFT_DRIVE_MOTOR);
-        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.BACK_RIGHT_DRIVE_MOTOR);
-        CRServo right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Params.RIGHT_FEEDER_SERVO);
-        CRServo left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Params.LEFT_FEEDER_SERVO);
-        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.INTAKE_MOTOR);
-        DcMotor launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.LAUNCHER_MOTOR);
+        GoBildaPinpointDriver pinpointDriver = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Names.ODOMETRY_COMPUTER);
+        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
+        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
+        backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
+        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
+        CRServo right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
+        CRServo left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
+        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
+        DcMotor launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -86,6 +82,8 @@ public class RobotAprilTagRedLoadingDrive extends LinearOpMode
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         Pose2d startingPose = new Pose2d(-60,-12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap,startingPose);
@@ -159,12 +157,6 @@ public class RobotAprilTagRedLoadingDrive extends LinearOpMode
                 strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
                 telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            } else {
-
-                // drive using manual POV Joystick mode.  Slow things down to make the robot more controllable.
-                drive  = 0;
-                strafe = 0;
-                turn   = 0.05;
             }
             telemetry.update();
 
@@ -175,11 +167,11 @@ public class RobotAprilTagRedLoadingDrive extends LinearOpMode
         moveRobot(0,0,0);
         if (opModeIsActive()){
             sleep(10);
-            launcher.setPower(-0.6);
-            intake.setPower(0.65);
-            sleep(1500);
+            launcher.setPower(-0.56);
+            sleep(2000);
             timer.reset();
             for (byte i = 0; i < 3; i++) {
+                if (i > 0) intake.setPower((0.65));
                 left_feeder.setPower(1);
                 right_feeder.setPower(-1);
                 while (timer.milliseconds() < 525){

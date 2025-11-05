@@ -35,9 +35,9 @@ public class ControllerDrive extends LinearOpMode {
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         while (timer.milliseconds() < 2000){
             sleep(1);
-            forward = -gamepad2.left_stick_y;
-            turn = gamepad2.right_stick_x;
-            strafe = gamepad2.left_stick_x;
+            forward = -gamepad1.left_stick_y;
+            turn = gamepad1.right_stick_x;
+            strafe = gamepad1.left_stick_x;
 
             front_left_drive.setPower((forward + strafe + turn));
             front_right_drive.setPower((forward - strafe - turn));
@@ -50,9 +50,9 @@ public class ControllerDrive extends LinearOpMode {
             left_feeder.setPower(1);
             while (timer.milliseconds() < 400){
                 sleep(1);
-                forward = -gamepad2.left_stick_y;
-                turn = gamepad2.right_stick_x;
-                strafe = gamepad2.left_stick_x;
+                forward = -gamepad1.left_stick_y;
+                turn = gamepad1.right_stick_x;
+                strafe = gamepad1.left_stick_x;
 
                 front_left_drive.setPower((forward + strafe + turn) / 2);
                 front_right_drive.setPower((forward - strafe - turn) / 2);
@@ -64,9 +64,9 @@ public class ControllerDrive extends LinearOpMode {
             right_feeder.setPower(0);
             while (timer.milliseconds() < 1000){
                 sleep(1);
-                forward = -gamepad2.left_stick_y;
-                turn = gamepad2.right_stick_x;
-                strafe = gamepad2.left_stick_x;
+                forward = -gamepad1.left_stick_y;
+                turn = gamepad1.right_stick_x;
+                strafe = gamepad1.left_stick_x;
 
                 front_left_drive.setPower((forward + strafe + turn) / 2);
                 front_right_drive.setPower((forward - strafe - turn) / 2);
@@ -81,17 +81,17 @@ public class ControllerDrive extends LinearOpMode {
     public void runOpMode() {
 
         // ===== Initialize hardware =====
-        GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Params.ODOMETRY_COMPUTER);
+        GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Names.ODOMETRY_COMPUTER);
+        ElapsedTime timer = new ElapsedTime();
+        front_left_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
+        front_right_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
+        back_left_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
+        back_right_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
+        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
+        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
 
-        front_left_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.FRONT_LEFT_DRIVE_MOTOR);
-        front_right_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.FRONT_RIGHT_DRIVE_MOTOR);
-        back_left_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.BACK_LEFT_DRIVE_MOTOR);
-        back_right_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.BACK_RIGHT_DRIVE_MOTOR);
-        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.LAUNCHER_MOTOR);
-        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.INTAKE_MOTOR);
-
-        left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Params.LEFT_FEEDER_SERVO);
-        right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Params.RIGHT_FEEDER_SERVO);
+        left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
+        right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
 
         // ===== Safety check for missing hardware =====
         if (pinpoint == null) {
@@ -150,11 +150,18 @@ public class ControllerDrive extends LinearOpMode {
             pinpoint.update();
 
             // Emergency stop, click b on gamepad 1
-            if (gamepad2.b) break;
+            if (gamepad1.b || gamepad2.b) break;
 
             // Shooting function
             if (gamepad2.right_trigger >= 0.85) {
                 shootBalls();
+            }
+            if (gamepad2.right_bumper){
+                left_feeder.setPower(0.25);
+                right_feeder.setPower(-0.25);
+            } else {
+                left_feeder.setPower(0);
+                right_feeder.setPower(0);
             }
 
             // Toggle drive mode
@@ -181,9 +188,9 @@ public class ControllerDrive extends LinearOpMode {
 
             } else {
 
-                double forward = gamepad1.left_stick_y;
+                double forward = -gamepad1.left_stick_y;
                 double turn = gamepad1.right_stick_x;
-                double strafe = -gamepad1.left_stick_x;
+                double strafe = gamepad1.left_stick_x;
 
                 front_left_drive.setPower((forward + strafe + turn) / 2);
                 front_right_drive.setPower((forward - strafe - turn) / 2);
