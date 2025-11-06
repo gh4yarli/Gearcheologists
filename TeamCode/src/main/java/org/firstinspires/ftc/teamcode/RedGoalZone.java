@@ -35,18 +35,10 @@ public class RedGoalZone extends LinearOpMode {
         waitForStart();
 
         Action path = drive.actionBuilder(startingPose)
-                .splineTo(new Vector2d(0,0),Math.toRadians(129))
+                .splineToLinearHeading(new Pose2d(0,0, 50), 0)
                 .build();
         Actions.runBlocking(new SequentialAction(path));
         sleep(50);
-        pinpoint.update();
-        double x = pinpoint.getPosX(DistanceUnit.INCH);
-        double y = pinpoint.getPosY(DistanceUnit.INCH);
-        double heading = pinpoint.getHeading(AngleUnit.RADIANS);
-        Action turn = drive.actionBuilder(new Pose2d(x,y,heading))
-                .turnTo(Math.toRadians(-50))
-                .build();
-        Actions.runBlocking(new SequentialAction(turn));
         launcher.setPower(-0.5);
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         while (timer.milliseconds() < 3000){
