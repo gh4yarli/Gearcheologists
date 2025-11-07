@@ -16,6 +16,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -184,6 +186,45 @@ public class Meet1AutoBlueLoading extends LinearOpMode {
             intake.setPower(0);
             telemetry.update();
         }
+        double h = pinpointDriver.getHeading(AngleUnit.RADIANS);
+        double x = pinpointDriver.getPosX(DistanceUnit.INCH);
+        double y = pinpointDriver.getPosY(DistanceUnit.INCH);
+        Action getBalls = mecanumDrive.actionBuilder(new Pose2d(x,y,h))
+                .turnTo(Math.toRadians(-110))
+                .lineToY(40)
+                .build();
+        intake.setPower(0.75);
+        Actions.runBlocking(new SequentialAction(getBalls));
+        intake.setPower(0);
+        launcher.setPower(-0.53);
+        double h2 = pinpointDriver.getHeading(AngleUnit.RADIANS);
+        double x2 = pinpointDriver.getPosX(DistanceUnit.INCH);
+        double y2 = pinpointDriver.getPosY(DistanceUnit.INCH);
+        Action shoot = mecanumDrive.actionBuilder(new Pose2d(x2,y2,h2))
+                .turnTo(Math.toRadians(30))
+                .build();
+        Actions.runBlocking(new SequentialAction(shoot));
+        if (opModeIsActive()){
+            sleep(10);
+            timer.reset();
+            for (byte i = 0; i < 2; i++) {
+                if (i > 0) intake.setPower((0.65));
+                left_feeder.setPower(1);
+                right_feeder.setPower(-1);
+                while (timer.milliseconds() < 525){
+                    sleep(1);
+                }
+                timer.reset();
+                left_feeder.setPower(0);
+                right_feeder.setPower(0);
+                while (timer.milliseconds() < 1500){
+                    sleep(1);
+                }
+                timer.reset();
+            }
+            telemetry.update();
+        }
+        launcher.setPower(0);
     }
 
     /**
@@ -288,4 +329,3 @@ public class Meet1AutoBlueLoading extends LinearOpMode {
         }
     }
 }
-
