@@ -78,6 +78,7 @@ public class CompetitionTeleopMode extends OpMode {
     DcMotor launcher;
     CRServo left_feeder;
     CRServo right_feeder;
+    final Double LAUNCHER_POWER = -.54 ;
 
     @Override
     public void init() {
@@ -165,6 +166,9 @@ public class CompetitionTeleopMode extends OpMode {
             right_feeder.setPower(0);
             left_feeder.setPower(0);
         }
+        if (gamepad1.x){
+            shootBallsVertex();
+        }
     }
 
     // This routine drives the robot field relative
@@ -219,5 +223,11 @@ public class CompetitionTeleopMode extends OpMode {
         frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
         backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
+    }
+    public void shootBallsVertex(){
+        launcher.setPower(LAUNCHER_POWER);
+        right_feeder.setPower(-1);
+        left_feeder.setPower(1);
+        intake.setPower(-.6);
     }
 }
