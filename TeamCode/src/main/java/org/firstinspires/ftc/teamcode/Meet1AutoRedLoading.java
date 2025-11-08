@@ -107,7 +107,7 @@ public class Meet1AutoRedLoading extends LinearOpMode {
         pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,-60,-12, AngleUnit.RADIANS, 0));
         waitForStart();
         if (opModeIsActive()){
-            launcher.setPower(-0.56);
+            launcher.setPower(-0.5);
             Actions.runBlocking(new SequentialAction(path));
         }
         while (timer.milliseconds() < 8500) {
@@ -197,7 +197,7 @@ public class Meet1AutoRedLoading extends LinearOpMode {
         intake.setPower(0.75);
         Actions.runBlocking(new SequentialAction(getBalls));
         intake.setPower(0);
-        launcher.setPower(-0.53);
+        launcher.setPower(-0.47);
         double h2 = pinpointDriver.getHeading(AngleUnit.RADIANS);
         double x2 = pinpointDriver.getPosX(DistanceUnit.INCH);
         double y2 = pinpointDriver.getPosY(DistanceUnit.INCH);

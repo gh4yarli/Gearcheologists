@@ -103,6 +103,7 @@ public class Meet1AutoBlueLoading extends LinearOpMode {
         pinpointDriver.initialize();
         waitForStart();
         if (opModeIsActive()){
+            launcher.setPower(-0.56);
             Actions.runBlocking(new SequentialAction(path));
         }
         while (timer.milliseconds() < 8500) {
