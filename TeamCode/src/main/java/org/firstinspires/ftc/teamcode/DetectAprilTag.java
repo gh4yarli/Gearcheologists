@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+@Disabled
 
 abstract public class DetectAprilTag extends LinearOpMode {
 
@@ -20,13 +22,6 @@ abstract public class DetectAprilTag extends LinearOpMode {
     VisionPortal visionPortal;
     public void moveRobotWithTag(int tagID, DcMotor fl, DcMotor fr, DcMotor bl, DcMotor br, AprilTagProcessor aprilTag, int distance) {
         aprilTag = initAprilTag();
-        visionPortal = new  VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .addProcessor(aprilTag)
-                .build();
-        //  this is how close the camera should get to the target (inches)
-
-
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
         //  applied to the drive motors to correct the error.
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
@@ -41,7 +36,7 @@ abstract public class DetectAprilTag extends LinearOpMode {
         double strafe = 0;
         double turn = 0;
         boolean targetFound = false;
-        setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+
         // Used to hold the data for a detected AprilTag
         AprilTagDetection desiredTag = null;
         // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -119,24 +114,17 @@ abstract public class DetectAprilTag extends LinearOpMode {
     AprilTagProcessor initAprilTag() {
         // Create the AprilTag processor by using a builder.
         AprilTagProcessor aprilTag = new AprilTagProcessor.Builder().build();
-
-        // Adjust Image Decimation to trade-off detection-range for detection-rate.
-        // e.g. Some typical detection data using a Logitech C920 WebCam
-        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
-        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
-        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
-        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
-        // Note: Decimation can be changed on-the-fly to adapt during a match.
+        visionPortal = new  VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .addProcessor(aprilTag)
+                .build();
+        setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
         aprilTag.setDecimation(2);
-        // Create the vision portal by using a builder.
-        // Used to manage the video source.
         return aprilTag;
 
     }
     private void    setManualExposure(int exposureMS, int gain) {
         // Wait for the camera to be open, then use the controls
-
-
         // Make sure camera is streaming before we try to set the exposure controls
         if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
             telemetry.addData("Camera", "Waiting");
