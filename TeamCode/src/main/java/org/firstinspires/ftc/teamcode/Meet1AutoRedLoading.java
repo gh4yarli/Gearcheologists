@@ -107,7 +107,7 @@ public class Meet1AutoRedLoading extends LinearOpMode {
         pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,-60,-12, AngleUnit.RADIANS, 0));
         waitForStart();
         if (opModeIsActive()){
-            launcher.setPower(-0.5);
+            launcher.setPower(-0.65);
             Actions.runBlocking(new SequentialAction(path));
         }
         while (timer.milliseconds() < 8500) {

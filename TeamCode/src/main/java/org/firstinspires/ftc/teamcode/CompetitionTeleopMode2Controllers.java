@@ -25,7 +25,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "Robot: TeleopMode2Controller", group = "Competition")
+@TeleOp
 
 public class CompetitionTeleopMode2Controllers extends OpMode {
 
@@ -49,7 +49,7 @@ public class CompetitionTeleopMode2Controllers extends OpMode {
     DcMotor launcher;
     CRServo left_feeder;
     CRServo right_feeder;
-    final Double LAUNCHER_POWER = -.57 ;
+    final Double LAUNCHER_POWER = -.62 ;
 
     @Override
     public void init() {

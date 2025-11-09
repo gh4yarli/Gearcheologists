@@ -142,7 +142,7 @@ public class ControllerDriveCompetition extends LinearOpMode {
 
         while (opModeIsActive()) {
             intake.setPower(-0.65);
-            launcher.setPower(-0.6);
+            launcher.setPower(-0.65);
 
             pinpoint.update();
 
