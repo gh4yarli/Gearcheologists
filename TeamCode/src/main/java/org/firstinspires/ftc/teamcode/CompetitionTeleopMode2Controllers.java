@@ -48,7 +48,7 @@ public class CompetitionTeleopMode2Controllers extends OpMode {
     DcMotor launcher;
     CRServo left_feeder;
     CRServo right_feeder;
-
+    final double LAUNCHER_POWER = .65;
     @Override
     public void init() {
 
@@ -62,7 +62,6 @@ public class CompetitionTeleopMode2Controllers extends OpMode {
         //Encoder Directions
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                 GoBildaPinpointDriver.EncoderDirection.REVERSED);
-
 
         //setup intake motor
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
