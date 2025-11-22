@@ -78,7 +78,7 @@ public class CompetitionTeleopMode extends OpMode {
     DcMotor launcher;
     CRServo left_feeder;
     CRServo right_feeder;
-    final Double LAUNCHER_POWER = -.54 ;
+    final Double LAUNCHER_POWER = -.57 ;
 
     @Override
     public void init() {
