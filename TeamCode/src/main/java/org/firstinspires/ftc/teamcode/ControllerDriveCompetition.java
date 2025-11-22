@@ -13,7 +13,6 @@ Notes:
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -27,54 +26,40 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 
 @TeleOp
-@Disabled
-
-public class ControllerDrive extends LinearOpMode {
+public class ControllerDriveCompetition extends LinearOpMode {
     CRServo right_feeder, left_feeder;
     DcMotor launcher, front_left_drive, front_right_drive, back_left_drive, back_right_drive;
     double forward, strafe, turn;
-    public void shootBalls(){
-        launcher.setPower(-0.6);
+    public void shootBalls() {
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-        while (timer.milliseconds() < 2000){
-            sleep(1);
-            forward = -gamepad1.left_stick_y;
-            turn = gamepad1.right_stick_x;
-            strafe = gamepad1.left_stick_x;
-
-            front_left_drive.setPower((forward + strafe + turn));
-            front_right_drive.setPower((forward - strafe - turn));
-            back_left_drive.setPower((forward - strafe + turn));
-            back_right_drive.setPower((forward + strafe - turn));
-        }
         timer.reset();
         for (byte i = 0; i < 2; i++) {
             right_feeder.setPower(-1);
             left_feeder.setPower(1);
-            while (timer.milliseconds() < 400){
+            while (timer.milliseconds() < 400) {
                 sleep(1);
                 forward = -gamepad1.left_stick_y;
                 turn = gamepad1.right_stick_x;
                 strafe = gamepad1.left_stick_x;
 
-                front_left_drive.setPower((forward + strafe + turn) / 2);
-                front_right_drive.setPower((forward - strafe - turn) / 2);
-                back_left_drive.setPower((forward - strafe + turn) / 2);
-                back_right_drive.setPower((forward + strafe - turn) / 2);
+                front_left_drive.setPower((forward + strafe + turn) / (5.0 / 3.5));
+                front_right_drive.setPower((forward - strafe - turn) / (5.0 / 3.5));
+                back_left_drive.setPower((forward - strafe + turn) / (5.0 / 3.5));
+                back_right_drive.setPower((forward + strafe - turn) / (5.0 / 3.5));
             }
             timer.reset();
             left_feeder.setPower(0);
             right_feeder.setPower(0);
-            while (timer.milliseconds() < 1000){
+            while (timer.milliseconds() < 1000) {
                 sleep(1);
                 forward = -gamepad1.left_stick_y;
                 turn = gamepad1.right_stick_x;
                 strafe = gamepad1.left_stick_x;
 
-                front_left_drive.setPower((forward + strafe + turn) / 2);
-                front_right_drive.setPower((forward - strafe - turn) / 2);
-                back_left_drive.setPower((forward - strafe + turn) / 2);
-                back_right_drive.setPower((forward + strafe - turn) / 2);
+                front_left_drive.setPower((forward + strafe + turn) / (5.0 / 3.5));
+                front_right_drive.setPower((forward - strafe - turn) / (5.0 / 3.5));
+                back_left_drive.setPower((forward - strafe + turn) / (5.0 / 3.5));
+                back_right_drive.setPower((forward + strafe - turn) / (5.0 / 3.5));
             }
             timer.reset();
         }
@@ -90,6 +75,11 @@ public class ControllerDrive extends LinearOpMode {
         front_right_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
         back_left_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
         back_right_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
+        front_left_drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        front_right_drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        back_left_drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        back_right_drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
         DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
 
@@ -103,6 +93,7 @@ public class ControllerDrive extends LinearOpMode {
             sleep(5000);
             return;
         }
+
 
         if (front_left_drive == null || front_right_drive == null ||
                 back_left_drive == null || back_right_drive == null) {
@@ -150,13 +141,16 @@ public class ControllerDrive extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
+            intake.setPower(-0.65);
+            launcher.setPower(-0.65);
+
             pinpoint.update();
 
-            // Emergency stop, click b on gamepad 1
-            if (gamepad1.b || gamepad2.b) break;
+            if (gamepad1.b || gamepad2.b) {
+                break;
+            }
 
-            // Shooting function
-            if (gamepad2.right_trigger >= 0.85) {
+             if (gamepad2.right_trigger >= 0.6) {
                 shootBalls();
             }
             if (gamepad2.right_bumper){
@@ -175,13 +169,6 @@ public class ControllerDrive extends LinearOpMode {
             }
             prevButton = currentButton;
 
-            // Intake control
-            if (gamepad2.left_trigger > 0.5) {
-                intake.setPower(-0.5);
-            } else {
-                intake.setPower(0);
-            }
-
             // Driving control
             if (fieldCentric) {
 
@@ -195,24 +182,12 @@ public class ControllerDrive extends LinearOpMode {
                 double turn = gamepad1.right_stick_x;
                 double strafe = gamepad1.left_stick_x;
 
-                front_left_drive.setPower((forward + strafe + turn) / 2);
-                front_right_drive.setPower((forward - strafe - turn) / 2);
-                back_left_drive.setPower((forward - strafe + turn) / 2);
-                back_right_drive.setPower((forward + strafe - turn) / 2);
+                front_left_drive.setPower((forward + strafe + turn) / (5.0/3.5));
+                front_right_drive.setPower((forward - strafe - turn) / (5.0/3.5));
+                back_left_drive.setPower((forward - strafe + turn) / (5.0/3.5));
+                back_right_drive.setPower((forward + strafe - turn) / (5.0/3.5));
 
                 telemetry.addData("Mode", "🤖 Robot Centric");
-
-            } if (gamepad1.left_stick_x == 0 && gamepad2.left_stick_y == 0 && gamepad2.right_stick_x == 0){
-
-                front_left_drive.setPower(0);
-                front_right_drive.setPower(0);
-                back_left_drive.setPower(0);
-                back_right_drive.setPower(0);
-
-            } if (gamepad2.right_trigger==0){
-
-                launcher.setPower(0);
-
             }
         }
 
@@ -243,10 +218,10 @@ public class ControllerDrive extends LinearOpMode {
         double pbl = rotY - rotX + rotate;
         double pbr = rotY + rotX - rotate;
 
-        fl.setPower(pfl / 2);
-        fr.setPower(pfr / 2);
-        bl.setPower(pbl / 2);
-        br.setPower(pbr / 2);
+        fl.setPower(pfl / (5.0/3.5));
+        fr.setPower(pfr / (5.0/3.5));
+        bl.setPower(pbl / (5.0/3.5));
+        br.setPower(pbr / (5.0/3.5));
 
         telemetry.addData("Position", "x: %.1f  y: %.1f  h: %.1f°",
                 pos.getX(DistanceUnit.INCH), pos.getY(DistanceUnit.INCH), pos.getHeading(AngleUnit.DEGREES));

@@ -25,7 +25,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  *
  */
-@TeleOp(name = "Robot: TeleopMode2Controller", group = "Competition")
 
 public class CompetitionTeleopMode2Controllers extends OpMode {
 
@@ -49,13 +48,11 @@ public class CompetitionTeleopMode2Controllers extends OpMode {
     DcMotor launcher;
     CRServo left_feeder;
     CRServo right_feeder;
-    final Double LAUNCHER_POWER = -.57 ;
 
     @Override
     public void init() {
 
         //pinpoint
-        pinpoint = (hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Params.ODOMETRY_COMPUTER));
 
         //roadrunner configuration
         double mmPerTick = PARAMS.inPerTick * 25.4;
@@ -66,13 +63,8 @@ public class CompetitionTeleopMode2Controllers extends OpMode {
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                 GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
-        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.FRONT_LEFT_DRIVE_MOTOR);
-        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.FRONT_RIGHT_DRIVE_MOTOR);
-        backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.BACK_LEFT_DRIVE_MOTOR);
-        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.BACK_RIGHT_DRIVE_MOTOR);
 
         //setup intake motor
-        intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.INTAKE_MOTOR);
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
@@ -80,11 +72,8 @@ public class CompetitionTeleopMode2Controllers extends OpMode {
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
 
         //Feeders Setup
-        left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Params.LEFT_FEEDER_SERVO);
-        right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Params.RIGHT_FEEDER_SERVO);
 
         //Launcher Setup
-        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.LAUNCHER_MOTOR);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these
@@ -122,7 +111,6 @@ public class CompetitionTeleopMode2Controllers extends OpMode {
         }
         //INTAKE
         if (gamepad2.left_trigger > 0) {
-            intake.setPower(-gamepad1.left_trigger);
         }
         else if (gamepad2.left_trigger == 0) {
             intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
