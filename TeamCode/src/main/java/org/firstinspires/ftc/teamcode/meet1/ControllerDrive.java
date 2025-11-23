@@ -10,7 +10,7 @@ Notes:
 1. Robot Centric Drive and Field Centric Drive
 2. Both Joysticks work in parallel (you can move while shooting)
  */
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.meet1;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -24,6 +24,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.ConfigurationConstants;
 
 
 @TeleOp
