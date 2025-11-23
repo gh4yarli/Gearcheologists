@@ -3,12 +3,26 @@ package org.firstinspires.ftc.teamcode;
 public final class ConfigurationConstants {
     /**
      * Class that stores all configuration names. Use it by calling the class like this:
+     * <p></p>
      * DcMotor exampleMotor = hardwaremap.get(DcMotor.class, ConfigurationConstants.Names.EXAMPLE_MOTOR);
+     *
      */
     public static class Names {
+        /**
+         * name for front left drive motor
+         */
         public static final String FRONT_LEFT_DRIVE_MOTOR = "leftFront";
+        /**
+         * name for front right drive motor
+         */
         public static final String FRONT_RIGHT_DRIVE_MOTOR = "rightFront";
+        /**
+         * name for back left drive motor
+         */
         public static final String BACK_LEFT_DRIVE_MOTOR = "leftBack";
+        /**
+         * name for back right drive motor
+         */
         public static final String BACK_RIGHT_DRIVE_MOTOR = "rightBack";
 
         public static final String FIRST_INTAKE_MOTOR = "feeder";
