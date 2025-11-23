@@ -84,7 +84,7 @@ public class CompetitionTeleopMode extends OpMode {
     public void init() {
 
         //pinpoint
-        pinpoint = (hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Params.ODOMETRY_COMPUTER));
+        pinpoint = (hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Names.ODOMETRY_COMPUTER));
 
         //roadrunner configuration
         double mmPerTick = PARAMS.inPerTick * 25.4;
@@ -95,13 +95,13 @@ public class CompetitionTeleopMode extends OpMode {
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                 GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
-        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.FRONT_LEFT_DRIVE_MOTOR);
-        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.FRONT_RIGHT_DRIVE_MOTOR);
-        backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.BACK_LEFT_DRIVE_MOTOR);
-        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.BACK_RIGHT_DRIVE_MOTOR);
+        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
+        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
+        backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
+        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
 
         //setup intake motor
-        intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.INTAKE_MOTOR);
+        intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
@@ -109,11 +109,11 @@ public class CompetitionTeleopMode extends OpMode {
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
 
         //Feeders Setup
-        left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Params.LEFT_FEEDER_SERVO);
-        right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Params.RIGHT_FEEDER_SERVO);
+        left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
+        right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
 
         //Launcher Setup
-        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.LAUNCHER_MOTOR);
+        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these

@@ -69,15 +69,15 @@ public class BlueAprilTag extends LinearOpMode
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must match the names assigned during the robot configuration.
         // step (using the FTC Robot Controller app on the phone).
-        GoBildaPinpointDriver pinpointDriver = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Params.ODOMETRY_COMPUTER);
-        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.FRONT_LEFT_DRIVE_MOTOR);
-        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.FRONT_RIGHT_DRIVE_MOTOR);
-        backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.BACK_LEFT_DRIVE_MOTOR);
-        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.BACK_RIGHT_DRIVE_MOTOR);
-        CRServo right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Params.RIGHT_FEEDER_SERVO);
-        CRServo left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Params.LEFT_FEEDER_SERVO);
-        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.INTAKE_MOTOR);
-        DcMotor launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Params.LAUNCHER_MOTOR);
+        GoBildaPinpointDriver pinpointDriver = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Names.ODOMETRY_COMPUTER);
+        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
+        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
+        backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
+        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
+        CRServo right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
+        CRServo left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
+        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
+        DcMotor launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
