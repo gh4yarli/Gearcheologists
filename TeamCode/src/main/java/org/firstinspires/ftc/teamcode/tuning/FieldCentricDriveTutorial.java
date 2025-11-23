@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.tuning;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -36,7 +37,7 @@ public class FieldCentricDriveTutorial extends OpMode {
         BLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Odometry Computer Configuration
-        odo.setOffsets(83.0,-115.0);
+        odo.setOffsets(83.0,-115.0, DistanceUnit.MM);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
@@ -96,8 +97,8 @@ public class FieldCentricDriveTutorial extends OpMode {
         moveRobot();
 
         Pose2D pos = odo.getPosition();
-        telemetry.addData("Robot X: ", odo.getPosX());
-        telemetry.addData("Robot X: ", odo.getPosY());
+        telemetry.addData("Robot X: ", odo.getPosX(DistanceUnit.MM));
+        telemetry.addData("Robot X: ", odo.getPosY(DistanceUnit.MM));
         telemetry.addData("Robot X: ", pos.getHeading(AngleUnit.DEGREES));
         telemetry.update();
 
