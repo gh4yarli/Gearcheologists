@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Meet1;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.ConfigurationConstants;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 @Autonomous
@@ -23,10 +25,10 @@ public class RedGoalZone extends DetectAprilTag {
     public void runOpMode(){
         AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
 
-        DcMotor launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
+        DcMotor launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
         CRServo left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
         CRServo right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
-        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
+        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
         GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Names.ODOMETRY_COMPUTER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Pose2d startingPose = new Pose2d(38,-40, Math.toRadians(130));

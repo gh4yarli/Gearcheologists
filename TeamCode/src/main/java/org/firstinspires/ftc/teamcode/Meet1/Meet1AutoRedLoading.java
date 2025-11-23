@@ -1,12 +1,12 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Meet1;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
-
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,7 +20,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainCon
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-
+import org.firstinspires.ftc.teamcode.ConfigurationConstants;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -29,7 +30,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class Meet1AutoRedGoal extends LinearOpMode {
+@Disabled
+public class Meet1AutoRedLoading extends LinearOpMode {
     final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
@@ -75,8 +77,8 @@ public class Meet1AutoRedGoal extends LinearOpMode {
         backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
         CRServo right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
         CRServo left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
-        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
-        DcMotor launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
+        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
+        DcMotor launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -87,18 +89,14 @@ public class Meet1AutoRedGoal extends LinearOpMode {
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Pose2d startingPose = new Pose2d(38,-40, Math.toRadians(130));
-        pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH, 38,-40, AngleUnit.DEGREES, 130));
+        launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        Pose2d startingPose = new Pose2d(-60,-12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap,startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToXLinearHeading(0,Math.toRadians(-49) )
+                .lineToX(-20)
+                .turnTo(Math.toRadians(-30))
                 .build();
-        telemetry.addData("Position",
-                "X:" + pinpointDriver.getPosX(DistanceUnit.INCH) +
-                        ", Y:" + pinpointDriver.getPosY(DistanceUnit.INCH) +
-                        ", Heading:" + pinpointDriver.getHeading(AngleUnit.DEGREES) );
-        telemetry.update();
 
         if (USE_WEBCAM)
             setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
@@ -109,21 +107,11 @@ public class Meet1AutoRedGoal extends LinearOpMode {
 
         AprilTagDetection desiredTag;
         pinpointDriver.initialize();
+        pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH,-60,-12, AngleUnit.RADIANS, 0));
         waitForStart();
         if (opModeIsActive()){
-            telemetry.addData("Position",
-                    "X:" + pinpointDriver.getPosX(DistanceUnit.INCH) +
-                            ", Y:" + pinpointDriver.getPosY(DistanceUnit.INCH) +
-                            ", Heading:" + pinpointDriver.getHeading(AngleUnit.DEGREES) );
-            telemetry.update();
-            launcher.setPower(-0.56);
+            launcher.setPower(-0.65);
             Actions.runBlocking(new SequentialAction(path));
-            telemetry.addData("Position",
-                    "X:" + pinpointDriver.getPosX(DistanceUnit.INCH) +
-                            ", Y:" + pinpointDriver.getPosY(DistanceUnit.INCH) +
-                            ", Heading:" + pinpointDriver.getHeading(AngleUnit.DEGREES) );
-            telemetry.update();
-
         }
         while (timer.milliseconds() < 8500) {
             targetFound = false;
@@ -157,11 +145,6 @@ public class Meet1AutoRedGoal extends LinearOpMode {
                 telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
                 telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
                 telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
-                telemetry.addData("Position",
-                        "X:" + pinpointDriver.getPosX(DistanceUnit.INCH) +
-                                ", Y:" + pinpointDriver.getPosY(DistanceUnit.INCH) +
-                                ", Heading:" + pinpointDriver.getHeading(AngleUnit.DEGREES) );
-                telemetry.update();
             } else {
                 telemetry.addData("\n>","Drive using joysticks to find valid target\n");
             }
@@ -179,11 +162,6 @@ public class Meet1AutoRedGoal extends LinearOpMode {
                 strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
                 telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-                telemetry.addData("Position",
-                        "X:" + pinpointDriver.getPosX(DistanceUnit.INCH) +
-                                ", Y:" + pinpointDriver.getPosY(DistanceUnit.INCH) +
-                                ", Heading:" + pinpointDriver.getHeading(AngleUnit.DEGREES) );
-                telemetry.update();
             }
             telemetry.update();
 
@@ -194,8 +172,6 @@ public class Meet1AutoRedGoal extends LinearOpMode {
         moveRobot(0,0,0);
         if (opModeIsActive()){
             sleep(10);
-            launcher.setPower(-0.56);
-            sleep(2000);
             timer.reset();
             for (byte i = 0; i < 3; i++) {
                 if (i > 0) intake.setPower((0.65));
@@ -217,44 +193,21 @@ public class Meet1AutoRedGoal extends LinearOpMode {
         double h = pinpointDriver.getHeading(AngleUnit.RADIANS);
         double x = pinpointDriver.getPosX(DistanceUnit.INCH);
         double y = pinpointDriver.getPosY(DistanceUnit.INCH);
-        telemetry.addData("Position",
-                  "X:" + pinpointDriver.getPosX(DistanceUnit.INCH) +
-                        ", Y:" + pinpointDriver.getPosY(DistanceUnit.INCH) +
-                        ", Heading:" + pinpointDriver.getHeading(AngleUnit.DEGREES) );
-        telemetry.update();
         Action getBalls = mecanumDrive.actionBuilder(new Pose2d(x,y,h))
-                .turnTo(Math.toRadians(-110))
+                .turnTo(Math.toRadians(110))
                 .lineToY(-40)
                 .build();
         intake.setPower(0.75);
         Actions.runBlocking(new SequentialAction(getBalls));
-        telemetry.addData("Position",
-                "X:" + pinpointDriver.getPosX(DistanceUnit.INCH) +
-                        ", Y:" + pinpointDriver.getPosY(DistanceUnit.INCH) +
-                        ", Heading:" + pinpointDriver.getHeading(AngleUnit.DEGREES) );
-        telemetry.update();
-        sleep(5000);
         intake.setPower(0);
-        launcher.setPower(-0.53);
+        launcher.setPower(-0.47);
         double h2 = pinpointDriver.getHeading(AngleUnit.RADIANS);
         double x2 = pinpointDriver.getPosX(DistanceUnit.INCH);
         double y2 = pinpointDriver.getPosY(DistanceUnit.INCH);
-        telemetry.addData("Position",
-                "X:" + pinpointDriver.getPosX(DistanceUnit.INCH) +
-                        ", Y:" + pinpointDriver.getPosY(DistanceUnit.INCH) +
-                        ", Heading:" + pinpointDriver.getHeading(AngleUnit.DEGREES) );
-        telemetry.update();
-        sleep(5000);
         Action shoot = mecanumDrive.actionBuilder(new Pose2d(x2,y2,h2))
                 .turnTo(Math.toRadians(-30))
                 .build();
         Actions.runBlocking(new SequentialAction(shoot));
-        telemetry.addData("Position",
-                "X:" + pinpointDriver.getPosX(DistanceUnit.INCH) +
-                        ", Y:" + pinpointDriver.getPosY(DistanceUnit.INCH) +
-                        ", Heading:" + pinpointDriver.getHeading(AngleUnit.DEGREES) );
-        telemetry.update();
-        sleep(5000);
         if (opModeIsActive()){
             sleep(10);
             timer.reset();
@@ -289,10 +242,10 @@ public class Meet1AutoRedGoal extends LinearOpMode {
      */
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
-        double frontLeftPower = x - y - yaw;
-        double frontRightPower = x + y + yaw;
-        double backLeftPower = x + y - yaw;
-        double backRightPower = x - y + yaw;
+        double frontLeftPower    =  x - y - yaw;
+        double frontRightPower   =  x + y + yaw;
+        double backLeftPower     =  x + y - yaw;
+        double backRightPower    =  x - y + yaw;
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
@@ -372,7 +325,7 @@ public class Meet1AutoRedGoal extends LinearOpMode {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
                 sleep(50);
             }
-            exposureControl.setExposure((long) exposureMS, TimeUnit.MILLISECONDS);
+            exposureControl.setExposure(exposureMS, TimeUnit.MILLISECONDS);
             sleep(20);
             GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
             gainControl.setGain(gain);

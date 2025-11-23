@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Meet1;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -9,6 +10,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.ConfigurationConstants;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.PinpointLocalizer;
 
 
 /*
@@ -26,6 +30,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  *
  */
 @TeleOp
+@Disabled
 
 public class CompetitionTeleopMode2Controllers extends OpMode {
 
@@ -72,7 +77,7 @@ public class CompetitionTeleopMode2Controllers extends OpMode {
         backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
 
         //setup intake motor
-        intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
+        intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
@@ -84,7 +89,7 @@ public class CompetitionTeleopMode2Controllers extends OpMode {
         right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
 
         //Launcher Setup
-        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
+        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
 
         // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
         // wires, you should remove these

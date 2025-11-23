@@ -10,7 +10,7 @@ Notes:
 1. Robot Centric Drive and Field Centric Drive
 2. Both Joysticks work in parallel (you can move while shooting)
  */
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Meet1;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -24,6 +24,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.ConfigurationConstants;
 
 
 @TeleOp
@@ -90,8 +91,8 @@ public class ControllerDrive extends LinearOpMode {
         front_right_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
         back_left_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
         back_right_drive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
-        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
-        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
+        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
+        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
 
         left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
         right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);

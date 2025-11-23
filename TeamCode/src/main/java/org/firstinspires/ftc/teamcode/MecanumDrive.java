@@ -43,7 +43,6 @@ import com.acmerobotics.roadrunner.ftc.RawEncoder;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -62,45 +61,27 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Config
-@Disabled
-
 public final class MecanumDrive {
     public static class Params {
-        // IMU orientation
-        // TODO: fill in these values based on
-        //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
-        public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
-        public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
-        // drive model parameters
+        public double axialGain = 0.225;
+        public double axialVelGain = 0;
+        public double headingGain = 0;
+        public double headingVelGain = 0;
         public double inPerTick = 0.001979;
-        public double lateralInPerTick = inPerTick;
-        public double trackWidthTicks = 5950;
-
-        // feedforward parameters (in tick units)
-        public double kS = 0.7655996237713447;
-        public double kV = 0.00035552227781602966;
-        public double kA = 0.000045;
-
-        // path profile parameters (in inches)
+        public double kA = 0.00005;
+        public double kS = 0.8152076926540901;
+        public double kV = 0.00034319521546823865;
+        public double lateralGain = 0;
+        public double lateralInPerTick = 0.001979;
+        public double lateralVelGain = 0;
+        public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        public double maxAngAccel = 3.141592653589793;
+        public double maxAngVel = 3.141592653589793;
+        public double maxProfileAccel = 50;
         public double maxWheelVel = 50;
         public double minProfileAccel = -30;
-        public double maxProfileAccel = 50;
-
-        // turn profile parameters (in radians)
-        public double maxAngVel = Math.PI; // shared with path
-        public double maxAngAccel = Math.PI;
-
-        // path controller gains
-        public double axialGain = 0.0;
-        public double lateralGain = 0.0;
-        public double headingGain = 0.0; // shared with turn
-
-        public double axialVelGain = 0.0;
-        public double lateralVelGain = 0.0;
-        public double headingVelGain = 0.0; // shared with turn
+        public double trackWidthTicks = 7180;
+        public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
     }
 
     public static Params PARAMS = new Params();
@@ -364,10 +345,10 @@ public final class MecanumDrive {
             drawPoseHistory(c);
 
             c.setStroke("#4CAF50");
-            Drawing.drawRobot(c, txWorldTarget.value());
+            //Drawing.drawRobot(c, txWorldTarget.value());
 
             c.setStroke("#3F51B5");
-            Drawing.drawRobot(c, localizer.getPose());
+            //Drawing.drawRobot(c, localizer.getPose());
 
             c.setStroke("#4CAF50FF");
             c.setStrokeWidth(1);
@@ -445,10 +426,10 @@ public final class MecanumDrive {
             drawPoseHistory(c);
 
             c.setStroke("#4CAF50");
-            Drawing.drawRobot(c, txWorldTarget.value());
+            //Drawing.drawRobot(c, txWorldTarget.value());
 
             c.setStroke("#3F51B5");
-            Drawing.drawRobot(c, localizer.getPose());
+            //Drawing.drawRobot(c, localizer.getPose());
 
             c.setStroke("#7C4DFFFF");
             c.fillCircle(turn.beginPose.position.x, turn.beginPose.position.y, 2);

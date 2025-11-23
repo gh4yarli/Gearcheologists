@@ -15,7 +15,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
 import java.util.Objects;
 
 @Config
-@Disabled
 
 public final class PinpointLocalizer implements Localizer {
     public static class Params {
@@ -41,7 +40,7 @@ public final class PinpointLocalizer implements Localizer {
         driver.setOffsets(mmPerTick * PARAMS.parYTicks, mmPerTick * PARAMS.perpXTicks, DistanceUnit.MM);
 
         // TODO: reverse encoder directions if needed
-        initialParDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
+        initialParDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
         initialPerpDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
 
         driver.setEncoderDirections(initialParDirection, initialPerpDirection);

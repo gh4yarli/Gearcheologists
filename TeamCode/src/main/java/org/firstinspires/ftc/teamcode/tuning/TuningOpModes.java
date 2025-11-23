@@ -33,7 +33,6 @@ import com.acmerobotics.roadrunner.ftc.PinpointIMU;
 import com.acmerobotics.roadrunner.ftc.PinpointView;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
@@ -51,7 +50,6 @@ import org.firstinspires.ftc.teamcode.TwoDeadWheelLocalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-@Disabled
 
 public final class TuningOpModes {
     public static final Class<?> DRIVE_CLASS = MecanumDrive.class;
@@ -299,7 +297,6 @@ public final class TuningOpModes {
 
         manager.register(metaForClass(ManualFeedbackTuner.class), ManualFeedbackTuner.class);
         manager.register(metaForClass(SplineTest.class), SplineTest.class);
-        manager.register(metaForClass(LocalizationTest.class), LocalizationTest.class);
 
         manager.register(metaForClass(OTOSAngularScalarTuner.class), new OTOSAngularScalarTuner(dvf));
         manager.register(metaForClass(OTOSLinearScalarTuner.class), new OTOSLinearScalarTuner(dvf));

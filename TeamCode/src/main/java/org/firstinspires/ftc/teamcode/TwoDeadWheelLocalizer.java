@@ -26,7 +26,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.messages.TwoDeadWheelInputsMessage;
 
 @Config
-@Disabled
 
 public final class TwoDeadWheelLocalizer implements Localizer {
     public static class Params {

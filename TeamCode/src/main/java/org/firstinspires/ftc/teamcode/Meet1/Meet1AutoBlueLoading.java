@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Meet1;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,7 +19,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.ConfigurationConstants;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -27,7 +29,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class Meet1AutoBlueGoal extends LinearOpMode {
+@Disabled
+public class Meet1AutoBlueLoading extends LinearOpMode {
     final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
@@ -73,8 +76,8 @@ public class Meet1AutoBlueGoal extends LinearOpMode {
         backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
         CRServo right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
         CRServo left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
-        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
-        DcMotor launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
+        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
+        DcMotor launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -85,12 +88,12 @@ public class Meet1AutoBlueGoal extends LinearOpMode {
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        pinpointDriver.setPosition(new Pose2D(DistanceUnit.INCH, 38,40, AngleUnit.DEGREES, -130));
 
-        Pose2d startingPose = new Pose2d(38,40, Math.toRadians(-130));
+        Pose2d startingPose = new Pose2d(-60,12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap,startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToXLinearHeading(0,Math.toRadians(49) )
+                .lineToX(-20)
+                .turnTo(Math.toRadians(30))
                 .build();
 
         if (USE_WEBCAM)
@@ -166,6 +169,7 @@ public class Meet1AutoBlueGoal extends LinearOpMode {
         moveRobot(0,0,0);
         if (opModeIsActive()){
             sleep(10);
+            launcher.setPower(-0.56);
             sleep(2000);
             timer.reset();
             for (byte i = 0; i < 3; i++) {
@@ -183,6 +187,8 @@ public class Meet1AutoBlueGoal extends LinearOpMode {
                 }
                 timer.reset();
             }
+            launcher.setPower(0);
+            intake.setPower(0);
             telemetry.update();
         }
         double h = pinpointDriver.getHeading(AngleUnit.RADIANS);
@@ -200,7 +206,7 @@ public class Meet1AutoBlueGoal extends LinearOpMode {
         double x2 = pinpointDriver.getPosX(DistanceUnit.INCH);
         double y2 = pinpointDriver.getPosY(DistanceUnit.INCH);
         Action shoot = mecanumDrive.actionBuilder(new Pose2d(x2,y2,h2))
-                .turnTo(Math.toRadians(-30))
+                .turnTo(Math.toRadians(30))
                 .build();
         Actions.runBlocking(new SequentialAction(shoot));
         if (opModeIsActive()){
