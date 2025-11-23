@@ -80,8 +80,8 @@ public class ControllerDriveCompetition extends LinearOpMode {
         back_left_drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         back_right_drive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
-        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.INTAKE_MOTOR);
+        launcher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
+        DcMotor intake = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
 
         left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
         right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);

@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -15,12 +14,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
 import java.util.Objects;
 
 @Config
-@Disabled
-
 public final class PinpointLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks = 1800; // y position of the parallel encoder (in tick units)
-        public double perpXTicks = -800; // x position of the perpendicular encoder (in tick units)
+        public double parYTicks = -1500; // y position of the parallel encoder (in tick units)
+        public double perpXTicks = 400; // x position of the perpendicular encoder (in tick units)
+        //public double parYTicks = 332.6049270642366; // y position of the parallel encoder (in tick units)
+        // public double perpXTicks = -4039.6904638031087; // x position of the perpendicular encoder (in tick units)
+
     }
 
     public static Params PARAMS = new Params();
@@ -41,8 +41,8 @@ public final class PinpointLocalizer implements Localizer {
         driver.setOffsets(mmPerTick * PARAMS.parYTicks, mmPerTick * PARAMS.perpXTicks, DistanceUnit.MM);
 
         // TODO: reverse encoder directions if needed
-        initialParDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
-        initialPerpDirection = GoBildaPinpointDriver.EncoderDirection.REVERSED;
+        initialParDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
+        initialPerpDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
 
         driver.setEncoderDirections(initialParDirection, initialPerpDirection);
 
