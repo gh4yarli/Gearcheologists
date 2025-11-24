@@ -23,6 +23,7 @@ public class Meet2AutoBlueGoal extends LinearOpMode {
     private static final String WEBCAM_NAME = "Webcam 1";
     private static final int TAG_ID = 20;
     private static final double DESIRED_DISTANCE = 50;
+
     @Override
     public void runOpMode() throws InterruptedException {
         frontLeft = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
