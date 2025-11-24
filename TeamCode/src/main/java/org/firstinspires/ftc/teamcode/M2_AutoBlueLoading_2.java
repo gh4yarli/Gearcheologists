@@ -16,8 +16,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -26,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class M2_AutoBlueLoading extends LinearOpMode {
+public class M2_AutoBlueLoading_2 extends LinearOpMode {
     final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
@@ -106,9 +104,9 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()){
             telemetry.addData("Power", "Left Launcher Power set to 0.56");
-            left_launcher.setPower(-0.56);
+            left_launcher.setPower(-0.39);
             telemetry.addData("Power", "Right Launcher Power set to 0.56");
-            right_launcher.setPower(-0.56);
+            right_launcher.setPower(-0.39);
             telemetry.addData("Path", "Sending robot to near the blue goal");
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
@@ -207,8 +205,8 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         moveRobot(0,0,0);
         if (opModeIsActive()){
             sleep(10);
-            left_launcher.setPower(0.56);
-            right_launcher.setPower(0.56);
+//            left_launcher.setPower(0.56);
+//            right_launcher.setPower(0.56);
             second_intake.setPower(0.5);
             sleep(2000);
             timer.reset();
