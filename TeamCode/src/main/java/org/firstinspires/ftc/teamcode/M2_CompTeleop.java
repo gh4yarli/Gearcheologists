@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -25,10 +26,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  *
  */
 
-public class Meet2CompTeleop extends OpMode {
+@TeleOp(name = "M2_CompTeleop", group = "Competition")
+public class M2_CompTeleop extends OpMode {
 
     public static class Params {
-        public final double parYTicks = PinpointLocalizer.PARAMS.parYTicks; ; // y position of the parallel encoder (in tick units)
+        public final double parYTicks = PinpointLocalizer.PARAMS.parYTicks;  // y position of the parallel encoder (in tick units)
         public final double perpXTicks = PinpointLocalizer.PARAMS.perpXTicks; // x position of the perpendicular encoder (in tick units)
 
         public double inPerTick = MecanumDrive.PARAMS.inPerTick;
@@ -49,17 +51,55 @@ public class Meet2CompTeleop extends OpMode {
     DcMotor rightLauncher;
     CRServo leftFeeder;
     CRServo rightFeeder;
-    final double LAUNCHER_POWER = .65;
+    final double LAUNCHER_POWER = .35;
     @Override
     public void init() {
 
         //pinpoint
-
+        /*
+        telemetry.addLine("Hold left bumper for robot centric");
+        telemetry.addLine("A to reset pos/IMU");
+        telemetry.addLine("Left trigger to start intake");
+        telemetry.addLine("X to shoot");
+        telemetry.addLine("Gamepad 2 has all the movement buttons and gamepad 1 has everything else");
+        */
         //roadrunner configuration
+
+
+        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
+        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
+        backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
+        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
+
+        //setup intake motor
+        feeder = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
+        intake2 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.SECOND_INTAKE_MOTOR);
+        // We set the left motors in reverse which is needed for drive trains where the left
+        // motors are opposite to the right ones.
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        //Feeders Setup
+        leftFeeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
+        rightFeeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
+
+        //Launcher Setup
+        leftLauncher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
+        rightLauncher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.RIGHT_LAUNCHER_MOTOR);
+
+        //Pinpoint Setup
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Names.ODOMETRY_COMPUTER);
+
         double mmPerTick = PARAMS.inPerTick * 25.4;
         pinpoint.setEncoderResolution(1 / mmPerTick, DistanceUnit.MM);
         pinpoint.setOffsets(mmPerTick * PARAMS.parYTicks, mmPerTick * PARAMS.perpXTicks, DistanceUnit.MM);
 
+        //Encoder Directions
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
+                GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        //double mmPerTick = PARAMS.inPerTick * 25.4;
+        pinpoint.setEncoderResolution(1 / mmPerTick, DistanceUnit.MM);
+        pinpoint.setOffsets(mmPerTick * PARAMS.parYTicks, mmPerTick * PARAMS.perpXTicks, DistanceUnit.MM);
         //Encoder Directions
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                 GoBildaPinpointDriver.EncoderDirection.REVERSED);
@@ -109,6 +149,7 @@ public class Meet2CompTeleop extends OpMode {
         }
         //INTAKE
         if (gamepad2.left_trigger > 0) {
+            feeder.setPower(1);
         }
         else if (gamepad2.left_trigger == 0) {
             feeder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -116,14 +157,14 @@ public class Meet2CompTeleop extends OpMode {
         }
         //SHOOTING
         if (gamepad1.right_trigger > 0) {
-            leftLauncher.setPower(gamepad1.right_trigger);
+            leftLauncher.setPower(-gamepad1.right_trigger);
             rightLauncher.setPower(-gamepad1.right_trigger);
             rightFeeder.setPower(-1);
             leftFeeder.setPower(1);
         }
         else if (gamepad2.right_trigger == 0) {
-            leftLauncher.setPower(LAUNCHER_POWER);
-            rightLauncher.setPower(LAUNCHER_POWER);
+            leftLauncher.setPower(-LAUNCHER_POWER);
+            rightLauncher.setPower(-LAUNCHER_POWER);
             rightFeeder.setPower(0);
             leftFeeder.setPower(0);
         }
