@@ -12,11 +12,14 @@ public final class ConfigurationConstants {
         public static final String FRONT_RIGHT_DRIVE_MOTOR = "rightFront";
         public static final String BACK_LEFT_DRIVE_MOTOR = "leftBack";
         public static final String BACK_RIGHT_DRIVE_MOTOR = "rightBack";
-        public static final String INTAKE_MOTOR = "intake";
-        public static final String LAUNCHER_MOTOR = "launcher";
 
-        public static final String LEFT_FEEDER_SERVO = "left_feeder";
-        public static final String RIGHT_FEEDER_SERVO = "right_feeder";
+        public static final String FIRST_INTAKE_MOTOR = "feeder";
+        public static final String SECOND_INTAKE_MOTOR = "intake2";
+        public static final String LEFT_LAUNCHER_MOTOR = "leftLauncher";
+        public static final String RIGHT_LAUNCHER_MOTOR = "rightLauncher";
+
+        public static final String LEFT_FEEDER_SERVO = "leftFeeder";
+        public static final String RIGHT_FEEDER_SERVO = "rightFeeder";
 
         public static final String DISTANCE_SENSOR = "distance";
 
