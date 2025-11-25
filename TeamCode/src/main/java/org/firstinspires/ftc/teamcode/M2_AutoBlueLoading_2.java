@@ -104,9 +104,9 @@ public class M2_AutoBlueLoading_2 extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()){
             telemetry.addData("Power", "Left Launcher Power set to 0.56");
-            left_launcher.setPower(-0.39);
+            left_launcher.setPower(-0.33);
             telemetry.addData("Power", "Right Launcher Power set to 0.56");
-            right_launcher.setPower(-0.39);
+            right_launcher.setPower(-0.33);
             telemetry.addData("Path", "Sending robot to near the blue goal");
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
@@ -135,6 +135,7 @@ public class M2_AutoBlueLoading_2 extends LinearOpMode {
                     telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
                 }
             }
+            telemetry.update();
 
             // Tell the driver what we see, and what to do.
             if (targetFound) {
@@ -142,10 +143,10 @@ public class M2_AutoBlueLoading_2 extends LinearOpMode {
                 telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
                 telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
                 telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
-                telemetry.update();
             } else {
                 telemetry.addData("\n>","Drive using joysticks to find valid target\n");
             }
+            telemetry.update();
 
             if (targetFound) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -159,7 +160,7 @@ public class M2_AutoBlueLoading_2 extends LinearOpMode {
                 strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
                 telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-                // telemetry.update();
+                telemetry.update();
 
                 // Apply desired axes motions to the drivetrain.
                 moveRobot(drive, strafe, turn);
@@ -172,11 +173,11 @@ public class M2_AutoBlueLoading_2 extends LinearOpMode {
             sleep(10);
 //            left_launcher.setPower(0.56);
 //            right_launcher.setPower(0.56);
-            second_intake.setPower(0.5);
+            second_intake.setPower(1);
             sleep(2000);
             timer.reset();
             for (byte i = 0; i < 3; i++) {
-                if (i > 0) first_intake.setPower((0.65));
+                if (i > 0) first_intake.setPower((1));
                 left_feeder.setPower(1);
                 right_feeder.setPower(-1);
                 while (timer.milliseconds() < 525){

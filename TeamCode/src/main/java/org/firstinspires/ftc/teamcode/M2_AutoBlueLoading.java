@@ -106,14 +106,15 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()){
             telemetry.addData("Power", "Left Launcher Power set to 0.56");
-            left_launcher.setPower(-0.56);
+            left_launcher.setPower(-0.33);
             telemetry.addData("Power", "Right Launcher Power set to 0.56");
-            right_launcher.setPower(-0.56);
+            right_launcher.setPower(-0.33);
             telemetry.addData("Path", "Sending robot to near the blue goal");
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
         }
-        while (timer.milliseconds() < 8500) {
+        int delayTime = 8500;
+        while (timer.milliseconds() < delayTime) {
             targetFound = false;
             // Used to hold the data for a detected AprilTag
             desiredTag = null;
@@ -150,7 +151,9 @@ public class M2_AutoBlueLoading extends LinearOpMode {
                 int new_angle = 5;
                 while (!targetFound) {
                     sleep(1000);
+                    delayTime += 1000;
                     telemetry.addData("Rotate to find tag", "New angle %d", (new_angle));
+                    telemetry.update();
 
                     // telemetry.update();
                     //path = mecanumDrive.actionBuilder(startingPose)
@@ -160,9 +163,8 @@ public class M2_AutoBlueLoading extends LinearOpMode {
 
                     Pose2d currentPose = mecanumDrive.localizer.getPose();
                     path = mecanumDrive.actionBuilder(currentPose)
-                            .turn(Math.toRadians(5))   // +1° CCW
+                            .turn(Math.toRadians(5))   // +5 CCW
                             .build();
-
 
                     Actions.runBlocking(new SequentialAction(path));
 
@@ -197,7 +199,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
             telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            // telemetry.update();
+            telemetry.update();
 
             // Apply desired axes motions to the drivetrain.
             moveRobot(drive, strafe, turn);
@@ -207,13 +209,13 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         moveRobot(0,0,0);
         if (opModeIsActive()){
             sleep(10);
-            left_launcher.setPower(0.56);
-            right_launcher.setPower(0.56);
-            second_intake.setPower(0.5);
+//            left_launcher.setPower(0.56);
+//            right_launcher.setPower(0.56);
+            second_intake.setPower(1);
             sleep(2000);
             timer.reset();
             for (byte i = 0; i < 3; i++) {
-                if (i > 0) first_intake.setPower((0.65));
+                if (i > 0) first_intake.setPower((1));
                 left_feeder.setPower(1);
                 right_feeder.setPower(-1);
                 while (timer.milliseconds() < 525){
@@ -223,9 +225,11 @@ public class M2_AutoBlueLoading extends LinearOpMode {
                 left_feeder.setPower(0);
                 right_feeder.setPower(0);
                 while (timer.milliseconds() < 1500){
-                    sleep(1);
+                    sleep(1000);
                 }
                 timer.reset();
+                telemetry.addData("Shooting update", "Finsihed shooting ball: %d", (i+1));
+                telemetry.update();
             }
             left_launcher.setPower(0);
             right_launcher.setPower(0);
