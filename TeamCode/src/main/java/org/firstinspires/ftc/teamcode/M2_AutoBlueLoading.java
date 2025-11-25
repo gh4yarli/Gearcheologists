@@ -220,10 +220,10 @@ public class M2_AutoBlueLoading extends LinearOpMode {
                     sleep(1000);
                 }
                 timer.reset();
-                telemetry.addData("Shooting update", "Finsihed shooting ball: %d", (i+1));
+                telemetry.addData("Shooting update", "Finished shooting ball: %d", (i+1));
                 telemetry.update();
             }
-            telemetry.addData("Shooting update", "Finsihed shooting ALL balls. Move to next phase");
+            telemetry.addData("Shooting update", "Finished shooting ALL balls. Move to next phase");
             telemetry.update();
             left_launcher.setPower(0);
             right_launcher.setPower(0);
@@ -231,7 +231,6 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             first_intake.setPower(0);
             telemetry.update();
         }
-
 
         // Code to get balls #1(closest one to the goal)
         //Add intake from the beginning(Both intakes)
@@ -242,7 +241,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         telemetry.update();
         //Moving to pick up the ball
         Pose2d currentPose = mecanumDrive.localizer.getPose();
-       //Turning and moving down
+        //Turning and moving down
         path = mecanumDrive.actionBuilder(currentPose)
                 .turn(Math.toRadians(-30))   // -30 CCW
                 .lineToX(-5)
@@ -264,22 +263,147 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         //Read April Tag
         //Re position
         //Then shoot 4 times
-//        telemetry.addData("Move update", "On the way to shoot the first set of balls");
-//        telemetry.update();
-//        currentPose = mecanumDrive.localizer.getPose();
-//        path = mecanumDrive.actionBuilder(currentPose)
-//                .turn(Math.toRadians(-30))   // -30 CCW
-//                .lineToX(-5)
-//                .lineToY(20)
-//                .build();
-//        Actions.runBlocking(new SequentialAction(path));
-//
-//        telemetry.addData("Move update", "At the first goal ready to launch");
-//        telemetry.update();
+        telemetry.addData("Move update", "Moving back to shoot the first set of balls");
+        telemetry.update();
+        currentPose = mecanumDrive.localizer.getPose();
+        path = mecanumDrive.actionBuilder(currentPose)
+                .lineToY(-20)
+                .turn(Math.toRadians(-90))   // -30 CCW
+                .lineToX(-5)
+                .build();
+        Actions.runBlocking(new SequentialAction(path));
 
-        //Detect april tag command
+        telemetry.addData("Move update", "At the  goal ready to launch");
+        telemetry.update();
 
-        //Shoot
+        pinpointDriver.initialize();
+        waitForStart();
+        if (opModeIsActive()){
+            telemetry.addData("Power", "Left Launcher Power set to 0.56");
+            left_launcher.setPower(-0.35);
+            telemetry.addData("Power", "Right Launcher Power set to 0.56");
+            right_launcher.setPower(-0.35);
+            telemetry.addData("Path", "Sending robot to near the blue goal");
+            Actions.runBlocking(new SequentialAction(path));
+            telemetry.update();
+        }
+        while (timer.milliseconds() < delayTime) {
+            targetFound = false;
+            // Used to hold the data for a detected AprilTag
+            desiredTag = null;
+            // Step through the list of detected tags and look for a matching tag
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            for (AprilTagDetection detection : currentDetections) {
+                // Look to see if we have size info on this tag.
+                if (detection.metadata != null) {
+                    //  Check to see if we want to track towards this tag.
+                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                        // Yes, we want to use this tag.
+                        targetFound = true;
+                        desiredTag = detection;
+                        break;  // don't look any further.
+                    } else {
+                        // This tag is in the library, but we do not want to track it right now.
+                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                    }
+                } else {
+                    // This tag is NOT in the library, so we don't have enough information to track to it.
+                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+                }
+            }
+
+            // Tell the driver what we see, and what to do.
+            if (targetFound) {
+                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+                telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
+                telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
+                telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
+                telemetry.update();
+            }
+            else {
+                int new_angle = 5;
+                while (!targetFound) {
+                    sleep(1000);
+                    delayTime += 1000;
+                    telemetry.addData("Rotate to find tag", "New angle %d", (new_angle));
+                    telemetry.update();
+
+                    currentPose = mecanumDrive.localizer.getPose();
+                    path = mecanumDrive.actionBuilder(currentPose)
+                            .turn(Math.toRadians(5))   // +5 CCW
+                            .build();
+
+                    Actions.runBlocking(new SequentialAction(path));
+
+                    // Step through the list of detected tags and look for a matching tag
+                    currentDetections = aprilTag.getDetections();
+                    for (AprilTagDetection detection : currentDetections) {
+                        // Look to see if we have size info on this tag.
+                        if (detection.metadata != null) {
+                            //  Check to see if we want to track towards this tag.
+                            if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                                // Yes, we want to use this tag.
+                                targetFound = true;
+                                desiredTag = detection;
+                                break;  // don't look any further.
+                            } else {
+                                // This tag is in the library, but we do not want to track it right now.
+                                telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+            double  headingError    = desiredTag.ftcPose.bearing;
+            double  yawError        = desiredTag.ftcPose.yaw;
+
+            // Use the speed and turn "gains" to calculate how we want the robot to move.
+            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+            telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            telemetry.update();
+
+            // Apply desired axes motions to the drivetrain.
+            moveRobot(drive, strafe, turn);
+            sleep(10);
+        }
+        // >> second time launch
+        moveRobot(0,0,0);
+        if (opModeIsActive()){
+            sleep(10);
+            second_intake.setPower(1);
+            sleep(2000);
+            timer.reset();
+            for (byte i = 0; i < 4; i++) {
+                if (i > 0) first_intake.setPower((1));
+                left_feeder.setPower(1);
+                right_feeder.setPower(-1);
+                while (timer.milliseconds() < 525){
+                    sleep(1);
+                }
+                timer.reset();
+                left_feeder.setPower(0);
+                right_feeder.setPower(0);
+                while (timer.milliseconds() < 1500){
+                    sleep(1000);
+                }
+                timer.reset();
+                telemetry.addData("Shooting update", "Finsihed shooting ball: %d", (i+1));
+                telemetry.update();
+            }
+            telemetry.addData("Shooting update", "Finsihed shooting ALL balls. Move to next phase");
+            telemetry.update();
+            left_launcher.setPower(0);
+            right_launcher.setPower(0);
+            second_intake.setPower(0);
+            first_intake.setPower(0);
+            telemetry.update();
+        }
     }
 
     /**
