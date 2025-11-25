@@ -90,7 +90,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         Pose2d startingPose = new Pose2d(-60,12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap,startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(-20)
+                .lineToX(10)
                 .turnTo(Math.toRadians(30))
                 .build();
 
@@ -106,9 +106,9 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()){
             telemetry.addData("Power", "Left Launcher Power set to 0.56");
-            left_launcher.setPower(-0.33);
+            left_launcher.setPower(-0.35);
             telemetry.addData("Power", "Right Launcher Power set to 0.56");
-            right_launcher.setPower(-0.33);
+            right_launcher.setPower(-0.35);
             telemetry.addData("Path", "Sending robot to near the blue goal");
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
@@ -154,12 +154,6 @@ public class M2_AutoBlueLoading extends LinearOpMode {
                     delayTime += 1000;
                     telemetry.addData("Rotate to find tag", "New angle %d", (new_angle));
                     telemetry.update();
-
-                    // telemetry.update();
-                    //path = mecanumDrive.actionBuilder(startingPose)
-                    //        .turnTo(Math.toRadians(new_angle))
-                    //        .build();
-                    //Actions.runBlocking(new SequentialAction(path));
 
                     Pose2d currentPose = mecanumDrive.localizer.getPose();
                     path = mecanumDrive.actionBuilder(currentPose)
@@ -209,12 +203,10 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         moveRobot(0,0,0);
         if (opModeIsActive()){
             sleep(10);
-//            left_launcher.setPower(0.56);
-//            right_launcher.setPower(0.56);
             second_intake.setPower(1);
             sleep(2000);
             timer.reset();
-            for (byte i = 0; i < 3; i++) {
+            for (byte i = 0; i < 4; i++) {
                 if (i > 0) first_intake.setPower((1));
                 left_feeder.setPower(1);
                 right_feeder.setPower(-1);
@@ -231,55 +223,63 @@ public class M2_AutoBlueLoading extends LinearOpMode {
                 telemetry.addData("Shooting update", "Finsihed shooting ball: %d", (i+1));
                 telemetry.update();
             }
+            telemetry.addData("Shooting update", "Finsihed shooting ALL balls. Move to next phase");
+            telemetry.update();
             left_launcher.setPower(0);
             right_launcher.setPower(0);
             second_intake.setPower(0);
             first_intake.setPower(0);
             telemetry.update();
         }
-//      After robot is done shootin, set the intake one to 1
-//      Then it will go to the lines with 3 dashes, and go to each
-//        It will collect th
-//        double h = pinpointDriver.getHeading(AngleUnit.RADIANS);
-//        double x = pinpointDriver.getPosX(DistanceUnit.INCH);
-//        double y = pinpointDriver.getPosY(DistanceUnit.INCH);
-//        Action getBalls = mecanumDrive.actionBuilder(new Pose2d(x,y,h))
-//                .turnTo(Math.toRadians(-110))
-//                .lineToY(40)
+
+
+        // Code to get balls #1(closest one to the goal)
+        //Add intake from the beginning(Both intakes)
+        second_intake.setPower(1);
+        first_intake.setPower(1);
+       //Moving ball to pick balls up
+        telemetry.addData("Move update", "On the way to pickup the first set of balls");
+        telemetry.update();
+        //Moving to pick up the ball
+        Pose2d currentPose = mecanumDrive.localizer.getPose();
+       //Turning and moving down
+        path = mecanumDrive.actionBuilder(currentPose)
+                .turn(Math.toRadians(-30))   // -30 CCW
+                .lineToX(-5)
+                .build();
+        Actions.runBlocking(new SequentialAction(path));
+        //Turning 90 degrees and moving left
+        currentPose = mecanumDrive.localizer.getPose();
+        path = mecanumDrive.actionBuilder(currentPose)
+                .turn(Math.toRadians(-90))   // -30 CCW
+                .lineToY(20)
+                .build();
+        Actions.runBlocking(new SequentialAction(path));
+
+        //Going back to shooting position
+        //Move -20 y
+        //Move -90 degrees
+        //move 5 x forward
+        //Position 30 degrees
+        //Read April Tag
+        //Re position
+        //Then shoot 4 times
+//        telemetry.addData("Move update", "On the way to shoot the first set of balls");
+//        telemetry.update();
+//        currentPose = mecanumDrive.localizer.getPose();
+//        path = mecanumDrive.actionBuilder(currentPose)
+//                .turn(Math.toRadians(-30))   // -30 CCW
+//                .lineToX(-5)
+//                .lineToY(20)
 //                .build();
-//        first_intake.setPower(0.75);
-//        Actions.runBlocking(new SequentialAction(getBalls));
-//        first_intake.setPower(0);
-//        left_launcher.setPower(-0.53);
-//        double h2 = pinpointDriver.getHeading(AngleUnit.RADIANS);
-//        double x2 = pinpointDriver.getPosX(DistanceUnit.INCH);
-//        double y2 = pinpointDriver.getPosY(DistanceUnit.INCH);
-//        Action shoot = mecanumDrive.actionBuilder(new Pose2d(x2,y2,h2))
-//                .turnTo(Math.toRadians(50))
-//                .build();
-//        Actions.runBlocking(new SequentialAction(shoot));
-//        if (opModeIsActive()){
-//            sleep(10);
-//            timer.reset();
-//            for (byte i = 0; i < 2; i++) {
-//                if (i > 0) first_intake.setPower((0.65));
+//        Actions.runBlocking(new SequentialAction(path));
 //
-//                left_feeder.setPower(1);
-//                right_feeder.setPower(-1);
-//                while (timer.milliseconds() < 525){
-//                    sleep(1);
-//                }
-//                timer.reset();
-//                left_feeder.setPower(0);
-//                right_feeder.setPower(0);
-//                while (timer.milliseconds() < 1500){
-//                    sleep(1);
-//                }
-//                timer.reset();
-//            }
-//            telemetry.update();
-//        }
-//        left_launcher.setPower(0);
+//        telemetry.addData("Move update", "At the first goal ready to launch");
+//        telemetry.update();
+
+        //Detect april tag command
+
+        //Shoot
     }
 
     /**
@@ -317,8 +317,8 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         backRightDrive.setPower(backRightPower);
     }
 
-    /**
-     * Initialize the AprilTag processor.
+    /*
+     Initialize the AprilTag processor.
      */
     private void initAprilTag() {
         // Create the AprilTag processor by using a builder.
@@ -351,7 +351,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
      Manually set the camera gain and exposure.
      This can only be called AFTER calling initAprilTag(), and only works for Webcams;
     */
-    private void    setManualExposure(int exposureMS, int gain) {
+    private void setManualExposure(int exposureMS, int gain) {
         // Wait for the camera to be open, then use the controls
 
         if (visionPortal == null) {
