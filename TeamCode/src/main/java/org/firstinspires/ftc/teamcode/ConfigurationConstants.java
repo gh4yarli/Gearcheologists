@@ -9,19 +9,19 @@ public final class ConfigurationConstants {
      */
     public static class Names {
         /**
-         * name for front left drive motor
+         * name for the front left drive motor
          */
         public static final String FRONT_LEFT_DRIVE_MOTOR = "leftFront";
         /**
-         * name for front right drive motor
+         * name for the front right drive motor
          */
         public static final String FRONT_RIGHT_DRIVE_MOTOR = "rightFront";
         /**
-         * name for back left drive motor
+         * name for the back left drive motor
          */
         public static final String BACK_LEFT_DRIVE_MOTOR = "leftBack";
         /**
-         * name for back right drive motor
+         * name for the back right drive motor
          */
         public static final String BACK_RIGHT_DRIVE_MOTOR = "rightBack";
 
@@ -33,7 +33,9 @@ public final class ConfigurationConstants {
         public static final String LEFT_FEEDER_SERVO = "leftFeeder";
         public static final String RIGHT_FEEDER_SERVO = "rightFeeder";
 
-        public static final String DISTANCE_SENSOR = "distance";
+        public static final String BACK_DISTANCE_SENSOR = "backDistance";
+        public static final String FRONT_DISTANCE_SENSOR = "distance";
+        public static final String COLOR_SENSOR = "color";
 
         public static final String ODOMETRY_COMPUTER = "pinpoint";
     }

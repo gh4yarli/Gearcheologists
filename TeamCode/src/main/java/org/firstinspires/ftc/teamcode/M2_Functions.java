@@ -71,8 +71,10 @@ public abstract class M2_Functions extends LinearOpMode {
         leftFeeder.setDirection(LeftFeederDirection);
         leftLauncher.setDirection(LeftLauncherDirection);
         rightLauncher.setDirection(RightLauncherDirection);
-
-
+        leftLauncher.setPower(0);
+        rightLauncher.setPower(0);
+        intake1.setPower(0);
+        intake2.setPower(0);
     }
     /**
      * <p></p>

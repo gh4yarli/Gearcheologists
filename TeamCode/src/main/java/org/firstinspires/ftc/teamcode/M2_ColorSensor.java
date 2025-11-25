@@ -1,13 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-public class M2_ColorSensor {
+public abstract class M2_ColorSensor extends LinearOpMode{
     public boolean detectArtifact(ColorSensor colorSensor){
         boolean isBallDetected = false;
-        int torf = (int) Math.round(Math.random() * 1000.0);
-        if (torf % 2 == 0){
-            isBallDetected = true;
-        }
+        int blue = colorSensor.blue();
+        int red = colorSensor.red();
+        int green = colorSensor.green();
+        int alpha = colorSensor.alpha();
+        telemetry.addData("R", red);
+        telemetry.addData("G", green);
+        telemetry.addData("B", blue);
+        telemetry.addData("A", alpha);
         return isBallDetected;
     }
 }

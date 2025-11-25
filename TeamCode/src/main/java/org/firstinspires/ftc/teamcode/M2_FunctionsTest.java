@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp
-public class M2_DistanceSensor extends M2_Functions {
+public class M2_FunctionsTest extends M2_Functions {
     @Override
     public void runOpMode(){
         DcMotor leftLauncher = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
@@ -18,10 +18,10 @@ public class M2_DistanceSensor extends M2_Functions {
         waitForStart();
         while (opModeIsActive()){
             //intake(firstIntake, secondIntake);
-            //shootBalls(leftLauncher, rightLauncher, leftFeeder, rightFeeder, firstIntake, secondIntake, 0.4, colorSensor);
+            //shootBalls(leftLauncher, rightLauncher, leftFeeder, rightFeeder, firstIntake, secondIntake, 0.35, colorSensor);
             detectArtifact(colorSensor);
             telemetry.update();
-            stop();
+            //stop();
         }
         if (isStopRequested()){
             stop();
