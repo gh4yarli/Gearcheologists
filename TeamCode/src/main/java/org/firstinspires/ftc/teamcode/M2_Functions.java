@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.jetbrains.annotations.Nullable;
-
 public abstract class M2_Functions extends LinearOpMode {
     /**
      *
@@ -46,12 +44,9 @@ public abstract class M2_Functions extends LinearOpMode {
      * second intake
      * @param launcherPower
      * power to shoot balls
-     * @param colorSensor
-     * color sensor to detect balls
      */
     public void shootBalls(DcMotor leftLauncher, DcMotor rightLauncher, CRServo leftFeeder,
-                           CRServo rightFeeder, DcMotor intake1, DcMotor intake2, double launcherPower, @Nullable ColorSensor colorSensor) {
-        @Nullable ColorSensor colorSensor1 = colorSensor;
+                           CRServo rightFeeder, DcMotor intake1, DcMotor intake2, double launcherPower) {
         DcMotorSimple.Direction LeftFeederDirection = leftFeeder.getDirection();
         DcMotorSimple.Direction LeftLauncherDirection = leftLauncher.getDirection();
         DcMotorSimple.Direction RightLauncherDirection = rightLauncher.getDirection();
