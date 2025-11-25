@@ -5,6 +5,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class RobotAprilTagRedLoadingDrive extends LinearOpMode
+public class RobotAprilTagRedLoadingDrive extends M2_Functions
 {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
@@ -78,7 +79,7 @@ public class RobotAprilTagRedLoadingDrive extends LinearOpMode
         initAprilTag();
 
         // GoBildaPinpointDriver pinpointDriver = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Names.ODOMETRY_COMPUTER);
-        frontLeftDrive =  hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
+        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
         frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
         backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
         backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
@@ -132,7 +133,7 @@ public class RobotAprilTagRedLoadingDrive extends LinearOpMode
         double rangeError = 5000;
         while (rangeError > 2) {
             desiredTag = null;
-            tagFound=0;
+            tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             desiredTag = detectAprilTag(tagNumber, currentDetections);
             if (desiredTag.id == tagNumber) {
@@ -141,37 +142,36 @@ public class RobotAprilTagRedLoadingDrive extends LinearOpMode
                 telemetry.addData("Found", "ID %d (%s), Range %5.1f inches, Bearing %3.0f degrees,  Yaw %3.0f degrees", desiredTag.id, desiredTag.metadata.name, desiredTag.ftcPose.range, desiredTag.ftcPose.bearing, desiredTag.ftcPose.yaw);
                 telemetry.addData("range error inside", rangeError);
                 telemetry.update();
-              } else {
+            } else {
                 telemetry.addData("Tag Not Found, ID %d (%s)", desiredTag.id);
                 telemetry.update();
-                tagFound=0;
+                tagFound = 0;
             }
-            if (tagFound == 0){
-                moveRobot(0,0,-0.1);
+            if (tagFound == 0) {
+                moveRobot(0, 0, -0.1);
                 telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
-                 telemetry.update();
+                telemetry.update();
                 sleep(10);
-                moveRobot(0,0,0);
+                moveRobot(0, 0, 0);
             }
         }
-        moveRobot(0,0,0);
+        moveRobot(0, 0, 0);
 
         if (opModeIsActive()) {
-            LaunchBall(0.35, 1, 3000, 3, 1, 500, 1000);
-        }
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.35); }
         //--------------------Second Shot---------------------------------
         // pinpointDriver.update();
         mecanumDrive.updatePoseEstimate();
         Pose2d newPose = mecanumDrive.localizer.getPose();
-       // pose2D newpos = pinpointDriver.
+        // pose2D newpos = pinpointDriver.
         //telemetry.addData("x, y, a",pinpointDriver.getPosX(DistanceUnit.INCH), pinpointDriver.getPosY(DistanceUnit.INCH) )
-       //  Pose2d newPos  = new Pose2d(pinpointDriver.getPosX(DistanceUnit.INCH), pinpointDriver.getPosY(DistanceUnit.INCH), pinpointDriver.getHeading(AngleUnit.RADIANS) );
+        //  Pose2d newPos  = new Pose2d(pinpointDriver.getPosX(DistanceUnit.INCH), pinpointDriver.getPosY(DistanceUnit.INCH), pinpointDriver.getHeading(AngleUnit.RADIANS) );
         mecanumDrive = new MecanumDrive(hardwareMap, newPose);
         Action path1 = mecanumDrive.actionBuilder(newPose)
                 .turnTo(Math.toRadians(0))
                 .lineToX(-5)
                 .turnTo(Math.toRadians(90))
-                .lineToY(-50)
+                .lineToY(-72)
                 .lineToY(0)
                 .turnTo(Math.toRadians(-30))
                 .build();
@@ -187,7 +187,7 @@ public class RobotAprilTagRedLoadingDrive extends LinearOpMode
         rangeError = 5000;
         while (rangeError > 2) {
             desiredTag = null;
-            tagFound=0;
+            tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             desiredTag = detectAprilTag(tagNumber, currentDetections);
             if (desiredTag.id == tagNumber) {
@@ -199,27 +199,89 @@ public class RobotAprilTagRedLoadingDrive extends LinearOpMode
             } else {
                 telemetry.addData("Tag Not Found, ID %d (%s)", desiredTag.id);
                 telemetry.update();
-                tagFound=0;
+                tagFound = 0;
             }
-            if (tagFound == 0){
-                moveRobot(0,0,-0.1);
+            if (tagFound == 0) {
+                moveRobot(0, 0, -0.1);
                 telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
                 telemetry.update();
                 sleep(10);
-                moveRobot(0,0,0);
+                moveRobot(0, 0, 0);
             }
         }
-        moveRobot(0,0,0);
+        moveRobot(0, 0, 0);
 
 
         if (opModeIsActive()) {
-            LaunchBall(0.35, 1, 1000, 3, 1, 500, 1000);
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.33);
         }
 
+
         //--------------------Third Shot---------------------------------
+        mecanumDrive.updatePoseEstimate();
+        newPose = mecanumDrive.localizer.getPose();
 
 
+        Action path2 = mecanumDrive.actionBuilder(newPose)
+                .turnTo(Math.toRadians(0))
+                .lineToX(18)
+                .turnTo(Math.toRadians(90))
+                .lineToY(-72)
+                .lineToY(0)
+                .turnTo(Math.toRadians(-50))
+                .build();
+
+        if (opModeIsActive()) {
+            feeder.setPower(1);
+            intake2.setPower(1);
+            Actions.runBlocking(new SequentialAction(path2));
+            feeder.setPower(0);
+            intake2.setPower(0);
+        }
+
+
+
+
+        tagFound = 0;
+        rangeError = 5000;
+        while (rangeError > 2) {
+            desiredTag = null;
+            tagFound = 0;
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+            desiredTag = detectAprilTag(tagNumber, currentDetections);
+            if (desiredTag.id == tagNumber) {
+                rangeError = MovetoDesiredLocation(desiredTag);
+                tagFound = 1;
+                telemetry.addData("Found", "ID %d (%s), Range %5.1f inches, Bearing %3.0f degrees,  Yaw %3.0f degrees", desiredTag.id, desiredTag.metadata.name, desiredTag.ftcPose.range, desiredTag.ftcPose.bearing, desiredTag.ftcPose.yaw);
+                telemetry.addData("range error inside", rangeError);
+                telemetry.update();
+            } else {
+                telemetry.addData("Tag Not Found, ID %d (%s)", desiredTag.id);
+                telemetry.update();
+                tagFound = 0;
+            }
+            if (tagFound == 0) {
+                moveRobot(0, 0, -0.1);
+                telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
+                telemetry.update();
+                sleep(10);
+                moveRobot(0, 0, 0);
+            }
+        }
+        moveRobot(0, 0, 0);
+        if (opModeIsActive()) {
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.35);
+        }
+
+
+        if (opModeIsActive()) {
+        }
     }
+
+
+
+
+
 
     //functions
     //launchball
@@ -246,7 +308,11 @@ public class RobotAprilTagRedLoadingDrive extends LinearOpMode
         right_feeder.setPower(0);
         feeder.setPower(0);
         intake2.setPower(0);
+
+
     }
+
+
 
 
     //Detecting the Designed AprilTag
