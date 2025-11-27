@@ -1,36 +1,19 @@
 package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-
-/*
- * This OpMode illustrates how to program your robot to drive field relative.  This means
- * that the robot drives the direction you push the joystick regardless of the current orientation
- * of the robot.
- *
- * This OpMode assumes that you have four mecanum wheels each on its own motor named:
- *   front_left_motor, front_right_motor, back_left_motor, back_right_motor
- *
- *   and that the left motors are flipped such that when they turn clockwise the wheel moves backwards
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
- *
- */
 
 @TeleOp(name = "M2_CompTeleop", group = "Competition")
 public class M2_CompTeleop extends OpMode {
 
     public static class Params {
-        public final double parYTicks = PinpointLocalizer.PARAMS.parYTicks;  // y position of the parallel encoder (in tick units)
+        public final double parYTicks = PinpointLocalizer.PARAMS.parYTicks;
+        ; // y position of the parallel encoder (in tick units)
         public final double perpXTicks = PinpointLocalizer.PARAMS.perpXTicks; // x position of the perpendicular encoder (in tick units)
 
         public double inPerTick = MecanumDrive.PARAMS.inPerTick;
@@ -45,25 +28,17 @@ public class M2_CompTeleop extends OpMode {
     DcMotor frontRightDrive;
     DcMotor backLeftDrive;
     DcMotor backRightDrive;
-    DcMotor feeder;
+    DcMotor intake1;
     DcMotor intake2;
     DcMotor leftLauncher;
     DcMotor rightLauncher;
     CRServo leftFeeder;
     CRServo rightFeeder;
-    final double LAUNCHER_POWER = .35;
+    final double SMALL_TRI_LAUNCHER_POWER = .4;
+    final double BIG_TRI_LAUNCH_POWER = .33;
+
     @Override
     public void init() {
-
-        //pinpoint
-        /*
-        telemetry.addLine("Hold left bumper for robot centric");
-        telemetry.addLine("A to reset pos/IMU");
-        telemetry.addLine("Left trigger to start intake");
-        telemetry.addLine("X to shoot");
-        telemetry.addLine("Gamepad 2 has all the movement buttons and gamepad 1 has everything else");
-        */
-        //roadrunner configuration
 
 
         frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
@@ -72,7 +47,7 @@ public class M2_CompTeleop extends OpMode {
         backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
 
         //setup intake motor
-        feeder = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
+        intake1 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
         intake2 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.SECOND_INTAKE_MOTOR);
         // We set the left motors in reverse which is needed for drive trains where the left
         // motors are opposite to the right ones.
@@ -109,18 +84,6 @@ public class M2_CompTeleop extends OpMode {
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        //Feeders Setup
-
-        //Launcher Setup
-
-        // This uses RUN_USING_ENCODER to be more accurate.   If you don't have the encoder
-        // wires, you should remove these
-        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        // Reset position/heading at init
         pinpoint.resetPosAndIMU();
     }
 
@@ -149,97 +112,99 @@ public class M2_CompTeleop extends OpMode {
         }
         //INTAKE
         if (gamepad2.left_trigger > 0) {
-            feeder.setPower(1);
-        }
-        else if (gamepad2.left_trigger == 0) {
-            feeder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            intake1.setPower(1);
+            intake2.setPower(1);
+        } else if (gamepad2.left_trigger == 0) {
+            intake1.setPower(0);
+            intake2.setPower(0);
         }
         //SHOOTING
-        if (gamepad1.right_trigger > 0) {
-            leftLauncher.setPower(-gamepad1.right_trigger);
-            rightLauncher.setPower(-gamepad1.right_trigger);
+
+        if (gamepad2.right_trigger > 0) {
+            leftLauncher.setPower(BIG_TRI_LAUNCH_POWER);
+            rightLauncher.setPower(BIG_TRI_LAUNCH_POWER);
             rightFeeder.setPower(-1);
             leftFeeder.setPower(1);
-        }
-        else if (gamepad2.right_trigger == 0) {
-            leftLauncher.setPower(-LAUNCHER_POWER);
-            rightLauncher.setPower(-LAUNCHER_POWER);
-            rightFeeder.setPower(0);
-            leftFeeder.setPower(0);
-        }
-        //Makes launchers always move
-        //leftLauncher.setPower(LAUNCHER_POWER);
-        //rightLauncher.setPower(LAUNCHER_POWER);
-        if (gamepad1.y){
-            intake2.setPower(1);
-        }
 
-        if (gamepad2.x){
-            //shootBallsVertex();
-            rightFeeder.setPower(-1);
-            leftFeeder.setPower(1);
+            if (gamepad2.right_bumper) {
+                leftLauncher.setPower(SMALL_TRI_LAUNCHER_POWER);
+                rightLauncher.setPower(SMALL_TRI_LAUNCHER_POWER);
+                rightFeeder.setPower(-1);
+                leftFeeder.setPower(1);
+            } else {
+                rightFeeder.setPower(0);
+                leftFeeder.setPower(0);
+                leftLauncher.setPower(0);
+                rightLauncher.setPower(0);
+            }
+            if (gamepad2.y) {
+                rightFeeder.setPower(-1);
+                leftFeeder.setPower(1);
+                //leftLauncher.setPower(SMALL_TRI_LAUNCHER_POWER);
+                //rightLauncher.setPower(SMALL_TRI_LAUNCHER_POWER);
+            }
         }
     }
 
-    // This routine drives the robot field relative
-    private void driveFieldRelative(double forward, double right, double rotate) {
+        // This routine drives the robot field relative
+        private void driveFieldRelative ( double forward, double right, double rotate){
 
-        telemetry.addLine("Hold left bumper to drive in robot relative");
-        telemetry.addLine("The left joystick sets the robot direction");
-        telemetry.addLine("Moving the right joystick left and right turns the robot");
-        // First, convert direction being asked to drive to polar coordinates
-        double theta = Math.atan2(forward, right);
-        double r = Math.hypot(right, forward);
+            telemetry.addLine("Hold left bumper to drive in robot relative");
+            telemetry.addLine("The left joystick sets the robot direction");
+            telemetry.addLine("Moving the right joystick left and right turns the robot");
+            // First, convert direction being asked to drive to polar coordinates
+            double theta = Math.atan2(forward, right);
+            double r = Math.hypot(right, forward);
 
-        double pinpoint_Heading = pinpoint.getHeading(AngleUnit.RADIANS);
+            double pinpoint_Heading = pinpoint.getHeading(AngleUnit.RADIANS);
 
-        // Second, rotate angle by the angle the robot is pointing
-        theta = AngleUnit.normalizeRadians(theta -
-                pinpoint_Heading);
+            // Second, rotate angle by the angle the robot is pointing
+            theta = AngleUnit.normalizeRadians(theta -
+                    pinpoint_Heading);
 
-        // Third, convert back to cartesian
-        double newForward = r * Math.sin(theta);
-        double newRight = r * Math.cos(theta);
+            // Third, convert back to cartesian
+            double newForward = r * Math.sin(theta);
+            double newRight = r * Math.cos(theta);
 
-        // Finally, call the drive method with robot relative forward and right amounts
-        drive(newForward, newRight, rotate);
+            // Finally, call the drive method with robot relative forward and right amounts
+            drive(newForward, newRight, rotate);
 
+        }
+
+        // Thanks to FTC16072 for sharing this code!!
+        public void drive ( double forward, double right, double rotate){
+            // This calculates the power needed for each wheel based on the amount of forward,
+            // strafe right, and rotate
+            double frontLeftPower = forward + right + rotate;
+            double frontRightPower = forward - right - rotate;
+            double backRightPower = forward + right - rotate;
+            double backLeftPower = forward - right + rotate;
+
+            double maxPower = 1.0;
+            double maxSpeed = 1.0;  // make this slower for outreaches
+
+            // This is needed to make sure we don't pass > 1.0 to any wheel
+            // It allows us to keep all of the motors in proportion to what they should
+            // be and not get clipped
+            maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
+            maxPower = Math.max(maxPower, Math.abs(frontRightPower));
+            maxPower = Math.max(maxPower, Math.abs(backRightPower));
+            maxPower = Math.max(maxPower, Math.abs(backLeftPower));
+
+            // We multiply by maxSpeed so that it can be set lower for outreaches
+            // When a young child is driving the robot, we may not want to allow full
+            // speed.
+            frontLeftDrive.setPower(maxSpeed * (frontLeftPower / maxPower));
+            frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
+            backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
+            backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
+        }
+
+        public void shootBallsVertex () {
+            leftLauncher.setPower(SMALL_TRI_LAUNCHER_POWER);
+            rightLauncher.setPower(SMALL_TRI_LAUNCHER_POWER);
+            rightFeeder.setPower(1);
+            leftFeeder.setPower(-1);
+            //intake.setPower(-.6);
+        }
     }
-
-    // Thanks to FTC16072 for sharing this code!!
-    public void drive(double forward, double right, double rotate) {
-        // This calculates the power needed for each wheel based on the amount of forward,
-        // strafe right, and rotate
-        double frontLeftPower = forward + right + rotate;
-        double frontRightPower = forward - right - rotate;
-        double backRightPower = forward + right - rotate;
-        double backLeftPower = forward - right + rotate;
-
-        double maxPower = 1.0;
-        double maxSpeed = 1.0;  // make this slower for outreaches
-
-        // This is needed to make sure we don't pass > 1.0 to any wheel
-        // It allows us to keep all of the motors in proportion to what they should
-        // be and not get clipped
-        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
-        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
-        maxPower = Math.max(maxPower, Math.abs(backRightPower));
-        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
-
-        // We multiply by maxSpeed so that it can be set lower for outreaches
-        // When a young child is driving the robot, we may not want to allow full
-        // speed.
-        frontLeftDrive.setPower(maxSpeed * (frontLeftPower / maxPower));
-        frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
-        backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
-        backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
-    }
-    public void shootBallsVertex(){
-        leftLauncher.setPower(LAUNCHER_POWER);
-        rightLauncher.setPower(LAUNCHER_POWER);
-        rightFeeder.setPower(-1);
-        leftFeeder.setPower(1);
-        //intake.setPower(-.6);
-    }
-}
