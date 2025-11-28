@@ -111,20 +111,18 @@ public class M2_CompTeleop extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
         //INTAKE
-        if (gamepad2.left_trigger > 0) {
+        if (gamepad2.left_trigger == 0) {
             intake1.setPower(1);
             intake2.setPower(1);
-        } else if (gamepad2.left_trigger == 0) {
+        } else if (gamepad2.left_trigger > 0) {
             intake1.setPower(0);
             intake2.setPower(0);
         }
         //SHOOTING
 
-        if (gamepad2.right_trigger > 0) {
+        if (gamepad2.right_trigger == 0) {
             leftLauncher.setPower(BIG_TRI_LAUNCH_POWER);
             rightLauncher.setPower(BIG_TRI_LAUNCH_POWER);
-            rightFeeder.setPower(-1);
-            leftFeeder.setPower(1);
 
             if (gamepad2.right_bumper) {
                 leftLauncher.setPower(SMALL_TRI_LAUNCHER_POWER);
@@ -137,7 +135,7 @@ public class M2_CompTeleop extends OpMode {
                 leftLauncher.setPower(0);
                 rightLauncher.setPower(0);
             }
-            if (gamepad2.y) {
+            if (gamepad1.left_bumper) {
                 rightFeeder.setPower(-1);
                 leftFeeder.setPower(1);
                 //leftLauncher.setPower(SMALL_TRI_LAUNCHER_POWER);
