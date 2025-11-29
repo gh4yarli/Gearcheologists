@@ -28,22 +28,23 @@ public class RedGoalMeet2 extends LinearOpMode {
         DcMotor intake1 = hardwareMap.get(DcMotor.class, "feeder");
         DcMotor intake2 = hardwareMap.get(DcMotor.class, "intake2");
 
-        Pose2d startingPose = new Pose2d(new Vector2d(44,-36),Math.toRadians(129));
+        Pose2d startingPose = new Pose2d(new Vector2d(52,-44),Math.toRadians(135));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
 
-        drive.leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        drive.leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        drive.rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        drive.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        //drive.leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        //drive.leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        //drive.rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        //drive.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
         waitForStart();
         Action path = drive.actionBuilder(startingPose)
-                .lineToXLinearHeading(0,Math.toRadians(-50) )
+                .splineTo(new Vector2d(0, 0), Math.toRadians(135))
+                .turnTo(Math.toRadians(-45))
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
-        left_launcher.setPower(0.3);
-        right_launcher.setPower(0.3);
+        left_launcher.setPower(-0.35);
+        right_launcher.setPower(-0.35);
 
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
@@ -56,7 +57,7 @@ public class RedGoalMeet2 extends LinearOpMode {
 
         timer.reset();
 
-        for (byte i = 0; i < 3; i++) {
+        for (byte i = 0; i < 6; i++) {
             left_feeder.setPower(1);
             right_feeder.setPower(-1);
 
@@ -67,7 +68,7 @@ public class RedGoalMeet2 extends LinearOpMode {
             timer.reset();
 
             left_feeder.setPower(0);
-            right_feeder.setPower(0);             //67
+            right_feeder.setPower(0);
 
             while (timer.milliseconds() < 1000) {
                 sleep(1);
