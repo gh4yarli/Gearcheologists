@@ -43,8 +43,8 @@ public class RedGoalMeet2 extends LinearOpMode {
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
-        left_launcher.setPower(-0.35);
-        right_launcher.setPower(-0.35);
+        left_launcher.setPower(-0.4);
+        right_launcher.setPower(-0.4);
 
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
