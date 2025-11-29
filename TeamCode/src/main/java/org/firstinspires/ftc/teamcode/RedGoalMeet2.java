@@ -64,7 +64,7 @@ public class RedGoalMeet2 extends LinearOpMode {
             while (timer.milliseconds() < 400) {
                 sleep(1);
             }
-
+                            //67
             timer.reset();
 
             left_feeder.setPower(0);
