@@ -16,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous
+
 public class M2_AutoRedGoalZone extends LinearOpMode {
 
     @Override
@@ -77,6 +78,15 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
             timer.reset();
 
         }
+        Action getBalls = drive.actionBuilder(new Pose2d(0,0,-45))
+                .turnTo(Math.toRadians(0))
+                .lineToX(Math.toRadians(-12))
+                .turnTo(Math.toRadians(90))
+                .lineToY(-40)
+                .build();
+        intake1.setPower(1);
+        intake2.setPower(1);
+        Actions.runBlocking(new SequentialAction(getBalls));
     }
 }
 
