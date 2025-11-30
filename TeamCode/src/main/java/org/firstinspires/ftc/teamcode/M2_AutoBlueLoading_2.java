@@ -112,17 +112,15 @@ public class M2_AutoBlueLoading_2 extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
         }
-        int delayTime = 8500;
-        while (timer.milliseconds() < delayTime) {
-            detectTagAndPositionToShoot(mecanumDrive);
-        }
+
         // >> first time launch
+        detectTagAndPositionToShoot(mecanumDrive);
         moveRobot(0,0,0);
         if (opModeIsActive()){
             shootBalls(first_intake, second_intake, left_launcher, right_launcher, right_feeder, left_feeder);
         }
 
-        // Code to get balls #1(closest one to the goal)
+        // **** Code to get balls #1(closest one to the goal) ****
         //Add intake from the beginning(Both intakes)
         second_intake.setPower(1);
         first_intake.setPower(1);
@@ -155,12 +153,10 @@ public class M2_AutoBlueLoading_2 extends LinearOpMode {
                 .lineToX(-5)
                 .build();
         Actions.runBlocking(new SequentialAction(path));
-
-        while (timer.milliseconds() < delayTime) {
-            detectTagAndPositionToShoot(mecanumDrive);
-        }
+        // **** Code to get balls #1(closest one to the goal) ****
 
         // >> second time launch
+        detectTagAndPositionToShoot(mecanumDrive);
         moveRobot(0,0,0);
         if (opModeIsActive()){
             shootBalls(first_intake, second_intake, left_launcher, right_launcher, right_feeder, left_feeder);
@@ -362,6 +358,7 @@ public class M2_AutoBlueLoading_2 extends LinearOpMode {
                 Actions.runBlocking(new SequentialAction(path));
                 telemetry.addData("Tag detection status", "Found tag after rotation");
                 telemetry.update();
+
                 desiredTag = detectAprilTag();
             }
         }
