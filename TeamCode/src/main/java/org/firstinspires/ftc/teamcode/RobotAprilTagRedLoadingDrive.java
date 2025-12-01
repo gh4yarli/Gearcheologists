@@ -158,7 +158,7 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
         moveRobot(0, 0, 0);
 
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.34); }
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.35); }
         //--------------------Second Shot---------------------------------
         // pinpointDriver.update();
         mecanumDrive.updatePoseEstimate();
@@ -213,7 +213,7 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
 
 
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.33);
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.32);
         }
 
 
@@ -270,7 +270,7 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.34);
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.35);
         }
         // --------------------------Fourth Shot--------------------------------
 
@@ -281,7 +281,7 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
 
         Action path3 = mecanumDrive.actionBuilder(newPose)
                 .turnTo(Math.toRadians(0))
-                .lineToX(-12)
+                .lineToX(-20)
                 .turnTo(Math.toRadians(90))
                 .lineToY(-72)
                 .lineToY(-5)
