@@ -34,7 +34,7 @@ public final class ConfigurationConstants {
         public static final String RIGHT_FEEDER_SERVO = "rightFeeder";
 
         public static final String BACK_DISTANCE_SENSOR = "backDistance";
-        public static final String FRONT_DISTANCE_SENSOR = "distance";
+        public static final String FRONT_DISTANCE_SENSOR = "frontDistance";
         public static final String COLOR_SENSOR = "color";
 
         public static final String ODOMETRY_COMPUTER = "pinpoint";

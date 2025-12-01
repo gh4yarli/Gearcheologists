@@ -14,10 +14,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class CancellableAutoTest extends LinearOpMode {
     @Override
     public void runOpMode() {
-        Rev2mDistanceSensor frontDistanceSensor = hardwareMap.get(Rev2mDistanceSensor.class, "distance");
+        Rev2mDistanceSensor frontDistanceSensor = hardwareMap.get(Rev2mDistanceSensor.class, "frontDistance");
         Pose2d startPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startPose);
 
+        // Add obstacle detection counter
+        int obstacleDetectionCount = 0;
+        final int REQUIRED_DETECTIONS = 3;  // Require 3 consecutive detections
+        
         // Set brake behavior at initialization
         mecanumDrive.leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mecanumDrive.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -47,10 +51,23 @@ public class CancellableAutoTest extends LinearOpMode {
             telemetry.addData("Pause Count", pauseCount);
 
             // Check for valid obstacle detection (not too close, not out of range)
-            boolean validReading = (distance >= 5 && distance <= 200);
+            // Add checks for infinity and NaN
+            boolean validReading = !Double.isNaN(distance) && 
+                                   !Double.isInfinite(distance) && 
+                                   distance >= 10 && 
+                                   distance <= 150;
 
             if (validReading && distance < 40) {
+                obstacleDetectionCount++;
+                telemetry.addData("Detection Count", obstacleDetectionCount);
+            } else {
+                obstacleDetectionCount = 0;  // Reset counter
+            }
+
+            if (obstacleDetectionCount >= REQUIRED_DETECTIONS) {
                 // OBSTACLE DETECTED - STOP AND WAIT
+                obstacleDetectionCount = 0;  // Reset after triggering
+                
                 mecanumDrive.rightFront.setPower(0);
                 mecanumDrive.rightBack.setPower(0);
                 mecanumDrive.leftFront.setPower(0);

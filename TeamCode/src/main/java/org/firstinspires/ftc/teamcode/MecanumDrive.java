@@ -41,6 +41,7 @@ import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -48,6 +49,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.meet1.Localizer;
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
@@ -128,6 +130,12 @@ public final class MecanumDrive {
     private final DownsampledWriter targetPoseWriter = new DownsampledWriter("TARGET_POSE", 50_000_000);
     private final DownsampledWriter driveCommandWriter = new DownsampledWriter("DRIVE_COMMAND", 50_000_000);
     private final DownsampledWriter mecanumCommandWriter = new DownsampledWriter("MECANUM_COMMAND", 50_000_000);
+
+    // ==================== DISTANCE SENSORS ====================
+    public Rev2mDistanceSensor frontDistanceSensor;
+    public Rev2mDistanceSensor backDistanceSensor;
+    public Rev2mDistanceSensor leftDistanceSensor;
+    public Rev2mDistanceSensor rightDistanceSensor;
 
     public class DriveLocalizer implements Localizer {
         public final Encoder leftFront, leftBack, rightBack, rightFront;
@@ -262,8 +270,153 @@ public final class MecanumDrive {
 
         localizer = new PinpointLocalizer(hardwareMap, PARAMS.inPerTick, pose);
 
+        // ==================== INITIALIZE DISTANCE SENSORS ====================
+        // Initialize distance sensors with error handling
+        // Make sure these names match your robot configuration
+        try {
+            frontDistanceSensor = hardwareMap.get(Rev2mDistanceSensor.class, "frontDistance");
+        } catch (Exception e) {
+            frontDistanceSensor = null;
+        }
+
+        try {
+            backDistanceSensor = hardwareMap.get(Rev2mDistanceSensor.class, "backDistance");
+        } catch (Exception e) {
+            backDistanceSensor = null;
+        }
+
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
+
+    // ==================== DISTANCE SENSOR HELPER METHODS ====================
+
+    /**
+     * Get distance from front sensor in centimeters
+     * @return distance in CM, or -1 if sensor is not available
+     */
+    public double getFrontDistance() {
+        return getDistance(frontDistanceSensor);
+    }
+
+    /**
+     * Get distance from back sensor in centimeters
+     * @return distance in CM, or -1 if sensor is not available
+     */
+    public double getBackDistance() {
+        return getDistance(backDistanceSensor);
+    }
+
+    /**
+     * Get distance from left sensor in centimeters
+     * @return distance in CM, or -1 if sensor is not available
+     */
+    public double getLeftDistance() {
+        return getDistance(leftDistanceSensor);
+    }
+
+    /**
+     * Get distance from right sensor in centimeters
+     * @return distance in CM, or -1 if sensor is not available
+     */
+    public double getRightDistance() {
+        return getDistance(rightDistanceSensor);
+    }
+
+    /**
+     * Helper method to get distance from any sensor
+     * @param sensor The distance sensor to read from
+     * @return distance in CM, or -1 if sensor is null
+     */
+    private double getDistance(Rev2mDistanceSensor sensor) {
+        if (sensor != null) {
+            return sensor.getDistance(DistanceUnit.CM);
+        }
+        return -1;
+    }
+
+    /**
+     * Get distance in inches from front sensor
+     * @return distance in inches, or -1 if sensor is not available
+     */
+    public double getFrontDistanceInches() {
+        if (frontDistanceSensor != null) {
+            return frontDistanceSensor.getDistance(DistanceUnit.INCH);
+        }
+        return -1;
+    }
+
+    /**
+     * Check if there's an obstacle detected by the front sensor
+     * @param threshold Distance threshold in CM
+     * @return true if obstacle detected within threshold
+     */
+    public boolean isObstacleInFront(double threshold) {
+        return isObstacleDetected(frontDistanceSensor, threshold);
+    }
+
+    /**
+     * Check if there's an obstacle detected by the back sensor
+     * @param threshold Distance threshold in CM
+     * @return true if obstacle detected within threshold
+     */
+    public boolean isObstacleInBack(double threshold) {
+        return isObstacleDetected(backDistanceSensor, threshold);
+    }
+
+    /**
+     * Check if there's an obstacle detected by the left sensor
+     * @param threshold Distance threshold in CM
+     * @return true if obstacle detected within threshold
+     */
+    public boolean isObstacleOnLeft(double threshold) {
+        return isObstacleDetected(leftDistanceSensor, threshold);
+    }
+
+    /**
+     * Check if there's an obstacle detected by the right sensor
+     * @param threshold Distance threshold in CM
+     * @return true if obstacle detected within threshold
+     */
+    public boolean isObstacleOnRight(double threshold) {
+        return isObstacleDetected(rightDistanceSensor, threshold);
+    }
+
+    /**
+     * Helper method to check if a specific sensor detects an obstacle
+     * @param sensor The distance sensor to check
+     * @param threshold Distance threshold in CM
+     * @return true if obstacle detected
+     */
+    private boolean isObstacleDetected(Rev2mDistanceSensor sensor, double threshold) {
+        if (sensor == null) return false;
+        double distance = sensor.getDistance(DistanceUnit.CM);
+        // Check for valid reading (not too close, not out of range)
+        boolean validReading = (distance >= 5 && distance <= 200);
+        return validReading && distance < threshold;
+    }
+
+    /**
+     * Check if ANY sensor detects an obstacle
+     * @param threshold Distance threshold in CM
+     * @return true if any sensor detects an obstacle
+     */
+    public boolean isAnyObstacleDetected(double threshold) {
+        return isObstacleInFront(threshold) ||
+                isObstacleInBack(threshold) ||
+                isObstacleOnLeft(threshold) ||
+                isObstacleOnRight(threshold);
+    }
+
+    /**
+     * Check if the path is clear (no obstacles in front)
+     * @param clearDistance Minimum clear distance in CM
+     * @return true if path is clear
+     */
+    public boolean isPathClear(double clearDistance) {
+        return !isObstacleInFront(clearDistance);
+    }
+
+    // ==================== EXISTING METHODS ====================
 
     public void setDrivePowers(PoseVelocity2d powers) {
         MecanumKinematics.WheelVelocities<Time> wheelVels = new MecanumKinematics(1).inverse(
@@ -285,6 +438,7 @@ public final class MecanumDrive {
         private double beginTs = -1;
 
         private final double[] xPoints, yPoints;
+
 
         public FollowTrajectoryAction(TimeTrajectory t) {
             timeTrajectory = t;
@@ -466,14 +620,14 @@ public final class MecanumDrive {
     public PoseVelocity2d updatePoseEstimate() {
         PoseVelocity2d vel = localizer.update();
         poseHistory.add(localizer.getPose());
-        
+
         while (poseHistory.size() > 100) {
             poseHistory.removeFirst();
         }
 
         estimatedPoseWriter.write(new PoseMessage(localizer.getPose()));
-        
-        
+
+
         return vel;
     }
 
