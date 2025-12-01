@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -51,7 +50,8 @@ public class M2_CompTeleop extends OpMode {
     DcMotor rightLauncher;
     CRServo leftFeeder;
     CRServo rightFeeder;
-    final double LAUNCHER_POWER = .35;
+    double BIG_LAUNCHER_POWER = .34;
+    double SMALL_LAUNCHER_POWER = .4;
     @Override
     public void init() {
 
@@ -130,6 +130,8 @@ public class M2_CompTeleop extends OpMode {
         telemetry.addLine("Hold left bumper to drive in robot relative");
         telemetry.addLine("The left joystick sets the robot direction");
         telemetry.addLine("Moving the right joystick left and right turns the robot");
+        telemetry.addData("Launcher", leftLauncher.getPower());
+        telemetry.addData("  Power ", rightLauncher.getPower());
 
         pinpoint.update();
 
@@ -150,33 +152,44 @@ public class M2_CompTeleop extends OpMode {
         //INTAKE
         if (gamepad2.left_trigger > 0) {
             feeder.setPower(1);
-        }
-        else if (gamepad2.left_trigger == 0) {
+        } else if (gamepad2.left_trigger == 0) {
             feeder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
         //SHOOTING
         if (gamepad1.right_trigger > 0) {
-            leftLauncher.setPower(-gamepad1.right_trigger);
-            rightLauncher.setPower(-gamepad1.right_trigger);
-            rightFeeder.setPower(-1);
-            leftFeeder.setPower(1);
-        }
-        else if (gamepad2.right_trigger == 0) {
-            leftLauncher.setPower(-LAUNCHER_POWER);
-            rightLauncher.setPower(-LAUNCHER_POWER);
+            leftLauncher.setPower(-BIG_LAUNCHER_POWER);
+            rightLauncher.setPower(-BIG_LAUNCHER_POWER);
+        } else if (gamepad2.right_bumper) {
+            leftLauncher.setPower(-SMALL_LAUNCHER_POWER);
+            rightLauncher.setPower(-SMALL_LAUNCHER_POWER);
+        } else if (gamepad2.right_trigger == 0 && !gamepad2.right_bumper) {
+            leftLauncher.setPower(-BIG_LAUNCHER_POWER);
+            rightLauncher.setPower(-BIG_LAUNCHER_POWER);
             rightFeeder.setPower(0);
             leftFeeder.setPower(0);
         }
         //Makes launchers always move
-        //leftLauncher.setPower(LAUNCHER_POWER);
-        //rightLauncher.setPower(LAUNCHER_POWER);
-        if (gamepad1.y){
+        //leftLauncher.setPower(BIG_LAUNCHER_POWER);
+        //rightLauncher.setPower(BIG_LAUNCHER_POWER);
+
+        if (gamepad2.b) {
             intake2.setPower(1);
         }
+        if (gamepad2.dpad_down){
+           SMALL_LAUNCHER_POWER -= .001;
+        }
+        if (gamepad2.dpad_up){
+            SMALL_LAUNCHER_POWER += .001;
+        }
+        if (gamepad2.y){
+            BIG_LAUNCHER_POWER += .001;
+        }
+        if (gamepad2.a){
+            BIG_LAUNCHER_POWER -= .001;
 
+        }
         if (gamepad2.x){
-            //shootBallsVertex();
             rightFeeder.setPower(-1);
             leftFeeder.setPower(1);
         }
@@ -191,9 +204,7 @@ public class M2_CompTeleop extends OpMode {
         // First, convert direction being asked to drive to polar coordinates
         double theta = Math.atan2(forward, right);
         double r = Math.hypot(right, forward);
-
         double pinpoint_Heading = pinpoint.getHeading(AngleUnit.RADIANS);
-
         // Second, rotate angle by the angle the robot is pointing
         theta = AngleUnit.normalizeRadians(theta -
                 pinpoint_Heading);
@@ -235,11 +246,13 @@ public class M2_CompTeleop extends OpMode {
         backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
     }
+    /*
     public void shootBallsVertex(){
-        leftLauncher.setPower(LAUNCHER_POWER);
-        rightLauncher.setPower(LAUNCHER_POWER);
+        leftLauncher.setPower(BIG_LAUNCHER_POWER);
+        rightLauncher.setPower(BIG_LAUNCHER_POWER);
         rightFeeder.setPower(-1);
         leftFeeder.setPower(1);
         //intake.setPower(-.6);
     }
+    */
 }
