@@ -51,7 +51,7 @@ public class M2_CompTeleop extends OpMode {
     CRServo leftFeeder;
     CRServo rightFeeder;
     double BIG_LAUNCHER_POWER = .34;
-    double SMALL_LAUNCHER_POWER = .4;
+    double SMALL_LAUNCHER_POWER = .41;
     @Override
     public void init() {
 
@@ -177,7 +177,7 @@ public class M2_CompTeleop extends OpMode {
             intake2.setPower(1);
         }
         if (gamepad2.dpad_down){
-           SMALL_LAUNCHER_POWER -= .001;
+            SMALL_LAUNCHER_POWER -= .001;
         }
         if (gamepad2.dpad_up){
             SMALL_LAUNCHER_POWER += .001;
