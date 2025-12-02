@@ -39,13 +39,13 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
         waitForStart();
         Action path = drive.actionBuilder(startingPose)
-                .splineTo(new Vector2d(0, 0), Math.toRadians(135))
+                .splineTo(new Vector2d(5, -9), Math.toRadians(135))
                 .turnTo(Math.toRadians(-45))
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
-        left_launcher.setPower(-0.3567);
-        right_launcher.setPower(-0.3567);
+        left_launcher.setPower(-0.35);
+        right_launcher.setPower(-0.35);
 
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
@@ -79,13 +79,11 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
         }
         Action getBalls = drive.actionBuilder(new Pose2d(0,0,-45))
-                .turnTo(Math.toRadians(5))
-                //.turnTo(Math.toRadians(-20))
-                .lineToX(-8)
+                .turnTo(Math.toRadians(-5))
+                .lineToX(-30)
                 .turnTo(Math.toRadians(90))
                 .lineToY(-50)
                 .lineToY(-5)
-                //.turnTo(Math.toRadians(-30))
                 .build();
 
         intake1.setPower(1);
