@@ -171,8 +171,8 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
                 .turnTo(Math.toRadians(0))
                 .lineToX(-5)
                 .turnTo(Math.toRadians(90))
-                .lineToY(-72)
-                .lineToY(-5)
+                .lineToY(-65)
+                .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
                 .build();
 
@@ -213,7 +213,7 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
 
 
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.32);
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.31);
         }
 
 
@@ -226,8 +226,8 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
                 .turnTo(Math.toRadians(0))
                 .lineToX(18)
                 .turnTo(Math.toRadians(90))
-                .lineToY(-72)
-                .lineToY(-5)
+                .lineToY(-65)
+                .lineToY(-20)
                 .turnTo(Math.toRadians(-50))
                 .build();
 
@@ -270,7 +270,7 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.35);
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.32);
         }
         // --------------------------Fourth Shot--------------------------------
 
@@ -281,10 +281,10 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
 
         Action path3 = mecanumDrive.actionBuilder(newPose)
                 .turnTo(Math.toRadians(0))
-                .lineToX(-20)
+                .lineToX(-23)
                 .turnTo(Math.toRadians(90))
-                .lineToY(-72)
-                .lineToY(-5)
+                .lineToY(-65)
+                .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
                 .build();
 
@@ -323,7 +323,7 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.35);
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.33);
         }
 
 
