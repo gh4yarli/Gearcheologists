@@ -29,7 +29,7 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         DcMotor intake1 = hardwareMap.get(DcMotor.class, "feeder");
         DcMotor intake2 = hardwareMap.get(DcMotor.class, "intake2");
         //setting starting position
-        Pose2d startingPose = new Pose2d(new Vector2d(52, -44), Math.toRadians(135));
+        Pose2d startingPose = new Pose2d(new Vector2d(52, -44), Math.toRadians(130));
 
         MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
 
@@ -41,7 +41,7 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         //going to the first desired shooting position
         waitForStart();
         Action path = drive.actionBuilder(startingPose)
-                .splineTo(new Vector2d(17, -24), Math.toRadians(135))
+                .splineTo(new Vector2d(17, -24), Math.toRadians(130))
                 .turnTo(Math.toRadians(-45))
                 .build();
         Actions.runBlocking(new SequentialAction(path));
