@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class M2_AutoRedLoading extends M2_Functions {
+public class M2_AutoRedLoading_Backup extends M2_Functions {
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -88,10 +88,10 @@ public class M2_AutoRedLoading extends M2_Functions {
             telemetry.addData("Status", "First Shot");
             telemetry.update();
             firstShot();
-            mecanumDrive.localizer.update();
+            //mecanumDrive.localizer.update();
             //telemetry.addData("Status", "Second shot");
             //telemetry.update();
-            secondShot(mecanumDrive);
+            //secondShot(mecanumDrive);
             //telemetry.addData("Status", "Third Shot");
             //telemetry.update();
             //thirdShot(mecanumDrive);
@@ -102,7 +102,7 @@ public class M2_AutoRedLoading extends M2_Functions {
             //mecanumDrive.localizer.update();
             //telemetry.addData("Status", "Done");
             //telemetry.update();
-            //sleep(2000);
+            sleep(2000);
             stop();
         }
         if (isStopRequested()) {
@@ -306,14 +306,14 @@ public class M2_AutoRedLoading extends M2_Functions {
                 .turnTo(Math.toRadians(0))
                 .lineToX(-5)
                 .turnTo(Math.toRadians(90))
-                .lineToY(-62)
-                .lineToY(-23)
+                .lineToY(-56)
+                .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
                 .build();
 
         if (opModeIsActive()) {
-            //feeder.setPower(1);
-            //intake2.setPower(1);
+            feeder.setPower(1);
+            intake2.setPower(1);
             Actions.runBlocking(new SequentialAction(path1));
             feeder.setPower(0);
             intake2.setPower(0);
@@ -329,7 +329,7 @@ public class M2_AutoRedLoading extends M2_Functions {
                 .turnTo(Math.toRadians(0))
                 .lineToX(18)
                 .turnTo(Math.toRadians(90))
-                .lineToY(-62)
+                .lineToY(-55)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-50))
                 .build();
