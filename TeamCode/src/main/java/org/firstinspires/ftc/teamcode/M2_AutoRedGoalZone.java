@@ -21,15 +21,16 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
+        //changing the names to my liking
         DcMotor left_launcher = hardwareMap.get(DcMotor.class, "leftLauncher");
         DcMotor right_launcher = hardwareMap.get(DcMotor.class, "rightLauncher");
         CRServo left_feeder = hardwareMap.get(CRServo.class, "leftFeeder");
         CRServo right_feeder = hardwareMap.get(CRServo.class, "rightFeeder");
         DcMotor intake1 = hardwareMap.get(DcMotor.class, "feeder");
         DcMotor intake2 = hardwareMap.get(DcMotor.class, "intake2");
+        //setting starting position
+        Pose2d startingPose = new Pose2d(new Vector2d(52, -44), Math.toRadians(135));
 
-        Pose2d startingPose = new Pose2d(new Vector2d(52,-44),Math.toRadians(135));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startingPose);
 
         //drive.leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -37,18 +38,19 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         //drive.rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         //drive.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        //going to the first desired shooting position
         waitForStart();
         Action path = drive.actionBuilder(startingPose)
-                .splineTo(new Vector2d(5, -9), Math.toRadians(135))
+                .splineTo(new Vector2d(17, -24), Math.toRadians(135))
                 .turnTo(Math.toRadians(-45))
                 .build();
         Actions.runBlocking(new SequentialAction(path));
-
-        left_launcher.setPower(-0.35);
-        right_launcher.setPower(-0.35);
+        //starting shooting phase 1
+        left_launcher.setPower(-0.37);
+        right_launcher.setPower(-0.37);
 
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-
+        // now it is starting up the shooting system
         while (timer.milliseconds() < 3000) {
             sleep(1);
         }
@@ -58,14 +60,14 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
         timer.reset();
 
-        for (byte i = 0; i < 6; i++) {
+        for (byte i = 0; i < 4; i++) { //repeats shooting 5 times
             left_feeder.setPower(1);
             right_feeder.setPower(-1);
 
             while (timer.milliseconds() < 400) {
                 sleep(1);
             }
-            //67
+
             timer.reset();
 
             left_feeder.setPower(0);
@@ -78,17 +80,61 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
             timer.reset();
 
         }
-        Action getBalls = drive.actionBuilder(new Pose2d(0,0,-45))
+        //getting balls for the second time
+        Action getBalls = drive.actionBuilder(new Pose2d(17, -24, -45))
                 .turnTo(Math.toRadians(-5))
-                .lineToX(-30)
+                .lineToX(-32)
                 .turnTo(Math.toRadians(90))
-                .lineToY(-50)
-                .lineToY(-5)
+                .lineToY(-56)
                 .build();
-
         intake1.setPower(1);
         intake2.setPower(1);
         Actions.runBlocking(new SequentialAction(getBalls));
+
+        //moving to shooting area same place as the first time
+        right_feeder.setPower(0);
+        left_feeder.setPower(0);
+        Action path2 = drive.actionBuilder(new Pose2d(-32, -56, 90))
+                .lineToY(-20)
+                .turnTo(Math.toRadians(0))
+                .lineToX(0)
+                .turnTo(Math.toRadians(-45))
+                .build();
+        Actions.runBlocking(new SequentialAction(path2));
+
+        left_launcher.setPower(-0.38);
+        right_launcher.setPower(-0.38);
+
+        // starting the shooting phase 2
+
+        while (timer.milliseconds() < 3000) {
+            sleep(1);
+        }
+
+        intake2.setPower(1);
+        intake1.setPower(1);
+
+        timer.reset();
+
+        for (byte i = 0; i < 5; i++) { //shooting for 5 times
+            left_feeder.setPower(1);
+            right_feeder.setPower(-1);
+
+            while (timer.milliseconds() < 400) {
+                sleep(1);
+            }
+
+            timer.reset();
+
+            left_feeder.setPower(0);
+            right_feeder.setPower(0);
+
+            while (timer.milliseconds() < 1000) {
+                sleep(1);
+            }
+
+            timer.reset();
+        }
     }
 }
 
