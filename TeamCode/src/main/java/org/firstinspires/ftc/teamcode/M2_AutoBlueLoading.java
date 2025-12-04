@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Autonomous
 public class M2_AutoBlueLoading extends LinearOpMode {
     final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
-    final double LAUNCHER_POWER = 0.34;  // Constant power used for launcher
+    final double LAUNCHER_POWER = 0.35;  // Constant power used for launcher
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -93,7 +93,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap,startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(10)
-                .turnTo(Math.toRadians(30))
+                .turnTo(Math.toRadians(35))
                 .build();
 
         if (USE_WEBCAM)
@@ -115,9 +115,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
         }
-        int delayTime = 8500;
-        while (timer.milliseconds() < delayTime) {
-            targetFound = false;
+        while (!targetFound) {
             // Used to hold the data for a detected AprilTag
             desiredTag = null;
             // Step through the list of detected tags and look for a matching tag
@@ -153,14 +151,13 @@ public class M2_AutoBlueLoading extends LinearOpMode {
                 int new_angle = 5;
                 while (!targetFound) {
                     sleep(1000);
-                    delayTime += 1000;
                     telemetry.addData("Rotate to find tag", "New angle %d", (new_angle));
                     telemetry.update();
 
-                    total_add_angle += 5;
+                    total_add_angle += new_angle;
                     Pose2d currentPose = mecanumDrive.localizer.getPose();
                     path = mecanumDrive.actionBuilder(currentPose)
-                            .turn(Math.toRadians(5))   // +5 CCW
+                            .turn(Math.toRadians(new_angle))   // +5 CCW
                             .build();
 
                     Actions.runBlocking(new SequentialAction(path));
@@ -195,7 +192,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-            telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            telemetry.addData("Making Robot Parallel","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             telemetry.update();
 
             // Apply desired axes motions to the drivetrain.
@@ -207,7 +204,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         if (opModeIsActive()){
             sleep(10);
             second_intake.setPower(1);
-            sleep(2000);
+            sleep(1000);      // was 2000
             timer.reset();
             for (byte i = 0; i < 4; i++) {
                 if (i > 0) first_intake.setPower((1));
@@ -244,70 +241,46 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         telemetry.update();
         //Moving to pick up the ball
         Pose2d currentPose = mecanumDrive.localizer.getPose();
-        telemetry.addData("X", currentPose.position.x);
-        telemetry.addData("Y", currentPose.position.y);
-        telemetry.addData("Heading (deg)", Math.toDegrees(currentPose.heading.toDouble()));
-        telemetry.addData("Move update", "Making robot straight!!");
-        telemetry.update();
         //Turning and moving down
         path = mecanumDrive.actionBuilder(currentPose)
-                .turn(Math.toRadians(-(total_add_angle + 30)))   // -60 CCW
-                .lineToX(-28)
+                .turn(Math.toRadians(-(total_add_angle + 35)))   // -60 CCW
+                .lineToX(-24)
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
         currentPose = mecanumDrive.localizer.getPose();
-        telemetry.addData("X", currentPose.position.x);
-        telemetry.addData("Y", currentPose.position.y);
-        telemetry.addData("Heading (deg)", Math.toDegrees(currentPose.heading.toDouble()));
-        telemetry.addData("Move update", "Move 90 degrees!!");
-        telemetry.update();
         path = mecanumDrive.actionBuilder(currentPose)
                 .turn(Math.toRadians(-90))   // -30 CCW
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
         currentPose = mecanumDrive.localizer.getPose();
-        telemetry.addData("X", currentPose.position.x);
-        telemetry.addData("Y", currentPose.position.y);
-        telemetry.addData("Heading (deg)", Math.toDegrees(currentPose.heading.toDouble()));
-        telemetry.addData("Move update", "Move 20 inches in Y!!");
-        telemetry.update();
         path = mecanumDrive.actionBuilder(currentPose)
-                .lineToY(38 )
+                .lineToY(40 )
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
         currentPose = mecanumDrive.localizer.getPose();
-        telemetry.addData("X", currentPose.position.x);
-        telemetry.addData("Y", currentPose.position.y);
-        telemetry.addData("Heading (deg)", Math.toDegrees(currentPose.heading.toDouble()));
-        telemetry.addData("Move update", "Move to 12 inches in Y!!");
-        telemetry.update();
         path = mecanumDrive.actionBuilder(currentPose)
-                .lineToY(12 )
+                .lineToY(18 )
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
         currentPose = mecanumDrive.localizer.getPose();
-        telemetry.addData("X", currentPose.position.x);
-        telemetry.addData("Y", currentPose.position.y);
-        telemetry.addData("Heading (deg)", Math.toDegrees(currentPose.heading.toDouble()));
-        telemetry.addData("Move update", "Move 90 degrees!!");
-        telemetry.update();
         path = mecanumDrive.actionBuilder(currentPose)
                 .turn(Math.toRadians(90))   // -30 CCW
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
         currentPose = mecanumDrive.localizer.getPose();
-        telemetry.addData("X", currentPose.position.x);
-        telemetry.addData("Y", currentPose.position.y);
-        telemetry.addData("Heading (deg)", Math.toDegrees(currentPose.heading.toDouble()));
-        telemetry.addData("Move update", "Move 10 inches in X!!");
-        telemetry.update();
         path = mecanumDrive.actionBuilder(currentPose)
-                .lineToX(10 )
+                .lineToX(12)
+                .build();
+        Actions.runBlocking(new SequentialAction(path));
+
+        currentPose = mecanumDrive.localizer.getPose();
+        path = mecanumDrive.actionBuilder(currentPose)
+                .turn(Math.toRadians(35))   // -30 CCW
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
@@ -323,8 +296,8 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             telemetry.update();
         }
         AprilTagDetection newDesiredTag;
-        while (timer.milliseconds() < delayTime) {
-            targetFound = false;
+        targetFound = false;
+        while (!targetFound) {
             newDesiredTag = null;
             // Used to hold the data for a detected AprilTag
             // Step through the list of detected tags and look for a matching tag
@@ -360,13 +333,12 @@ public class M2_AutoBlueLoading extends LinearOpMode {
                 int new_angle = 5;
                 while (!targetFound) {
                     sleep(1000);
-                    delayTime += 1000;
                     telemetry.addData("Rotate to find tag", "New angle %d", (new_angle));
                     telemetry.update();
 
                     currentPose = mecanumDrive.localizer.getPose();
                     path = mecanumDrive.actionBuilder(currentPose)
-                            .turn(Math.toRadians(5))   // +5 CCW
+                            .turn(Math.toRadians(new_angle))   // +5 CCW
                             .build();
 
                     Actions.runBlocking(new SequentialAction(path));
@@ -401,7 +373,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-            telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            telemetry.addData("Making Robot Parallel","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             telemetry.update();
 
             // Apply desired axes motions to the drivetrain.
@@ -413,7 +385,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         if (opModeIsActive()){
             sleep(10);
             second_intake.setPower(1);
-            sleep(2000);
+            sleep(2000);        // was 2000 seconds
             timer.reset();
             for (byte i = 0; i < 4; i++) {
                 if (i > 0) first_intake.setPower((1));
@@ -432,7 +404,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
                 telemetry.addData("Shooting update", "Finsihed shooting ball: %d", (i+1));
                 telemetry.update();
             }
-            telemetry.addData("Shooting update", "Finsihed shooting ALL balls. Move to next phase");
+            telemetry.addData("Shooting update", "Finisghed shooting ALL balls. Move to next phase");
             telemetry.update();
             left_launcher.setPower(0);
             right_launcher.setPower(0);
