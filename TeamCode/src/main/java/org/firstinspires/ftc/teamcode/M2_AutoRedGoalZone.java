@@ -41,13 +41,13 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         //going to the first desired shooting position
         waitForStart();
         Action path = drive.actionBuilder(startingPose)
-                .splineTo(new Vector2d(17, -24), Math.toRadians(130))
+                .splineTo(new Vector2d(5, -9), Math.toRadians(130))
                 .turnTo(Math.toRadians(-45))
                 .build();
         Actions.runBlocking(new SequentialAction(path));
         //starting shooting phase 1
-        left_launcher.setPower(-0.37);
-        right_launcher.setPower(-0.37);
+        left_launcher.setPower(0.35);
+        right_launcher.setPower(-0.35);
 
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         // now it is starting up the shooting system
@@ -102,8 +102,8 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
                 .build();
         Actions.runBlocking(new SequentialAction(path2));
 
-        left_launcher.setPower(-0.38);
-        right_launcher.setPower(-0.38);
+        left_launcher.setPower(0.39);
+        right_launcher.setPower(0.39);
 
         // starting the shooting phase 2
 
