@@ -81,7 +81,7 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
         }
         //getting balls for the second time
-        Action getBalls = drive.actionBuilder(new Pose2d(17, -24, -47))
+        Action getBalls = drive.actionBuilder(new Pose2d(9, -9, -47))
                 .turnTo(Math.toRadians(-5))
                 .lineToX(-20)
                 .turnTo(Math.toRadians(90))
