@@ -46,8 +46,8 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
                 .build();
         Actions.runBlocking(new SequentialAction(path));
         //starting shooting phase 1
-        left_launcher.setPower(0.35);
-        right_launcher.setPower(-0.35);
+        left_launcher.setPower(0.365);
+        right_launcher.setPower(-0.365);
 
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         // now it is starting up the shooting system
