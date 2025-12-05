@@ -42,12 +42,12 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         waitForStart();
         Action path = drive.actionBuilder(startingPose)
                 .splineTo(new Vector2d(9, -9), Math.toRadians(130))
-                .turnTo(Math.toRadians(-45))
+                .turnTo(Math.toRadians(-47))
                 .build();
         Actions.runBlocking(new SequentialAction(path));
         //starting shooting phase 1
-        left_launcher.setPower(0.39);
-        right_launcher.setPower(-0.39);
+        left_launcher.setPower(0.42);
+        right_launcher.setPower(-0.42);
 
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         // now it is starting up the shooting system
@@ -60,7 +60,7 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
         timer.reset();
 
-        for (byte i = 0; i < 5; i++) { //repeats shooting 5 times
+        for (byte i = 0; i < 4; i++) { //repeats shooting 5 times
             left_feeder.setPower(1);
             right_feeder.setPower(-1);
 
@@ -81,8 +81,8 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
         }
         //getting balls for the second time
-        Action getBalls = drive.actionBuilder(new Pose2d(17, -24, -45))
-                .turnTo(Math.toRadians(10))
+        Action getBalls = drive.actionBuilder(new Pose2d(17, -24, -47))
+                .turnTo(Math.toRadians(-5))
                 .lineToX(-20)
                 .turnTo(Math.toRadians(90))
                 .lineToY(-56)
@@ -95,15 +95,15 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         right_feeder.setPower(0);
         left_feeder.setPower(0);
         Action path2 = drive.actionBuilder(new Pose2d(-32, -56, 90))
-                .lineToY(-20)
+                .lineToY(-9)
                 .turnTo(Math.toRadians(0))
-                .lineToX(0)
-                .turnTo(Math.toRadians(-45))
+                .lineToX(9)
+                .turnTo(Math.toRadians(-34.5))
                 .build();
         Actions.runBlocking(new SequentialAction(path2));
 
-        left_launcher.setPower(0.45);
-        right_launcher.setPower(-0.45);
+        left_launcher.setPower(0.42);
+        right_launcher.setPower(-0.42);
 
         // starting the shooting phase 2
 
