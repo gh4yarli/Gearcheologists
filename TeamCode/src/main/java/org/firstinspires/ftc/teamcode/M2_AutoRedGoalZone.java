@@ -67,7 +67,7 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
             while (timer.milliseconds() < 400) {
                 sleep(1);
             }
-
+//reset the time
             timer.reset();
 
             left_feeder.setPower(0);
