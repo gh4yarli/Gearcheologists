@@ -50,7 +50,7 @@ public class M2_CompTeleop extends OpMode {
     DcMotor rightLauncher;
     CRServo leftFeeder;
     CRServo rightFeeder;
-    double BIG_LAUNCHER_POWER = .34;
+    double BIG_LAUNCHER_POWER = .354;
     double SMALL_LAUNCHER_POWER = .41;
     @Override
     public void init() {
@@ -158,13 +158,13 @@ public class M2_CompTeleop extends OpMode {
         }
         //SHOOTING
         if (gamepad1.right_trigger > 0) {
-            leftLauncher.setPower(-BIG_LAUNCHER_POWER);
+            leftLauncher.setPower(BIG_LAUNCHER_POWER);
             rightLauncher.setPower(-BIG_LAUNCHER_POWER);
         } else if (gamepad2.right_bumper) {
-            leftLauncher.setPower(-SMALL_LAUNCHER_POWER);
+            leftLauncher.setPower(SMALL_LAUNCHER_POWER);
             rightLauncher.setPower(-SMALL_LAUNCHER_POWER);
         } else if (gamepad2.right_trigger == 0 && !gamepad2.right_bumper) {
-            leftLauncher.setPower(-BIG_LAUNCHER_POWER);
+            leftLauncher.setPower(BIG_LAUNCHER_POWER);
             rightLauncher.setPower(-BIG_LAUNCHER_POWER);
             rightFeeder.setPower(0);
             leftFeeder.setPower(0);
@@ -177,16 +177,16 @@ public class M2_CompTeleop extends OpMode {
             intake2.setPower(1);
         }
         if (gamepad2.dpad_down){
-            SMALL_LAUNCHER_POWER -= .001;
+            SMALL_LAUNCHER_POWER -= .0001;
         }
         if (gamepad2.dpad_up){
-            SMALL_LAUNCHER_POWER += .001;
+            SMALL_LAUNCHER_POWER += .0001;
         }
         if (gamepad2.y){
-            BIG_LAUNCHER_POWER += .001;
+            BIG_LAUNCHER_POWER += .0001;
         }
         if (gamepad2.a){
-            BIG_LAUNCHER_POWER -= .001;
+            BIG_LAUNCHER_POWER -= .0001;
 
         }
         if (gamepad2.x){
