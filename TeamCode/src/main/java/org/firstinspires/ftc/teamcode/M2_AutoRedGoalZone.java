@@ -60,7 +60,7 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
         timer.reset();
 
-        for (byte i = 0; i < 4; i++) { //repeats shooting 5 times
+        for (byte i = 0; i < 5; i++) { //repeats shooting 5 times
             left_feeder.setPower(1);
             right_feeder.setPower(-1);
 
@@ -82,8 +82,8 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         }
         //getting balls for the second time
         Action getBalls = drive.actionBuilder(new Pose2d(17, -24, -45))
-                .turnTo(Math.toRadians(0))
-                .lineToX(-29)
+                .turnTo(Math.toRadians(10))
+                .lineToX(-20)
                 .turnTo(Math.toRadians(90))
                 .lineToY(-56)
                 .build();
