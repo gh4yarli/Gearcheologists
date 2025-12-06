@@ -58,7 +58,7 @@ public abstract class M2_Functions extends LinearOpMode {
         leftLauncher.setPower(launcherPower);
         rightLauncher.setPower(-launcherPower);
         //ranjith modification - to speed up the shooting
-        sleep(500);
+        sleep(2000);
         //sleep(2000);
             for (byte i = 0; i < 4; i++) {
                 if (i != 0) {
