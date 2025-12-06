@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Autonomous
 
 public class M2_AutoRedGoalZone extends LinearOpMode {
+    double launcherpower = 0.345; // 0.345 for high battery, 0.39 for low battery
 
     @Override
     public void runOpMode() {
@@ -28,6 +29,7 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         CRServo right_feeder = hardwareMap.get(CRServo.class, "rightFeeder");
         DcMotor intake1 = hardwareMap.get(DcMotor.class, "feeder");
         DcMotor intake2 = hardwareMap.get(DcMotor.class, "intake2");
+
         //setting starting position
         Pose2d startingPose = new Pose2d(new Vector2d(52, -44), Math.toRadians(130));
 
@@ -40,34 +42,34 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
         //going to the first desired shooting position
         waitForStart();
+        //starting launching power
+        left_launcher.setPower(-launcherpower);
+        right_launcher.setPower(launcherpower);
         Action path = drive.actionBuilder(startingPose)
                 .splineTo(new Vector2d(9, -9), Math.toRadians(130))
                 .turnTo(Math.toRadians(-47))
                 .build();
         Actions.runBlocking(new SequentialAction(path));
-        //starting shooting phase 1
-        left_launcher.setPower(0.42);
-        right_launcher.setPower(-0.42);
+
 
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         // now it is starting up the shooting system
-        while (timer.milliseconds() < 3000) {
-            sleep(1);
-        }
+        //while (timer.milliseconds() < 3000) {
+          //  sleep(1);
+        //}
 
         intake2.setPower(1);
         intake1.setPower(1);
 
         timer.reset();
 
-        for (byte i = 0; i < 4; i++) { //repeats shooting 5 times
+        for (byte i = 0; i < 5; i++) { //repeats shooting 5 times
             left_feeder.setPower(1);
             right_feeder.setPower(-1);
 
             while (timer.milliseconds() < 400) {
                 sleep(1);
             }
-//reset the time
             timer.reset();
 
             left_feeder.setPower(0);
@@ -81,8 +83,10 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
         }
         //getting balls for the second time
-        Action getBalls = drive.actionBuilder(new Pose2d(17, -24, -47))
-                .turnTo(Math.toRadians(-5))
+        drive.localizer.update();
+        Pose2d newPose = drive.localizer.getPose();
+        Action getBalls = drive.actionBuilder(newPose)
+                .turnTo(Math.toRadians(0))
                 .lineToX(-20)
                 .turnTo(Math.toRadians(90))
                 .lineToY(-56)
@@ -102,8 +106,8 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
                 .build();
         Actions.runBlocking(new SequentialAction(path2));
 
-        left_launcher.setPower(0.42);
-        right_launcher.setPower(-0.42);
+        left_launcher.setPower(-launcherpower);
+        right_launcher.setPower(launcherpower);
 
         // starting the shooting phase 2
 
