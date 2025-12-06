@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Autonomous
 
 public class M2_AutoRedGoalZone extends LinearOpMode {
-    double launcherpower = 0.36; // 0.365 for high battery, 0.39 for low battery
+    double launcherpower = 0.345; // 0.345 for high battery, 0.39 for low battery
 
     @Override
     public void runOpMode() {
