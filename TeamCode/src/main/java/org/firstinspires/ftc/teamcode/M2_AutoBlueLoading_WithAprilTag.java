@@ -10,23 +10,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class M2_AutoBlueLoading extends LinearOpMode {
+public class M2_AutoBlueLoading_WithAprilTag extends LinearOpMode {
     final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
     final double LAUNCHER_POWER = 0.35;  // Constant power used for launcher
 
@@ -51,7 +47,6 @@ public class M2_AutoBlueLoading extends LinearOpMode {
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    private int initial_angle = 40;
     private int total_add_angle = 0;
 
     @Override
@@ -94,7 +89,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap,startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(10)
-                .turnTo(Math.toRadians(initial_angle))
+                .turnTo(Math.toRadians(40))
                 .build();
 
         if (USE_WEBCAM)
@@ -116,6 +111,90 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
         }
+//        while (!targetFound) {
+//            // Used to hold the data for a detected AprilTag
+//            desiredTag = null;
+//            // Step through the list of detected tags and look for a matching tag
+//            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+//            for (AprilTagDetection detection : currentDetections) {
+//                // Look to see if we have size info on this tag.
+//                if (detection.metadata != null) {
+//                    //  Check to see if we want to track towards this tag.
+//                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+//                        // Yes, we want to use this tag.
+//                        targetFound = true;
+//                        desiredTag = detection;
+//                        break;  // don't look any further.
+//                    } else {
+//                        // This tag is in the library, but we do not want to track it right now.
+//                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+//                    }
+//                } else {
+//                    // This tag is NOT in the library, so we don't have enough information to track to it.
+//                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+//                }
+//            }
+//
+//            // Tell the driver what we see, and what to do.
+//            if (targetFound) {
+//                telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+//                telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
+//                telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
+//                telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
+//                telemetry.update();
+//            }
+//            else {
+//                int new_angle = 5;
+//                while (!targetFound) {
+//                    sleep(1000);
+//                    telemetry.addData("Rotate to find tag", "New angle %d", (new_angle));
+//                    telemetry.update();
+//
+//                    total_add_angle += new_angle;
+//                    Pose2d currentPose = mecanumDrive.localizer.getPose();
+//                    path = mecanumDrive.actionBuilder(currentPose)
+//                            .turn(Math.toRadians(new_angle))   // +5 CCW
+//                            .build();
+//
+//                    Actions.runBlocking(new SequentialAction(path));
+//
+//                    // Step through the list of detected tags and look for a matching tag
+//                    currentDetections = aprilTag.getDetections();
+//                    for (AprilTagDetection detection : currentDetections) {
+//                        // Look to see if we have size info on this tag.
+//                        if (detection.metadata != null) {
+//                            //  Check to see if we want to track towards this tag.
+//                            if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+//                                // Yes, we want to use this tag.
+//                                targetFound = true;
+//                                desiredTag = detection;
+//                                break;  // don't look any further.
+//                            } else {
+//                                // This tag is in the library, but we do not want to track it right now.
+//                                telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+//            double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+//            double  headingError    = desiredTag.ftcPose.bearing;
+//            double  yawError        = desiredTag.ftcPose.yaw;
+//
+//            // Use the speed and turn "gains" to calculate how we want the robot to move.
+//            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+//            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+//            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+//
+//            telemetry.addData("Making Robot Parallel","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+//            telemetry.update();
+//
+//            // Apply desired axes motions to the drivetrain.
+//            moveRobot(drive, strafe, turn);
+//            sleep(10);
+//        }
         // >> first time launch
         moveRobot(0,0,0);
         if (opModeIsActive()){
@@ -160,7 +239,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         Pose2d currentPose = mecanumDrive.localizer.getPose();
         //Turning and moving down
         path = mecanumDrive.actionBuilder(currentPose)
-                .turn(Math.toRadians(-(total_add_angle + initial_angle)))   // -60 CCW
+                .turn(Math.toRadians(-(total_add_angle + 40)))   // -60 CCW
                 .lineToX(-24)
                 .build();
         Actions.runBlocking(new SequentialAction(path));
@@ -197,7 +276,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
 
         currentPose = mecanumDrive.localizer.getPose();
         path = mecanumDrive.actionBuilder(currentPose)
-                .turn(Math.toRadians(initial_angle))   // -30 CCW
+                .turn(Math.toRadians(35))   // -30 CCW
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
@@ -212,6 +291,92 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
         }
+//        AprilTagDetection newDesiredTag;
+//        targetFound = false;
+//        while (!targetFound) {
+//            newDesiredTag = null;
+//            // Used to hold the data for a detected AprilTag
+//            // Step through the list of detected tags and look for a matching tag
+//            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+//            for (AprilTagDetection detection : currentDetections) {
+//                // Look to see if we have size info on this tag.
+//                if (detection.metadata != null) {
+//                    //  Check to see if we want to track towards this tag.
+//                    if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+//                        // Yes, we want to use this tag.
+//                        targetFound = true;
+//                        newDesiredTag = detection;
+//                        break;  // don't look any further.
+//                    } else {
+//                        // This tag is in the library, but we do not want to track it right now.
+//                        telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+//                    }
+//                } else {
+//                    // This tag is NOT in the library, so we don't have enough information to track to it.
+//                    telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+//                }
+//            }
+//
+ //            // Tell the driver what we see, and what to do.
+//            if (targetFound) {
+//                telemetry.addData("Found", "ID %d (%s)", newDesiredTag.id, newDesiredTag.metadata.name);
+//                telemetry.addData("Range",  "%5.1f inches", newDesiredTag.ftcPose.range);
+//                telemetry.addData("Bearing","%3.0f degrees", newDesiredTag.ftcPose.bearing);
+//                telemetry.addData("Yaw","%3.0f degrees", newDesiredTag.ftcPose.yaw);
+//                telemetry.update();
+//            }
+//            else {
+//                int new_angle = 5;
+//                timer.reset();
+//                while (timer.milliseconds() < 4000) {
+//                    sleep(1000);
+//                    telemetry.addData("Rotate to find tag", "New angle %d", (new_angle));
+//                    telemetry.update();
+//
+//                    currentPose = mecanumDrive.localizer.getPose();
+//                    path = mecanumDrive.actionBuilder(currentPose)
+//                            .turn(Math.toRadians(new_angle))   // +5 CCW
+//                            .build();
+//
+//                    Actions.runBlocking(new SequentialAction(path));
+//
+//                    // Step through the list of detected tags and look for a matching tag
+//                    currentDetections = aprilTag.getDetections();
+//                    for (AprilTagDetection detection : currentDetections) {
+//                        // Look to see if we have size info on this tag.
+//                        if (detection.metadata != null) {
+//                            //  Check to see if we want to track towards this tag.
+//                            if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+//                                // Yes, we want to use this tag.
+//                                targetFound = true;
+//                                newDesiredTag = detection;
+//                                break;  // don't look any further.
+//                            } else {
+//                                // This tag is in the library, but we do not want to track it right now.
+//                                telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//
+//            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+//            double  rangeError      = (newDesiredTag.ftcPose.range - DESIRED_DISTANCE);
+//            double  headingError    = newDesiredTag.ftcPose.bearing;
+//            double  yawError        = newDesiredTag.ftcPose.yaw;
+//
+//            // Use the speed and turn "gains" to calculate how we want the robot to move.
+//            drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+//            turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+//            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+//
+//            telemetry.addData("Making Robot Parallel","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+//            telemetry.update();
+//
+//            // Apply desired axes motions to the drivetrain.
+//            moveRobot(drive, strafe, turn);
+//            sleep(10);
+//        }
         // >> second time launch
         moveRobot(0,0,0);
         if (opModeIsActive()){
