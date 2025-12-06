@@ -63,7 +63,7 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
 
         timer.reset();
 
-        for (byte i = 0; i < 5; i++) { //repeats shooting 5 times
+        for (byte i = 0; i < 6; i++) { //repeats shooting 5 times
             left_feeder.setPower(1);
             right_feeder.setPower(-1);
 
