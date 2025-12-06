@@ -21,33 +21,35 @@ public class Meet2AutoBlueGoal extends LinearOpMode {
         rightFeeder = hardwareMap.get(CRServo.class, "rightFeeder");
         feederMotor = hardwareMap.get(DcMotor.class, "feeder");
         intakeMotor = hardwareMap.get(DcMotor.class, "intake2");
-        leftLauncher.setPower(-0.3533);
-        rightLauncher.setPower(0.3533);
+        leftLauncher.setPower(-0.346);
+        rightLauncher.setPower(0.346);
         intakeMotor.setPower(1);
         feederMotor.setPower(1);
         Pose2d startingPose = new Pose2d(new Vector2d(52, 44), Math.toRadians(45));
         Pose2d preloadedArtifacts = new Pose2d(new Vector2d(14, 48), Math.toRadians(-135));
         drive = new MecanumDrive(hardwareMap, startingPose);
         Action moveShoot = drive.actionBuilder(new Pose2d(52, 44, Math.toRadians(45)))
-                .lineToX(9)
+                .lineToX(20)
                 .build();
         Actions.runBlocking(moveShoot);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 6; i++) {
             rightFeeder.setPower(-1);
-            leftFeeder.setPower(-1);
+            leftFeeder.setPower(1);
             sleep(750);
             rightFeeder.setPower(0);
             leftFeeder.setPower(0);
         }
         rightFeeder.setPower(0);
         leftFeeder.setPower(0);
-        Action collect = drive.actionBuilder(new Pose2d(9, 7.615386, Math.toRadians(-135)))
+        drive.localizer.update();
+        Pose2d collectMove = drive.localizer.getPose();
+        Action collect = drive.actionBuilder(collectMove)
                 .turnTo(Math.toRadians(0))
-                .lineToX(-5)
-                .turnTo(Math.toRadians(-90))
-                .lineToY(65)
+                .lineToX(10)
+                .turnTo(Math.toRadians(270))
+                .lineToY(70)
                 .lineToY(20)
-                .turnTo(Math.toRadians(30))
+                .turnTo(Math.toRadians(45))
                 .build();
         Actions.runBlocking(collect);
     }
