@@ -16,8 +16,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -26,9 +24,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class M2_AutoBlueLoading extends LinearOpMode {
+public class M2_AutoBlueLoading_2 extends LinearOpMode {
     final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
-    final double LAUNCHER_POWER = 0.35;  // Constant power used for launcher
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -41,6 +38,8 @@ public class M2_AutoBlueLoading extends LinearOpMode {
     final double MAX_AUTO_STRAFE= 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
 
+    final double LAUNCHER_POWER = 0.36;  // Constant power used for launcher
+
     private DcMotor frontLeftDrive = null;  //  Used to control the left front drive wheel
     private DcMotor frontRightDrive = null;  //  Used to control the right front drive wheel
     private DcMotor backLeftDrive = null;  //  Used to control the left back drive wheel
@@ -51,13 +50,10 @@ public class M2_AutoBlueLoading extends LinearOpMode {
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    private int initial_angle = 40;
-    private int total_add_angle = 0;
 
     @Override
     public void runOpMode()
     {
-        boolean targetFound     = false;    // Set to true when an AprilTag target is detected
         double  drive           = 0;        // Desired forward power/speed (-1 to +1)
         double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
         double  turn            = 0;        // Desired turning power/speed (-1 to +1)
@@ -94,7 +90,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap,startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(10)
-                .turnTo(Math.toRadians(initial_angle))
+                .turnTo(Math.toRadians(30))
                 .build();
 
         if (USE_WEBCAM)
@@ -108,141 +104,62 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         pinpointDriver.initialize();
         waitForStart();
         if (opModeIsActive()){
-            telemetry.addData("Power", "Left Launcher Power set to 0.56");
+            telemetry.addData("Power", "Left Launcher Power set to %.2f", LAUNCHER_POWER);
             left_launcher.setPower(-LAUNCHER_POWER);
-            telemetry.addData("Power", "Right Launcher Power set to 0.56");
-            right_launcher.setPower(LAUNCHER_POWER);
+            telemetry.addData("Power", "Right Launcher Power set to %.2f", LAUNCHER_POWER);
+            right_launcher.setPower(-LAUNCHER_POWER);
             telemetry.addData("Path", "Sending robot to near the blue goal");
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
         }
+
         // >> first time launch
+        detectTagAndPositionToShoot(mecanumDrive);
         moveRobot(0,0,0);
         if (opModeIsActive()){
-            sleep(10);
-            second_intake.setPower(1);
-            sleep(1000);      // was 2000
-            timer.reset();
-            for (byte i = 0; i < 4; i++) {
-                if (i > 0) first_intake.setPower((1));
-                left_feeder.setPower(1);
-                right_feeder.setPower(-1);
-                while (timer.milliseconds() < 525){
-                    sleep(1);
-                }
-                timer.reset();
-                left_feeder.setPower(0);
-                right_feeder.setPower(0);
-                while (timer.milliseconds() < 1500){
-                    sleep(1000);
-                }
-                timer.reset();
-                telemetry.addData("Shooting update", "Finished shooting ball: %d", (i+1));
-                telemetry.update();
-            }
-            telemetry.addData("Shooting update", "Finished shooting ALL balls. Move to next phase");
-            telemetry.update();
-            left_launcher.setPower(0);
-            right_launcher.setPower(0);
-            second_intake.setPower(0);
-            first_intake.setPower(0);
-            telemetry.update();
+            shootBalls(first_intake, second_intake, left_launcher, right_launcher, right_feeder, left_feeder);
         }
-//**********************************************************************************//
-        // Code to get balls #1(closest one to the goal)
+
+        // **** Code to get balls #1(closest one to the goal) ****
         //Add intake from the beginning(Both intakes)
         second_intake.setPower(1);
         first_intake.setPower(1);
-       //Moving ball to pick balls up
+        //Moving ball to pick balls up
         telemetry.addData("Move update", "On the way to pickup the first set of balls");
         telemetry.update();
         //Moving to pick up the ball
         Pose2d currentPose = mecanumDrive.localizer.getPose();
         //Turning and moving down
         path = mecanumDrive.actionBuilder(currentPose)
-                .turn(Math.toRadians(-(total_add_angle + initial_angle)))   // -60 CCW
-                .lineToX(-24)
+                .turn(Math.toRadians(-30))   // -30 CCW
+                .lineToX(-5)
                 .build();
         Actions.runBlocking(new SequentialAction(path));
-
+        //Turning 90 degrees and moving left
         currentPose = mecanumDrive.localizer.getPose();
         path = mecanumDrive.actionBuilder(currentPose)
                 .turn(Math.toRadians(-90))   // -30 CCW
+                .lineToY(20)
                 .build();
         Actions.runBlocking(new SequentialAction(path));
 
+        //Going back to shooting position
+        telemetry.addData("Move update", "Moving back to shoot the first set of balls");
+        telemetry.update();
         currentPose = mecanumDrive.localizer.getPose();
         path = mecanumDrive.actionBuilder(currentPose)
-                .lineToY(40 )
+                .lineToY(-20)
+                .turn(Math.toRadians(-90))   // -30 CCW
+                .lineToX(-5)
                 .build();
         Actions.runBlocking(new SequentialAction(path));
+        // **** Code to get balls #1(closest one to the goal) ****
 
-        currentPose = mecanumDrive.localizer.getPose();
-        path = mecanumDrive.actionBuilder(currentPose)
-                .lineToY(18 )
-                .build();
-        Actions.runBlocking(new SequentialAction(path));
-
-        currentPose = mecanumDrive.localizer.getPose();
-        path = mecanumDrive.actionBuilder(currentPose)
-                .turn(Math.toRadians(90))   // -30 CCW
-                .build();
-        Actions.runBlocking(new SequentialAction(path));
-
-        currentPose = mecanumDrive.localizer.getPose();
-        path = mecanumDrive.actionBuilder(currentPose)
-                .lineToX(12)
-                .build();
-        Actions.runBlocking(new SequentialAction(path));
-
-        currentPose = mecanumDrive.localizer.getPose();
-        path = mecanumDrive.actionBuilder(currentPose)
-                .turn(Math.toRadians(initial_angle))   // -30 CCW
-                .build();
-        Actions.runBlocking(new SequentialAction(path));
-
-        // pinpointDriver.initialize();  // No need to initialize again
-        waitForStart();
-        if (opModeIsActive()){
-            telemetry.addData("Power", "Left Launcher Power set to 0.56");
-            left_launcher.setPower(-LAUNCHER_POWER);
-            telemetry.addData("Power", "Right Launcher Power set to 0.56");
-            right_launcher.setPower(LAUNCHER_POWER);
-            telemetry.addData("Path", "Sending robot to near the blue goal");
-            Actions.runBlocking(new SequentialAction(path));
-            telemetry.update();
-        }
         // >> second time launch
+        detectTagAndPositionToShoot(mecanumDrive);
         moveRobot(0,0,0);
         if (opModeIsActive()){
-            sleep(10);
-            second_intake.setPower(1);
-            sleep(2000);        // was 2000 seconds
-            timer.reset();
-            for (byte i = 0; i < 4; i++) {
-                if (i > 0) first_intake.setPower((1));
-                left_feeder.setPower(1);
-                right_feeder.setPower(-1);
-                while (timer.milliseconds() < 525){
-                    sleep(1);
-                }
-                timer.reset();
-                left_feeder.setPower(0);
-                right_feeder.setPower(0);
-                while (timer.milliseconds() < 1500){
-                    sleep(1000);
-                }
-                timer.reset();
-                telemetry.addData("Shooting update", "Finsihed shooting ball: %d", (i+1));
-                telemetry.update();
-            }
-            telemetry.addData("Shooting update", "Finisghed shooting ALL balls. Move to next phase");
-            telemetry.update();
-            left_launcher.setPower(0);
-            right_launcher.setPower(0);
-            second_intake.setPower(0);
-            first_intake.setPower(0);
-            telemetry.update();
+            shootBalls(first_intake, second_intake, left_launcher, right_launcher, right_feeder, left_feeder);
         }
     }
 
@@ -312,6 +229,76 @@ public class M2_AutoBlueLoading extends LinearOpMode {
     }
 
     /*
+        Step through the list of detected tags and look for a matching tag
+    */
+    private AprilTagDetection detectAprilTag() {
+        AprilTagDetection desiredTag = null;
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        for (AprilTagDetection detection : currentDetections) {
+            // Look to see if we have size info on this tag.
+            if (detection.metadata != null) {
+                //  Check to see if we want to track towards this tag.
+                if ((DESIRED_TAG_ID < 0) || (detection.id == DESIRED_TAG_ID)) {
+                    // Yes, we want to use this tag.
+                    desiredTag = detection;
+                    break;  // don't look any further.
+                } else {
+                    // This tag is in the library, but we do not want to track it right now.
+                    telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                }
+            } else {
+                // This tag is NOT in the library, so we don't have enough information to track to it.
+                telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+            }
+        }
+        return desiredTag;
+    }
+
+    /*
+        Shoot balls
+    */
+    private void shootBalls(DcMotor first_intake, DcMotor second_intake, DcMotor left_launcher, DcMotor right_launcher, CRServo right_feeder, CRServo left_feeder){
+        sleep(10);
+        second_intake.setPower(1);
+        sleep(2000);
+        timer.reset();
+        for (byte i = 0; i < 4; i++) {
+            if (i > 0) first_intake.setPower((1));
+            left_feeder.setPower(1);
+            right_feeder.setPower(-1);
+            while (timer.milliseconds() < 525){
+                sleep(1);
+            }
+            timer.reset();
+            left_feeder.setPower(0);
+            right_feeder.setPower(0);
+            while (timer.milliseconds() < 1500){
+                sleep(1000);
+            }
+            timer.reset();
+            telemetry.addData("Shooting update", "Finished shooting ball: %d", (i+1));
+            telemetry.update();
+        }
+        telemetry.addData("Shooting update", "Finished shooting ALL balls. Move to next phase");
+        telemetry.update();
+        left_launcher.setPower(0);
+        right_launcher.setPower(0);
+        second_intake.setPower(0);
+        first_intake.setPower(0);
+    }
+
+    /*
+        Print telemetry information
+    */
+    private void printTagInformation(AprilTagDetection desiredTag) {
+        telemetry.addData("Found", "ID %d (%s)", desiredTag.id, desiredTag.metadata.name);
+        telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
+        telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
+        telemetry.addData("Yaw","%3.0f degrees", desiredTag.ftcPose.yaw);
+        telemetry.update();
+    }
+
+    /*
      Manually set the camera gain and exposure.
      This can only be called AFTER calling initAprilTag(), and only works for Webcams;
     */
@@ -346,5 +333,52 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             gainControl.setGain(gain);
             sleep(20);
         }
+    }
+
+    private void detectTagAndPositionToShoot(MecanumDrive mecanumDrive){
+        // Used to hold the data for a detected AprilTag
+        AprilTagDetection desiredTag = detectAprilTag();
+        // Tell the driver what we see, and what to do.
+        if (desiredTag != null) {
+            telemetry.addData("Tag detection status", "Found without rotation!");
+            telemetry.update();
+        }
+        else {
+            int new_angle = 5;
+            while (desiredTag == null) {
+                sleep(100);
+                telemetry.addData("Rotate to find tag", "New angle %d", (new_angle));
+                telemetry.update();
+
+                Pose2d currentPose = mecanumDrive.localizer.getPose();
+                Action path = mecanumDrive.actionBuilder(currentPose)
+                        .turn(Math.toRadians(5))   // +5 CCW
+                        .build();
+
+                Actions.runBlocking(new SequentialAction(path));
+                telemetry.addData("Tag detection status", "Found tag after rotation");
+                telemetry.update();
+
+                desiredTag = detectAprilTag();
+            }
+        }
+        printTagInformation(desiredTag);
+
+        // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+        double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+        double  headingError    = desiredTag.ftcPose.bearing;
+        double  yawError        = desiredTag.ftcPose.yaw;
+
+        // Use the speed and turn "gains" to calculate how we want the robot to move.
+        double drive  = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+        double turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
+        double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+        telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        telemetry.update();
+
+        // Apply desired axes motions to the drivetrain.
+        moveRobot(drive, strafe, turn);
+        sleep(10);
     }
 }
