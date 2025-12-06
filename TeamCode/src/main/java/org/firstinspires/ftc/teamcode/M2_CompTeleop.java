@@ -5,10 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /*
@@ -29,8 +30,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @TeleOp(name = "M2_CompTeleop", group = "Competition")
 public class M2_CompTeleop extends OpMode {
 
+    private static final Logger log = LoggerFactory.getLogger(M2_CompTeleop.class);
+
     public static class Params {
-        public final double parYTicks = PinpointLocalizer.PARAMS.parYTicks;  // y position of the parallel encoder (in tick units)
+        public final double parYTicks = PinpointLocalizer.PARAMS.parYTicks;  // y position of  the parallel encoder (in tick units)
         public final double perpXTicks = PinpointLocalizer.PARAMS.perpXTicks; // x position of the perpendicular encoder (in tick units)
 
         public double inPerTick = MecanumDrive.PARAMS.inPerTick;
@@ -41,17 +44,11 @@ public class M2_CompTeleop extends OpMode {
     public GoBildaPinpointDriver pinpoint;
 
     // This declares the four motors needed
-    DcMotor frontLeftDrive;
-    DcMotor frontRightDrive;
-    DcMotor backLeftDrive;
-    DcMotor backRightDrive;
-    DcMotor feeder;
-    DcMotor intake2;
-    DcMotor leftLauncher;
-    DcMotor rightLauncher;
-    CRServo leftFeeder;
-    CRServo rightFeeder;
-    final double LAUNCHER_POWER = .35;
+    DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
+    DcMotor feeder, intake2, leftLauncher, rightLauncher;
+    CRServo leftFeeder, rightFeeder;
+    double BIG_LAUNCHER_POWER = .353;
+    double SMALL_LAUNCHER_POWER = .41;
     @Override
     public void init() {
 
@@ -130,6 +127,8 @@ public class M2_CompTeleop extends OpMode {
         telemetry.addLine("Hold left bumper to drive in robot relative");
         telemetry.addLine("The left joystick sets the robot direction");
         telemetry.addLine("Moving the right joystick left and right turns the robot");
+        telemetry.addData("Launcher Left", leftLauncher.getPower());
+        telemetry.addData(" Power  Right", rightLauncher.getPower());
 
         pinpoint.update();
 
@@ -150,33 +149,42 @@ public class M2_CompTeleop extends OpMode {
         //INTAKE
         if (gamepad2.left_trigger > 0) {
             feeder.setPower(1);
-        }
-        else if (gamepad2.left_trigger == 0) {
+        } else if (gamepad2.left_trigger == 0) {
             feeder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
         //SHOOTING
         if (gamepad1.right_trigger > 0) {
-            leftLauncher.setPower(-gamepad1.right_trigger);
-            rightLauncher.setPower(-gamepad1.right_trigger);
-            rightFeeder.setPower(-1);
-            leftFeeder.setPower(1);
-        }
-        else if (gamepad2.right_trigger == 0) {
-            leftLauncher.setPower(-LAUNCHER_POWER);
-            rightLauncher.setPower(-LAUNCHER_POWER);
+            leftLauncher.setPower(-BIG_LAUNCHER_POWER);
+            rightLauncher.setPower(BIG_LAUNCHER_POWER);
+        } else if (gamepad2.right_bumper) {
+            leftLauncher.setPower(-SMALL_LAUNCHER_POWER);
+            rightLauncher.setPower(SMALL_LAUNCHER_POWER);
+        } else if (gamepad2.right_trigger == 0 && !gamepad2.right_bumper) {
+            //Makes launchers always move
+            leftLauncher.setPower(-BIG_LAUNCHER_POWER);
+            rightLauncher.setPower(BIG_LAUNCHER_POWER);
             rightFeeder.setPower(0);
             leftFeeder.setPower(0);
         }
-        //Makes launchers always move
-        //leftLauncher.setPower(LAUNCHER_POWER);
-        //rightLauncher.setPower(LAUNCHER_POWER);
-        if (gamepad1.y){
+
+        if (gamepad2.b) {
             intake2.setPower(1);
         }
+        if (gamepad2.dpad_down){
+            SMALL_LAUNCHER_POWER -= .0003;
+        }
+        if (gamepad2.dpad_up){
+            SMALL_LAUNCHER_POWER += .0003;
+        }
+        if (gamepad2.y){
+            BIG_LAUNCHER_POWER += .0003;
+        }
+        if (gamepad2.a){
+            BIG_LAUNCHER_POWER -= .0003;
 
+        }
         if (gamepad2.x){
-            //shootBallsVertex();
             rightFeeder.setPower(-1);
             leftFeeder.setPower(1);
         }
@@ -191,9 +199,7 @@ public class M2_CompTeleop extends OpMode {
         // First, convert direction being asked to drive to polar coordinates
         double theta = Math.atan2(forward, right);
         double r = Math.hypot(right, forward);
-
         double pinpoint_Heading = pinpoint.getHeading(AngleUnit.RADIANS);
-
         // Second, rotate angle by the angle the robot is pointing
         theta = AngleUnit.normalizeRadians(theta -
                 pinpoint_Heading);
@@ -235,11 +241,13 @@ public class M2_CompTeleop extends OpMode {
         backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
         backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
     }
+    /*
     public void shootBallsVertex(){
-        leftLauncher.setPower(LAUNCHER_POWER);
-        rightLauncher.setPower(LAUNCHER_POWER);
+        leftLauncher.setPower(BIG_LAUNCHER_POWER);
+        rightLauncher.setPower(BIG_LAUNCHER_POWER);
         rightFeeder.setPower(-1);
         leftFeeder.setPower(1);
         //intake.setPower(-.6);
     }
+    */
 }
