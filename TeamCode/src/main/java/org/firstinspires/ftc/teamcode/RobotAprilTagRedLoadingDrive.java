@@ -127,12 +127,17 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
             telemetry.addData("Y", newPose.position.y);
             telemetry.addData("A", Math.toDegrees(newPose.heading.toDouble()));
             telemetry.update();
+
             Actions.runBlocking(new SequentialAction(path));
+
         }
         int tagFound = 0;
         double rangeError = 5000;
         while (rangeError > 2) {
             desiredTag = null;
+            //ranjith modifcation
+            launcher_left.setPower(0.365);
+            launcher_right.setPower(-0.365);
             tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             desiredTag = detectAprilTag(tagNumber, currentDetections);
@@ -158,7 +163,7 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
         moveRobot(0, 0, 0);
 
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.35); }
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.365); }
         //--------------------Second Shot---------------------------------
         // pinpointDriver.update();
         mecanumDrive.updatePoseEstimate();
@@ -187,6 +192,9 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
         rangeError = 5000;
         while (rangeError > 2) {
             desiredTag = null;
+            //ranjith modifcation
+            launcher_left.setPower(0.365);
+            launcher_right.setPower(-0.365);
             tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             desiredTag = detectAprilTag(tagNumber, currentDetections);
@@ -213,7 +221,7 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
 
 
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.31);
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.345);
         }
 
 
@@ -247,6 +255,9 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
         while (rangeError > 2) {
             desiredTag = null;
             tagFound = 0;
+            //ranjith modifcation
+            launcher_left.setPower(0.365);
+            launcher_right.setPower(-0.365);
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             desiredTag = detectAprilTag(tagNumber, currentDetections);
             if (desiredTag.id == tagNumber) {
@@ -270,7 +281,7 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.32);
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.33);
         }
         // --------------------------Fourth Shot--------------------------------
 
@@ -300,6 +311,8 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
         while (rangeError > 2) {
             desiredTag = null;
             tagFound = 0;
+            launcher_left.setPower(0.365);
+            launcher_right.setPower(-0.365);
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             desiredTag = detectAprilTag(tagNumber, currentDetections);
             if (desiredTag.id == tagNumber) {

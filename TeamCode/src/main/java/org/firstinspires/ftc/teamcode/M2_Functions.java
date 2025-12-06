@@ -56,8 +56,10 @@ public abstract class M2_Functions extends LinearOpMode {
         leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
         rightLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
         leftLauncher.setPower(launcherPower);
-        rightLauncher.setPower(launcherPower);
-        sleep(2000);
+        rightLauncher.setPower(-launcherPower);
+        //ranjith modification
+        sleep(500);
+        //sleep(2000);
             for (byte i = 0; i < 4; i++) {
                 if (i != 0) {
                     intake1.setPower(1);
@@ -65,7 +67,7 @@ public abstract class M2_Functions extends LinearOpMode {
                 }
                 rightFeeder.setPower(-1);
                 leftFeeder.setPower(-1);
-                sleep(750);
+                sleep(1000);
                 leftFeeder.setPower(0);
                 rightFeeder.setPower(0);
                 sleep(1000);
