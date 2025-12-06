@@ -255,7 +255,6 @@ public class RobotAprilTagRedLoadingDrive extends M2_Functions
         while (rangeError > 2) {
             desiredTag = null;
             tagFound = 0;
-            //ranjith modifcation
             launcher_left.setPower(0.365);
             launcher_right.setPower(-0.365);
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
