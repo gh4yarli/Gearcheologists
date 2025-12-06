@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 @Autonomous
-public class Meet2AutoBlueGoal extends LinearOpMode {
+public class M2_AutoBlueGoalZone extends LinearOpMode {
     private DcMotor leftLauncher, rightLauncher;
     private CRServo leftFeeder, rightFeeder;
     private DcMotor feederMotor, intakeMotor;
