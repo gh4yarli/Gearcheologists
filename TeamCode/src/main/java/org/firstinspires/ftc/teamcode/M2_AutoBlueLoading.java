@@ -153,7 +153,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         //Add intake from the beginning(Both intakes)
         second_intake.setPower(1);
         first_intake.setPower(1);
-       //Moving ball to pick balls up
+        //Moving ball to pick balls up
         telemetry.addData("Move update", "On the way to pickup the first set of balls");
         telemetry.update();
         //Moving to pick up the ball
@@ -209,41 +209,41 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             telemetry.addData("Power", "Right Launcher Power set to 0.56");
             right_launcher.setPower(LAUNCHER_POWER);
             telemetry.addData("Path", "Sending robot to near the blue goal");
-            Actions.runBlocking(new SequentialAction(path));
+            // Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
         }
         // >> second time launch
-        moveRobot(0,0,0);
-        if (opModeIsActive()){
-            sleep(10);
-            second_intake.setPower(1);
-            sleep(2000);        // was 2000 seconds
-            timer.reset();
-            for (byte i = 0; i < 4; i++) {
-                if (i > 0) first_intake.setPower((1));
-                left_feeder.setPower(1);
-                right_feeder.setPower(-1);
-                while (timer.milliseconds() < 525){
-                    sleep(1);
-                }
-                timer.reset();
-                left_feeder.setPower(0);
-                right_feeder.setPower(0);
-                while (timer.milliseconds() < 1500){
-                    sleep(1000);
-                }
-                timer.reset();
-                telemetry.addData("Shooting update", "Finsihed shooting ball: %d", (i+1));
-                telemetry.update();
-            }
-            telemetry.addData("Shooting update", "Finisghed shooting ALL balls. Move to next phase");
-            telemetry.update();
-            left_launcher.setPower(0);
-            right_launcher.setPower(0);
-            second_intake.setPower(0);
-            first_intake.setPower(0);
-            telemetry.update();
-        }
+        // moveRobot(0,0,0);
+//        if (opModeIsActive()){
+//            sleep(10);
+//            second_intake.setPower(1);
+//            sleep(2000);        // was 2000 seconds
+//            timer.reset();
+//            for (byte i = 0; i < 4; i++) {
+//                if (i > 0) first_intake.setPower((1));
+//                left_feeder.setPower(1);
+//                right_feeder.setPower(-1);
+//                while (timer.milliseconds() < 525){
+//                    sleep(1);
+//                }
+//                timer.reset();
+//                left_feeder.setPower(0);
+//                right_feeder.setPower(0);
+//                while (timer.milliseconds() < 1500){
+//                    sleep(1000);
+//                }
+//                timer.reset();
+//                telemetry.addData("Shooting update", "Finsihed shooting ball: %d", (i+1));
+//                telemetry.update();
+//            }
+//            telemetry.addData("Shooting update", "Finisghed shooting ALL balls. Move to next phase");
+//            telemetry.update();
+//            left_launcher.setPower(0);
+//            right_launcher.setPower(0);
+//            second_intake.setPower(0);
+//            first_intake.setPower(0);
+//            telemetry.update();
+//        }
     }
 
     /**
@@ -348,3 +348,4 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         }
     }
 }
+
