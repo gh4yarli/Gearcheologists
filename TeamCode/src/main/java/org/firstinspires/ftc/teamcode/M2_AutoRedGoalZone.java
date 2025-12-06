@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Autonomous
 
 public class M2_AutoRedGoalZone extends LinearOpMode {
-    double launcherpower = 0.345; // 0.345 for high battery, 0.39 for low battery
+    double launcherpower = 0.365; // 0.365 for high battery, 0.39 for low battery
 
     @Override
     public void runOpMode() {
@@ -46,7 +46,7 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         left_launcher.setPower(-launcherpower);
         right_launcher.setPower(launcherpower);
         Action path = drive.actionBuilder(startingPose)
-                .splineTo(new Vector2d(9, -9), Math.toRadians(130))
+                .splineTo(new Vector2d(20, -20), Math.toRadians(130))
                 .turnTo(Math.toRadians(-47))
                 .build();
         Actions.runBlocking(new SequentialAction(path));
@@ -87,7 +87,7 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         Pose2d newPose = drive.localizer.getPose();
         Action getBalls = drive.actionBuilder(newPose)
                 .turnTo(Math.toRadians(0))
-                .lineToX(-20)
+                //.lineToX(12)
                 .turnTo(Math.toRadians(90))
                 .lineToY(-56)
                 .build();
@@ -96,13 +96,15 @@ public class M2_AutoRedGoalZone extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(getBalls));
 
         //moving to shooting area same place as the first time
+        drive.localizer.update();
+        Pose2d newPose2 = drive.localizer.getPose();
         right_feeder.setPower(0);
         left_feeder.setPower(0);
-        Action path2 = drive.actionBuilder(new Pose2d(-32, -56, 90))
-                .lineToY(-9)
-                .turnTo(Math.toRadians(0))
-                .lineToX(9)
-                .turnTo(Math.toRadians(-34.5))
+        Action path2 = drive.actionBuilder(newPose2)
+                .lineToY(-20)
+                //.turnTo(Math.toRadians(0))
+                //.lineToX(9)
+                .turnTo(Math.toRadians(-45))
                 .build();
         Actions.runBlocking(new SequentialAction(path2));
 
