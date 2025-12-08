@@ -14,9 +14,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public final class ShootingTest extends LinearOpMode {
 
     public static double launcherPower = 0.1;
-    public static long delay = 750;
+    public static long delay = 1000;
 
-    public static long servoTime = 800;
+    public static long servoTime = 790;
 
     public static double launchVelocity = 800;
 
@@ -53,7 +53,7 @@ public final class ShootingTest extends LinearOpMode {
         launcher_right.setDirection(DcMotorEx.Direction.REVERSE);
 
         ElapsedTime timer = new ElapsedTime();
-        //delay - 750, vel - 800,   servo - 800
+        //delay - 1000, vel - 790,   servo - 800
 
         waitForStart();
         if (opModeIsActive()) {
@@ -71,15 +71,24 @@ public final class ShootingTest extends LinearOpMode {
             }
 
 
-            for (byte i = 0; i <= 4; i++) {
+            //for (byte i = 0; i <= 3; i++) {
+            while (opModeIsActive()) {
                 if(!opModeIsActive()) break;
 
-                if (i != 0) {
-                    intake1.setPower(1);
-                }
-                right_feeder.setPower(-1);
-                left_feeder.setPower(-1);
+                // if (i != 0) {
                 intake2.setPower(1);
+                intake1.setPower(1);
+                // }
+                for (byte j = 0; j < 5; j++) {
+                    right_feeder.setPower(-1);
+                    left_feeder.setPower(-1);
+                    sleep(500);
+                    right_feeder.setPower(0);
+                    left_feeder.setPower(0);
+                    //sleep(100);
+                    sleep(1000);
+                }
+
 
                 timer.reset();
                 while(opModeIsActive() && timer.milliseconds() < servoTime) {

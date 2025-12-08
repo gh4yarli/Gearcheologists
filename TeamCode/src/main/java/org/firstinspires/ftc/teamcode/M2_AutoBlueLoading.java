@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
+
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 @Autonomous
 public class M2_AutoBlueLoading extends LinearOpMode {
     final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
-    final double LAUNCHER_POWER = 0.35;  // Constant power used for launcher
+    final double LAUNCHER_POWER = 0.33;  // Constant power used for launcher
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -48,16 +49,17 @@ public class M2_AutoBlueLoading extends LinearOpMode {
     private static final int DESIRED_TAG_ID = 20;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
-    private ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private final ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    private ElapsedTime timerTotal = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private int total_add_angle = 0;
 
     @Override
     public void runOpMode()
     {
         boolean targetFound     = false;    // Set to true when an AprilTag target is detected
-        double  drive           = 0;        // Desired forward power/speed (-1 to +1)
-        double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
-        double  turn            = 0;        // Desired turning power/speed (-1 to +1)
+        double  drive;       // Desired forward power/speed (-1 to +1)
+        double  strafe;      // Desired strafe power/speed (-1 to +1)
+        double  turn;        // Desired turning power/speed (-1 to +1)
 
         // Initialize the Apriltag Detection process
         initAprilTag();
@@ -104,16 +106,20 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         AprilTagDetection desiredTag;
         pinpointDriver.initialize();
         waitForStart();
+        if (opModeInInit()){
+            timerTotal.reset();
+        }
         if (opModeIsActive()){
             telemetry.addData("Power", "Left Launcher Power set to 0.56");
             left_launcher.setPower(-LAUNCHER_POWER);
             telemetry.addData("Power", "Right Launcher Power set to 0.56");
-            right_launcher.setPower(-LAUNCHER_POWER);
+            right_launcher.setPower(LAUNCHER_POWER);
             telemetry.addData("Path", "Sending robot to near the blue goal");
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
         }
-        while (!targetFound) {
+        double  rangeError      = 500;
+        while (!targetFound && rangeError > 2) {
             // Used to hold the data for a detected AprilTag
             desiredTag = null;
             // Step through the list of detected tags and look for a matching tag
@@ -181,7 +187,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             }
 
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double  rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+            rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
             double  headingError    = desiredTag.ftcPose.bearing;
             double  yawError        = desiredTag.ftcPose.yaw;
 
@@ -286,9 +292,9 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()){
             telemetry.addData("Power", "Left Launcher Power set to 0.56");
-            left_launcher.setPower(-LAUNCHER_POWER);
+            left_launcher.setPower(-0.1);
             telemetry.addData("Power", "Right Launcher Power set to 0.56");
-            right_launcher.setPower(-LAUNCHER_POWER);
+            right_launcher.setPower(-0.1);
             telemetry.addData("Path", "Sending robot to near the blue goal");
             Actions.runBlocking(new SequentialAction(path));
             telemetry.update();
@@ -362,7 +368,7 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             }
 
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double  rangeError      = (newDesiredTag.ftcPose.range - DESIRED_DISTANCE);
+            rangeError      = (newDesiredTag.ftcPose.range - DESIRED_DISTANCE);
             double  headingError    = newDesiredTag.ftcPose.bearing;
             double  yawError        = newDesiredTag.ftcPose.yaw;
 
@@ -381,27 +387,63 @@ public class M2_AutoBlueLoading extends LinearOpMode {
         // >> second time launch
         moveRobot(0,0,0);
         if (opModeIsActive()){
+            if (isStopRequested()){
+                stop();
+            }
             sleep(10);
             second_intake.setPower(1);
-            sleep(2000);        // was 2000 seconds
+            timer.reset();
+            while (timer.milliseconds() < 2000){
+                sleep(1);
+                if (isStopRequested()){
+                    left_launcher.setPower(0);
+                    right_launcher.setPower(0);
+                    second_intake.setPower(0);
+                    first_intake.setPower(0);
+                    stop();
+                }
+            }
             timer.reset();
             for (byte i = 0; i < 4; i++) {
+                if (isStopRequested()){
+                    left_launcher.setPower(0);
+                    right_launcher.setPower(0);
+                    second_intake.setPower(0);
+                    first_intake.setPower(0);
+                    stop();
+                }
                 if (i > 0) first_intake.setPower((1));
                 left_feeder.setPower(1);
                 right_feeder.setPower(-1);
                 while (timer.milliseconds() < 525){
                     sleep(1);
+                    if (isStopRequested()){
+                        left_launcher.setPower(0);
+                        right_launcher.setPower(0);
+                        second_intake.setPower(0);
+                        first_intake.setPower(0);
+                        break;
+                    }
                 }
                 timer.reset();
                 left_feeder.setPower(0);
                 right_feeder.setPower(0);
                 while (timer.milliseconds() < 1500){
-                    sleep(1000);
+                    sleep(1);
+                    if (isStopRequested()){
+                        left_launcher.setPower(0);
+                        right_launcher.setPower(0);
+                        second_intake.setPower(0);
+                        first_intake.setPower(0);
+                        break;
+                    }
                 }
                 timer.reset();
                 telemetry.addData("Shooting update", "Finsihed shooting ball: %d", (i+1));
                 telemetry.update();
             }
+            stop();
+
             telemetry.addData("Shooting update", "Finisghed shooting ALL balls. Move to next phase");
             telemetry.update();
             left_launcher.setPower(0);
@@ -512,5 +554,13 @@ public class M2_AutoBlueLoading extends LinearOpMode {
             gainControl.setGain(gain);
             sleep(20);
         }
+    }
+
+    public ElapsedTime getTimerTotal() {
+        return timerTotal;
+    }
+
+    public void setTimerTotal(ElapsedTime timerTotal) {
+        this.timerTotal = timerTotal;
     }
 }

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.Nullable;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -15,76 +17,26 @@ public abstract class M2_Functions extends LinearOpMode {
      * returns true if ball is detected, false if not
      */
     public boolean detectArtifact(ColorSensor colorSensor){
-        boolean isBallDetected;
+        boolean isBallDetected = false;
         int blue = colorSensor.blue();
         int red = colorSensor.red();
         int green = colorSensor.green();
         int alpha = colorSensor.alpha();
-        isBallDetected = (red > 200 || blue > 200 || green > 200 || alpha > 200);
-        telemetry.addData("Ball Detected?", isBallDetected);
-        return isBallDetected;
+        telemetry.addData("R", red);
+        telemetry.addData("G", green);
+        telemetry.addData("B", blue);
+        telemetry.addData("A", alpha);
+        //return isBallDetected;
+        return true;
     }
+
     public void startLaunchers(DcMotor leftLauncher, DcMotor rightLauncher, double launcherPower) {
         leftLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
         rightLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftLauncher.setPower(launcherPower);
-        rightLauncher.setPower(launcherPower);
-    }
-    public void stopLaunchers(DcMotor leftLauncher, DcMotor rightLauncher) {
-        leftLauncher.setPower(0);
-        rightLauncher.setPower(0);
+        leftLauncher.setPower(-launcherPower);
+        rightLauncher.setPower(-launcherPower);
     }
 
-
-    /**
-     * This method shoots 3 balls.
-     * @param leftLauncher
-     * left launcher motor
-     * @param rightLauncher
-     * right launcher motor
-     * @param leftFeeder
-     * left feeder servo
-     * @param rightFeeder
-     * right feeder servo
-     * @param intake1
-     * first intake
-     * @param intake2
-     * second intake
-     * @param launcherPower
-     * power to shoot balls
-     */
-    public void shootBalls(DcMotor leftLauncher, DcMotor rightLauncher, CRServo leftFeeder,
-                           CRServo rightFeeder, DcMotor intake1, DcMotor intake2, double launcherPower) {
-        DcMotorSimple.Direction LeftFeederDirection = leftFeeder.getDirection();
-        DcMotorSimple.Direction LeftLauncherDirection = leftLauncher.getDirection();
-        DcMotorSimple.Direction RightLauncherDirection = rightLauncher.getDirection();
-        leftLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftLauncher.setPower(launcherPower);
-        rightLauncher.setPower(launcherPower);
-        //sleep(2000);
-        intake2.setPower(1);
-        for (byte i = 0; i <= 4; i++) {
-            if (i != 0) {
-                intake1.setPower(1);
-            }
-            rightFeeder.setPower(-1);
-            leftFeeder.setPower(-1);
-            sleep(700);
-            leftFeeder.setPower(0);
-            rightFeeder.setPower(0);
-            sleep(700);
-        }
-        leftFeeder.setDirection(LeftFeederDirection);
-        leftLauncher.setDirection(LeftLauncherDirection);
-        rightLauncher.setDirection(RightLauncherDirection);
-        leftLauncher.setPower(0);
-        rightLauncher.setPower(0);
-        //intake1.setPower(0);
-        //intake2.setPower(0);
-
-    }
     /**
      * This method shoots 2 balls. It checks if the robot has a ball, and then it shoots if it detects a ball.
      * If there is no ball, if will not shoot
@@ -102,45 +54,35 @@ public abstract class M2_Functions extends LinearOpMode {
      * second intake
      * @param launcherPower
      * power to shoot balls
-     * @param colorSensor
-     * color sensor to detect ball
      */
-    public void shootBallsWithSensor(DcMotor leftLauncher, DcMotor rightLauncher, CRServo leftFeeder,
-                           CRServo rightFeeder, DcMotor intake1, DcMotor intake2, double launcherPower, ColorSensor colorSensor) {
+    public void shootBalls(DcMotor leftLauncher, DcMotor rightLauncher, CRServo leftFeeder,
+                           CRServo rightFeeder, DcMotor intake1, DcMotor intake2, double launcherPower ) {
         DcMotorSimple.Direction LeftFeederDirection = leftFeeder.getDirection();
         DcMotorSimple.Direction LeftLauncherDirection = leftLauncher.getDirection();
         DcMotorSimple.Direction RightLauncherDirection = rightLauncher.getDirection();
         leftLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
         rightLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
-        if (detectArtifact(colorSensor)) {
-            leftLauncher.setPower(launcherPower);
-            rightLauncher.setPower(launcherPower);
-            sleep(2000);
-            for (byte i = 0; i < 3; i++) {
-                if (i != 0) {
-                    intake1.setPower(1);
-                    if (i == 1) {
-                        sleep(1000);
-                        intake2.setPower(1);
-                    }
-                }
-                rightFeeder.setPower(-1);
-                leftFeeder.setPower(-1);
-                sleep(750);
-                leftFeeder.setPower(0);
-                rightFeeder.setPower(0);
-                sleep(1000);
+        leftLauncher.setPower(launcherPower);
+        rightLauncher.setPower(-launcherPower);
+        sleep(2000);
+        for (byte i = 0; i < 4; i++) {
+            if (i != 0) {
+                intake1.setPower(1);
+                intake2.setPower(1);
             }
+            rightFeeder.setPower(-1);
+            leftFeeder.setPower(-1);
+            sleep(750);
+            leftFeeder.setPower(0);
+            rightFeeder.setPower(0);
+            sleep(1000);
         }
         leftFeeder.setDirection(LeftFeederDirection);
         leftLauncher.setDirection(LeftLauncherDirection);
         rightLauncher.setDirection(RightLauncherDirection);
-        leftLauncher.setPower(0);
-        rightLauncher.setPower(0);
-        intake1.setPower(0);
-        intake2.setPower(0);
     }
+
     /**
      * <p></p>
      * @param intake1 primary intake
@@ -150,6 +92,8 @@ public abstract class M2_Functions extends LinearOpMode {
         intake1.setPower(1);
         intake2.setPower(1);
         //sleep(2500);
-
+        intake1.setPower(0);
+        //sleep(2500);
+        intake2.setPower(0);
     }
 }

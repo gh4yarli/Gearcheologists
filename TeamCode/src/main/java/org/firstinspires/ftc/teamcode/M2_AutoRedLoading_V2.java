@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -23,9 +24,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class M2_AutoRedLoading_Backup extends M2_Functions {
+public class M2_AutoRedLoading_V2 extends M2_Functions_V2 {
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -49,8 +50,8 @@ public class M2_AutoRedLoading_Backup extends M2_Functions {
     CRServo left_feeder;
     DcMotor feeder ;
     DcMotor intake2 ;
-    DcMotor launcher_left ;
-    DcMotor launcher_right ;
+    DcMotorEx launcher_left ;
+    DcMotorEx launcher_right ;
     double rangeError = 5000;
     int tagFound = 0;
     int tagNumber = 24;
@@ -69,8 +70,8 @@ public class M2_AutoRedLoading_Backup extends M2_Functions {
         left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
         feeder = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
         intake2 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.SECOND_INTAKE_MOTOR);
-        launcher_left = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
-        launcher_right = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.RIGHT_LAUNCHER_MOTOR);
+        launcher_left = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
+        launcher_right = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.RIGHT_LAUNCHER_MOTOR);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -84,14 +85,14 @@ public class M2_AutoRedLoading_Backup extends M2_Functions {
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
         if (opModeIsActive()) {
-            //startLaunchers(launcher_left, launcher_right,0.35);
+            startLaunchers(launcher_left, launcher_right,1800);
             telemetry.addData("Status", "First Shot");
             telemetry.update();
             firstShot();
-            //mecanumDrive.localizer.update();
+            mecanumDrive.localizer.update();
             //telemetry.addData("Status", "Second shot");
             //telemetry.update();
-            //secondShot(mecanumDrive);
+            secondShot(mecanumDrive);
             //telemetry.addData("Status", "Third Shot");
             //telemetry.update();
             //thirdShot(mecanumDrive);
@@ -102,7 +103,7 @@ public class M2_AutoRedLoading_Backup extends M2_Functions {
             //mecanumDrive.localizer.update();
             //telemetry.addData("Status", "Done");
             //telemetry.update();
-            sleep(2000);
+            //sleep(2000);
             stop();
         }
         if (isStopRequested()) {
@@ -304,16 +305,16 @@ public class M2_AutoRedLoading_Backup extends M2_Functions {
         mecanumDrive = new MecanumDrive(hardwareMap, newPose);
         Action path1 = mecanumDrive.actionBuilder(newPose)
                 .turnTo(Math.toRadians(0))
-                .lineToX(-5)
+                .lineToX(-7)
                 .turnTo(Math.toRadians(90))
-                .lineToY(-56)
+                .lineToY(-63)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
                 .build();
 
         if (opModeIsActive()) {
-            feeder.setPower(1);
-            intake2.setPower(1);
+            //feeder.setPower(1);
+            //intake2.setPower(1);
             Actions.runBlocking(new SequentialAction(path1));
             feeder.setPower(0);
             intake2.setPower(0);
@@ -329,7 +330,7 @@ public class M2_AutoRedLoading_Backup extends M2_Functions {
                 .turnTo(Math.toRadians(0))
                 .lineToX(18)
                 .turnTo(Math.toRadians(90))
-                .lineToY(-55)
+                .lineToY(-62)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-50))
                 .build();
@@ -396,7 +397,7 @@ public class M2_AutoRedLoading_Backup extends M2_Functions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 0.35);
+            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, feeder, intake2, 760);
         }
     }
 }
