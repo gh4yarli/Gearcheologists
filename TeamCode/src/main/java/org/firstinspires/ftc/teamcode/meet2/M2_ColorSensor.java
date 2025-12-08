@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.meet2;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 public class M2_ColorSensor {
