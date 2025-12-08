@@ -20,8 +20,6 @@ public final class ShootingTest extends LinearOpMode {
 
     public static double launchVelocity = 800;
 
-    double cpr = 28;
-
     CRServo right_feeder;
     CRServo left_feeder;
     DcMotor intake1;
@@ -82,11 +80,11 @@ public final class ShootingTest extends LinearOpMode {
                 for (byte j = 0; j < 5; j++) {
                     right_feeder.setPower(-1);
                     left_feeder.setPower(-1);
-                    sleep(500);
-                    right_feeder.setPower(0);
-                    left_feeder.setPower(0);
+                    //sleep(500);
+                    //right_feeder.setPower(0);
+                    //left_feeder.setPower(0);
                     //sleep(100);
-                    sleep(1000);
+                    //sleep(1000);
                 }
 
 
