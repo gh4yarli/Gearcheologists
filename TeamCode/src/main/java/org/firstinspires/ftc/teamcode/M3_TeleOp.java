@@ -119,12 +119,12 @@ rotate = -1.0;
     // INTAKE AND LAUNCHER CODE BELOW
 
       // this turns on both of the intakes 🎉
-        if (gamepad2.right_bumper){
+        if (gamepad2.left_trigger < -0.1){
             intake1.setPower(1.0);
             intake2.setPower(1.0);
         }
         // Reverse intakes in case the artifacts are jammed 😢
-        else if (gamepad2.left_bumper) {
+        else if (gamepad2.a) {
             intake1.setPower(-1.0);
             intake2.setPower(1.0);
         }
@@ -134,7 +134,7 @@ rotate = -1.0;
             intake2.setPower(0);
         }
         // if x is pressed it will launch the artifacts
-        if (gamepad2.x){
+        if (gamepad2.right_trigger > 0.1){
             intake1.setPower(1.0);
             intake2.setPower(-1.0);
             launcher.setVelocity(1400);
