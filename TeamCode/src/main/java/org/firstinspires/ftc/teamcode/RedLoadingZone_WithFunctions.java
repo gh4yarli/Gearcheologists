@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
+@SuppressWarnings({"unused"})
 public class RedLoadingZone_WithFunctions extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
@@ -35,9 +37,9 @@ public class RedLoadingZone_WithFunctions extends M3_CommonFunctions {
     final double STRAFE_GAIN =  0.01 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE = 0.5;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE = 0.75;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.45;   //  Clip the turn speed to this max value (adjust for your robot)
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private VisionPortal visionPortal;               // Used to manage the video source.
@@ -85,13 +87,13 @@ public class RedLoadingZone_WithFunctions extends M3_CommonFunctions {
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
         if (opModeIsActive()) {
-            startLaunchers(launcher_left, launcher_right,1800);
+            //startLaunchers(launcher_left, launcher_right,1800);
             telemetry.addData("Status", "First Shot");
             telemetry.update();
             firstShot();
             secondShot(mecanumDrive);
-            //thirdShot(mecanumDrive);
-            //fourthShot(mecanumDrive);
+            thirdShot(mecanumDrive);
+            fourthShot(mecanumDrive);
             stop();
         }
         if (isStopRequested()) {
@@ -276,7 +278,7 @@ public class RedLoadingZone_WithFunctions extends M3_CommonFunctions {
             telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
         }
-        startLaunchers(launcher_left,launcher_right,780);
+        //startLaunchers(launcher_left,launcher_right,780);
         aprilTagShoot();
     }
     private void secondShot(@NonNull MecanumDrive mecanumDrive){
@@ -284,44 +286,41 @@ public class RedLoadingZone_WithFunctions extends M3_CommonFunctions {
         mecanumDrive.updatePoseEstimate();
         Pose2d newPose = mecanumDrive.localizer.getPose();
         mecanumDrive = new MecanumDrive(hardwareMap, newPose);
-        Action path1 = mecanumDrive.actionBuilder(newPose)
+        Action path_SecondShot = mecanumDrive.actionBuilder(newPose)
                 .turnTo(Math.toRadians(0))
-                .lineToX(-7)
+                .lineToX(15)
                 .turnTo(Math.toRadians(90))
+                .lineToY(-62)
+                .lineToY(-20)
+                .turnTo(Math.toRadians(-50))
+                .build();
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path_SecondShot));
+        }
+        //startLaunchers(launcher_left,launcher_right,780);
+        aprilTagShoot();
+    }
+    private void thirdShot(@NonNull MecanumDrive mecanumDrive){
+        mecanumDrive.localizer.update();
+        Pose2d newPose = mecanumDrive.localizer.getPose();
+        mecanumDrive.localizer.setPose(newPose);
+        Action path_SecondShot = mecanumDrive.actionBuilder(newPose)
+                .splineTo(new Vector2d(-7, 30), 90)
                 .lineToY(-63)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
                 .build();
 
         if (opModeIsActive()) {
-            Actions.runBlocking(new SequentialAction(path1));
-            stopIntake(intake1,intake2);
+            mecanumDrive.localizer.update();
+            newPose = mecanumDrive.localizer.getPose();
+            telemetry.addData("X", newPose.position.x);
+            telemetry.addData("Y", newPose.position.y);
+            telemetry.addData("A", Math.toDegrees(newPose.heading.toDouble()));
+            telemetry.update();
+            Actions.runBlocking(new SequentialAction(path_SecondShot));
         }
-        startLaunchers(launcher_left,launcher_right,780);
-        aprilTagShoot();
-    }
-    private void thirdShot(@NonNull MecanumDrive mecanumDrive){
-        mecanumDrive.localizer.update();
-        mecanumDrive.updatePoseEstimate();
-        Pose2d newPose = mecanumDrive.localizer.getPose();
-        mecanumDrive = new MecanumDrive(hardwareMap, newPose);
-        Action path1 = mecanumDrive.actionBuilder(newPose)
-                .turnTo(Math.toRadians(0))
-                .lineToX(18)
-                .turnTo(Math.toRadians(90))
-                .lineToY(-62)
-                .lineToY(-20)
-                .turnTo(Math.toRadians(-50))
-                .build();
-
-        if (opModeIsActive()) {
-            intake1.setPower(1);
-            intake2.setPower(1);
-            Actions.runBlocking(new SequentialAction(path1));
-            intake1.setPower(0);
-            intake2.setPower(0);
-        }
-        startLaunchers(launcher_left,launcher_right,780);
+        //startLaunchers(launcher_left,launcher_right,780);
         aprilTagShoot();
     }
     private void fourthShot(@NonNull MecanumDrive mecanumDrive ){
@@ -378,7 +377,7 @@ public class RedLoadingZone_WithFunctions extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, intake1, intake2);
+            //shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, intake1, intake2);
         }
     }
 }
