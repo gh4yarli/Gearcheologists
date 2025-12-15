@@ -9,22 +9,19 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Autonomous
-@SuppressWarnings({"unused"})
-public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
+@SuppressWarnings({"unused", "CommentedOutCode"})
+public class M3_RedLoadingBigTriangle_AdjustedVelocity extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
@@ -49,10 +46,13 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     DcMotor intake1 ;
     DcMotor intake2 ;
     DcMotorEx launcher ;
+    Servo arm;
     double rangeError = 5000;
     int tagFound = 0;
     int tagNumber = 24;
     AprilTagDetection desiredTag;
+    double range;
+
 
     @Override
     public void runOpMode() {
@@ -66,6 +66,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         intake1 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
         intake2 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.SECOND_INTAKE_MOTOR);
         launcher = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
+        arm = hardwareMap.get(Servo.class, ConfigurationConstants.Names.ARM_SERVO);
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -76,10 +77,16 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        arm.scaleRange(0.5, 1);
+
+
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
+        startLaunchers(launcher, 1400);
         if (opModeIsActive()) {
+            arm.setPosition(1);
+            startIntake(intake1, intake2);
             telemetry.addData("Status", "First Shot");
             telemetry.update();
             firstShot();
@@ -98,30 +105,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             stop();
         }
     }
-    public AprilTagDetection detectAprilTag (int tag, List<AprilTagDetection> currentDetections ){
 
-        // Step through the list of detected tags and look for a matching tag
-
-        AprilTagDetection dummyTag = new AprilTagDetection(-1, -1 , 1.900F, null, null, null, null, null, null, 123);
-
-        for (AprilTagDetection detection : currentDetections) {
-            // Look to see if we have size info on this tag.
-            if (detection.metadata != null) {
-                //  Check to see if we want to track towards this tag.
-                if ((detection.id == tag)) {
-                    // Yes, we want to use this tag.
-                    return detection;
-                } else {
-                    // This tag is in the library, but we do not want to track it right now.
-                    telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
-                }
-            } else {
-                // This tag is NOT in the library, so we don't have enough information to track to it.
-                telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
-            }
-        }
-        return dummyTag;
-    }
     public double MoveToDesiredLocation (AprilTagDetection desiredTag){
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
         double rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
@@ -180,79 +164,20 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         backRightDrive.setPower(backRightPower);
     }
 
-    /**
-     * Initialize the AprilTag processor.
-     */
-    private void initAprilTag() {
-        // Create the AprilTag processor by using a builder.
-        aprilTag = new AprilTagProcessor.Builder().build();
-
-        // Adjust Image Decimation to trade-off detection-range for detection-rate.
-        // e.g. Some typical detection data using a Logitech C920 WebCam
-        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
-        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
-        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
-        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
-        // Note: Decimation can be changed on-the-fly to adapt during a match.
-        aprilTag.setDecimation(2);
-
-        // Create the vision portal by using a builder.
-        if (USE_WEBCAM) {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                    .addProcessor(aprilTag)
-                    .build();
-        } else {
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(BuiltinCameraDirection.BACK)
-                    .addProcessor(aprilTag)
-                    .build();
-        }
-    }
-
-    private void setManualExposure() {
-        // Wait for the camera to be open, then use the controls
-
-        if (visionPortal == null) {
-            return;
-        }
-
-        // Make sure camera is streaming before we try to set the exposure controls
-        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            telemetry.addData("Camera", "Waiting");
-            telemetry.update();
-            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
-                sleep(20);
-            }
-            telemetry.addData("Camera", "Ready");
-            telemetry.update();
-        }
-
-        // Set camera controls unless we are stopping.
-        if (!isStopRequested())
-        {
-            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
-                exposureControl.setMode(ExposureControl.Mode.Manual);
-                sleep(50);
-            }
-            exposureControl.setExposure(6, TimeUnit.MILLISECONDS);
-            sleep(20);
-            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-            gainControl.setGain(250);
-            sleep(20);
-        }
-    }
     private void firstShot(){
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
+       /* Action path = mecanumDrive.actionBuilder(startingPose)
+                .lineToX(-50)
+                .turnTo(Math.toRadians(-30))
+                .build(); */
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(10)
                 .turnTo(Math.toRadians(-47))
                 .build();
 
         if (USE_WEBCAM)
-            setManualExposure();  // Use low exposure time to reduce motion blur
+            setManualExposure(visionPortal);  // Use low exposure time to reduce motion blur
 
         // Wait for driver to press start
         telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
@@ -269,7 +194,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
         }
-        aprilTagShoot(1200);
+        aprilTagShoot();
     }
     private void secondShot(@NonNull MecanumDrive mecanumDrive){
         mecanumDrive.updatePoseEstimate();
@@ -279,6 +204,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
+                //.turnTo(Math.toRadians(0))
                 .lineToX(15)
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-62)
@@ -290,7 +216,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
         }
 
-        aprilTagShoot(1250);
+        aprilTagShoot();
 
     }
 
@@ -309,11 +235,12 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
                 .build();
+
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
         }
 
-        aprilTagShoot(1200);
+        aprilTagShoot();
 
     }
     private void fourthShot(@NonNull MecanumDrive mecanumDrive ){
@@ -336,11 +263,11 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
 
         }
-        aprilTagShoot(1200);
+        aprilTagShoot();
     }
-    private void aprilTagShoot(double launcherVel){
+    private void aprilTagShoot(){
         tagFound = 0;
-        rangeError = 5000;
+        rangeError = 2.01;
         while (rangeError > 2) {
             desiredTag = null;
             tagFound = 0;
@@ -367,7 +294,26 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            //shootArtifacts(launcher, intake1, intake2, launcherVel);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError);
         }
+    }
+    public void initAprilTag() {
+        // Create the AprilTag processor by using a builder.
+        aprilTag = new AprilTagProcessor.Builder().build();
+
+        // Adjust Image Decimation to trade-off detection-range for detection-rate.
+        // e.g. Some typical detection data using a Logitech C920 WebCam
+        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
+        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
+        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
+        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
+        // Note: Decimation can be changed on-the-fly to adapt during a match.
+        aprilTag.setDecimation(2);
+
+        // Create the vision portal by using a builder.
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .addProcessor(aprilTag)
+                .build();
     }
 }

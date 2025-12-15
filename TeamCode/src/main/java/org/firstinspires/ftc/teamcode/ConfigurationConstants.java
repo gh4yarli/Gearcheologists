@@ -25,13 +25,20 @@ public final class ConfigurationConstants {
          */
         public static final String BACK_RIGHT_DRIVE_MOTOR = "rightBack";
 
-        public static final String FIRST_INTAKE_MOTOR = "feeder";
+        //public static final String FIRST_INTAKE_MOTOR = "feeder";
+        // For Meet 3
+        public static final String FIRST_INTAKE_MOTOR = "intake1";
         public static final String SECOND_INTAKE_MOTOR = "intake2";
+
         public static final String LEFT_LAUNCHER_MOTOR = "leftLauncher";
         public static final String RIGHT_LAUNCHER_MOTOR = "rightLauncher";
 
+        //For Meet3
+        public static final String LAUNCHER_MOTOR = "launcher";
+
         public static final String LEFT_FEEDER_SERVO = "leftFeeder";
         public static final String RIGHT_FEEDER_SERVO = "rightFeeder";
+        public static final String ARM_SERVO = "armServo";
 
         public static final String DISTANCE_SENSOR = "distance";
 
