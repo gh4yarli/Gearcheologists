@@ -25,8 +25,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-@SuppressWarnings({"unused", "CommentedOutCode"})
-public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
+@SuppressWarnings({"unused"})
+public class Autonomous_Template extends M3_CommonFunctions {
+    // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
@@ -36,9 +37,9 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     final double STRAFE_GAIN =  0.01 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE = 0.5;  //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.3;   //  Clip the turn speed to this max value (adjust for your robot) 4167 OHIO
+    final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE = 0.75;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.45;   //  Clip the turn speed to this max value (adjust for your robot)
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private VisionPortal visionPortal;               // Used to manage the video source.
@@ -63,16 +64,16 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         // Initialize the Apriltag Detection process
         initAprilTag();
 
-        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
-        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
-        launcher_right = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.RIGHT_LAUNCHER_MOTOR);
         frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
-        launcher_left = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
+        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
         backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
+        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
         right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
         left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
-        intake2 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.SECOND_INTAKE_MOTOR);
         intake1 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
+        intake2 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.SECOND_INTAKE_MOTOR);
+        launcher_left = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
+        launcher_right = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.RIGHT_LAUNCHER_MOTOR);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -86,14 +87,13 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
         if (opModeIsActive()) {
-            //splineTest(mecanumDrive);
             //startLaunchers(launcher_left, launcher_right,1800);
-            //telemetry.addData("Status", "First Shot");
-            //telemetry.update();
+            telemetry.addData("Status", "First Shot");
+            telemetry.update();
             firstShot();
             secondShot(mecanumDrive);
-            //thirdShot(mecanumDrive);
-            //fourthShot(mecanumDrive);
+            thirdShot(mecanumDrive);
+            fourthShot(mecanumDrive);
             stop();
         }
         if (isStopRequested()) {
@@ -103,7 +103,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             mecanumDrive.leftBack.setPower(0);
             mecanumDrive.rightFront.setPower(0);
             mecanumDrive.rightBack.setPower(0);
-            stopLaunchers(launcher_left,launcher_right);
+            //stopLaunchers(launcher_left,launcher_right);
             stop();
         }
     }
@@ -268,7 +268,8 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         telemetry.addData(">", "Touch START to start OpMode");
         telemetry.update();
 
-        waitForStart();
+        //waitForStart();
+
         if (opModeIsActive()) {
             Pose2d newPose = mecanumDrive.localizer.getPose();
             telemetry.addData("X", newPose.position.x);
@@ -277,44 +278,19 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
         }
-        //startLaunchers(launcher_left,launcher_right,780);
+
         aprilTagShoot();
     }
     private void secondShot(@NonNull MecanumDrive mecanumDrive){
-        mecanumDrive.localizer.update();
         mecanumDrive.updatePoseEstimate();
-        Pose2d newPose = mecanumDrive.localizer.getPose();
-        mecanumDrive = new MecanumDrive(hardwareMap, newPose);
-        startIntake(intake1, intake2);
-        /*Action path1 = mecanumDrive.actionBuilder(newPose)
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+        telemetry.addData("Second Shot Pose", pose);
+        telemetry.update();
+
+        Action path_SecondShot = mecanumDrive.actionBuilder(pose)
                 .turnTo(Math.toRadians(0))
-                .lineToX(-7)
-                .turnTo(Math.toRadians(90))
-                .lineToY(-63)
-                .lineToY(-20)
-                .turnTo(Math.toRadians(-30))
-                .build(); */
-        Action pickup1 = mecanumDrive.actionBuilder(newPose)
-                .splineTo(new Vector2d(15, -30), Math.toRadians(105))
-                .lineToY(-56)
-                .lineToY(-40)
-                .splineTo(new Vector2d(14.679, -16.4729), Math.toRadians(-25))
-                .build();
-        if (opModeIsActive()) {
-            Actions.runBlocking(new SequentialAction(pickup1));
-            //stopIntake(intake1,intake2);
-        }
-        //startLaunchers(launcher_left,launcher_right,780);
-        aprilTagShoot();
-    }
-    private void thirdShot(@NonNull MecanumDrive mecanumDrive){
-        mecanumDrive.localizer.update();
-        mecanumDrive.updatePoseEstimate();
-        Pose2d newPose = mecanumDrive.localizer.getPose();
-        mecanumDrive = new MecanumDrive(hardwareMap, newPose);
-        Action path1 = mecanumDrive.actionBuilder(newPose)
-                .turnTo(Math.toRadians(0))
-                .lineToX(18)
+                .lineToX(15)
                 .turnTo(Math.toRadians(90))
                 .lineToY(-62)
                 .lineToY(-20)
@@ -322,22 +298,44 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 .build();
 
         if (opModeIsActive()) {
-            intake1.setPower(1);
-            intake2.setPower(1);
-            Actions.runBlocking(new SequentialAction(path1));
-            intake1.setPower(0);
-            intake2.setPower(0);
+            Actions.runBlocking(new SequentialAction(path_SecondShot));
         }
-        startLaunchers(launcher_left,launcher_right,780);
+
         aprilTagShoot();
+
+    }
+
+    private void thirdShot(@NonNull MecanumDrive mecanumDrive){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+        telemetry.addData("Third Shot Pose", pose);
+        telemetry.update();
+
+        Action path_thirdShot = mecanumDrive.actionBuilder(pose)
+                .turnTo(Math.toRadians(0))
+                .lineToX(-5)
+                .turnTo(Math.toRadians(90))
+                .lineToY(-65)
+                .lineToY(-20)
+                .turnTo(Math.toRadians(-30))
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path_thirdShot));
+        }
+
+        aprilTagShoot();
+
     }
     private void fourthShot(@NonNull MecanumDrive mecanumDrive ){
-        mecanumDrive.localizer.update();
         mecanumDrive.updatePoseEstimate();
-        Pose2d newPose = mecanumDrive.localizer.getPose();
+        Pose2d pose = mecanumDrive.localizer.getPose();
 
+        telemetry.addData("Third Shot Pose", pose);
+        telemetry.update();
 
-        Action path3 = mecanumDrive.actionBuilder(newPose)
+        Action path_fourthShot = mecanumDrive.actionBuilder(pose)
                 .turnTo(Math.toRadians(0))
                 .lineToX(-23)
                 .turnTo(Math.toRadians(90))
@@ -347,13 +345,9 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 .build();
 
         if (opModeIsActive()) {
-            intake1.setPower(1);
-            intake2.setPower(1);
-            Actions.runBlocking(new SequentialAction(path3));
-            intake1.setPower(0);
-            intake2.setPower(0);
+            Actions.runBlocking(new SequentialAction(path_fourthShot));
+
         }
-        startLaunchers(launcher_left,launcher_right,780);
         aprilTagShoot();
     }
     private void aprilTagShoot(){
@@ -385,37 +379,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            // shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, intake1, intake2);
+            //shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, intake1, intake2);
         }
-    }
-
-    private void splineTest(@NonNull MecanumDrive mecanumDrive){                                    //
-        mecanumDrive.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);              //
-        mecanumDrive.leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);              //
-        mecanumDrive.rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);           //
-        mecanumDrive.rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);           //
-        Pose2d startingPose = new Pose2d(0, 0, Math.toRadians(0));           //
-        mecanumDrive = new MecanumDrive(hardwareMap, startingPose);                           //
-        Action shoot = mecanumDrive.actionBuilder(startingPose)                              //
-                .splineTo(new Vector2d(14.679, -16.4729), Math.toRadians(-45.8924))   //
-                .build();                                                                  //
-        Actions.runBlocking(shoot);                                                       //
-        sleep(2000);                                                          //
-        startIntake(intake1,intake2);                                                   //
-        mecanumDrive.localizer.update();                                               //
-        mecanumDrive.updatePoseEstimate();                                            //
-        Pose2d newPose = mecanumDrive.localizer.getPose();                           //
-        Action pickup1 = mecanumDrive.actionBuilder(newPose)                        //
-                .splineTo(new Vector2d(5, -30), Math.toRadians(90))          //
-                .lineToY(-56)                                               //
-                .build();                                                        //
-        Actions.runBlocking(pickup1);
-        mecanumDrive.localizer.update();
-        mecanumDrive.updatePoseEstimate();
-        newPose = mecanumDrive.localizer.getPose();
-        shoot = mecanumDrive.actionBuilder(newPose)
-                .splineTo(new Vector2d(14.679, -16.4729), Math.toRadians(-55.8924))
-                .build();
-        Actions.runBlocking(shoot);
     }
 }
