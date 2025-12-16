@@ -25,8 +25,10 @@ public final class ConfigurationConstants {
          */
         public static final String BACK_RIGHT_DRIVE_MOTOR = "rightBack";
 
-        public static final String FIRST_INTAKE_MOTOR = "feeder";
+        public static final String FIRST_INTAKE_MOTOR = "intake1";
         public static final String SECOND_INTAKE_MOTOR = "intake2";
+        public static final String LAUNCHER_MOTOR = "launcher";
+
         public static final String LEFT_LAUNCHER_MOTOR = "leftLauncher";
         public static final String RIGHT_LAUNCHER_MOTOR = "rightLauncher";
 
