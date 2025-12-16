@@ -53,37 +53,9 @@ public class M3_TeleOp extends OpMode {
     @Override
     public void loop(){
 
+
         // Driver Binds
 
-        // the code below tells the robot to go front or back depending on the input from the controller
-
-   // Un-Comment this code if the proportional control doesn't work
-      /*if(gamepad1.left_stick_y < -0.1) {
-forwardBackward = -1.0;
-      } else if (gamepad1.left_stick_y > 0.1) {
-forwardBackward = 1.0;
-      } else {
-          forwardBackward = 0;
-      }
-
-      // The code below tells the robot to go strafe left or right depending on input from the controller
-      if (gamepad1.left_stick_x < -0.1) {
-          strafeRightLeft = -1.0;
-      } else if (gamepad1.left_stick_x > 0.1) {
-          strafeRightLeft = 1.0;
-      } else {
-          strafeRightLeft = 0;
-      }
-
-      if (gamepad1.right_stick_x < 0.1) {
-rotate = -1.0;
-      } else if (gamepad1.right_stick_x > -0.1) {
-          rotate = 1.0;
-      } else {
-          rotate = 0;
-      }
-
-       */
 
         forwardBackward = -gamepad1.left_stick_y;
         strafeRightLeft = gamepad1.left_stick_x;
@@ -118,14 +90,16 @@ rotate = -1.0;
 
     // INTAKE AND LAUNCHER CODE BELOW
 
-      // this turns on both of the intakes 🎉
+
+        intake1.setPower(-1.0);
+
+        // this turns on both of the intakes 🎉
         if (gamepad2.left_trigger < -0.1){
             intake1.setPower(1.0);
             intake2.setPower(1.0);
         }
         // Reverse intakes in case the artifacts are jammed 😢
         else if (gamepad2.a) {
-            intake1.setPower(-1.0);
             intake2.setPower(1.0);
         }
         // if nothing is pressed nothing will happen 😱🤯
@@ -135,13 +109,13 @@ rotate = -1.0;
         }
         // if x is pressed it will launch the artifacts
         if (gamepad2.right_trigger > 0.1){
-            intake1.setPower(1.0);
+
             intake2.setPower(-1.0);
             launcher.setVelocity(1400);
         }
         // if x is unpressed it will stop moving
          else {
-             intake1.setPower(0);
+
              intake2.setPower(0);
              launcher.setPower(0);
         }
