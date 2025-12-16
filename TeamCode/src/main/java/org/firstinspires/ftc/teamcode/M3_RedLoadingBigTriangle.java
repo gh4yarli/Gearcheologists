@@ -5,10 +5,8 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
@@ -25,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused", "CommentedOutCode"})
 public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
@@ -43,7 +41,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private VisionPortal visionPortal;               // Used to manage the video source.
-    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
+    AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive ;
     DcMotor backLeftDrive ;
@@ -248,9 +246,13 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     private void firstShot(){
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
-        Action path = mecanumDrive.actionBuilder(startingPose)
+       /* Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(-50)
                 .turnTo(Math.toRadians(-30))
+                .build(); */
+        Action path = mecanumDrive.actionBuilder(startingPose)
+                .lineToX(10)
+                .turnTo(Math.toRadians(-47))
                 .build();
 
         if (USE_WEBCAM)
@@ -271,7 +273,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
         }
-        aprilTagShoot();
+        aprilTagShoot(1200);
     }
     private void secondShot(@NonNull MecanumDrive mecanumDrive){
         mecanumDrive.updatePoseEstimate();
@@ -283,7 +285,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
                 .turnTo(Math.toRadians(0))
                 .lineToX(15)
-                .turnTo(Math.toRadians(90))
+                .turnTo(Math.toRadians(-90))
                 .lineToY(-62)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-50))
@@ -293,7 +295,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
         }
 
-        aprilTagShoot();
+        aprilTagShoot(1250);
 
     }
 
@@ -317,7 +319,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
         }
 
-        aprilTagShoot();
+        aprilTagShoot(1200);
 
     }
     private void fourthShot(@NonNull MecanumDrive mecanumDrive ){
@@ -340,9 +342,9 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
 
         }
-        aprilTagShoot();
+        aprilTagShoot(1200);
     }
-    private void aprilTagShoot(){
+    private void aprilTagShoot(double launcherVel){
         tagFound = 0;
         rangeError = 5000;
         while (rangeError > 2) {
@@ -371,7 +373,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            //shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, intake1, intake2);
+            shootArtifacts(launcher, intake1, intake2, launcherVel);
         }
     }
 }
