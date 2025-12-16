@@ -6,17 +6,33 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Drawing;
+import org.firstinspires.ftc.teamcode.M3_CommonFunctions;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.meet1.TankDrive;
 
-@Disabled
-public class LocalizationTest extends LinearOpMode {
+
+@TeleOp
+@SuppressWarnings("unused")
+public class LocalizationTest extends M3_CommonFunctions {
+    DcMotorEx leftLauncherMotor;
+    DcMotorEx rightLauncherMotor;
+    CRServo leftFeeder;
+    CRServo rightFeeder;
+
+
     @Override
     public void runOpMode() throws InterruptedException {
+        leftLauncherMotor = hardwareMap.get(DcMotorEx.class, "leftLauncher");
+        rightLauncherMotor = hardwareMap.get(DcMotorEx.class, "rightLauncher");
+        leftFeeder = hardwareMap.get(CRServo.class, "leftFeeder");
+        rightFeeder = hardwareMap.get(CRServo.class, "rightFeeder");
+
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
@@ -45,6 +61,13 @@ public class LocalizationTest extends LinearOpMode {
                 packet.fieldOverlay().setStroke("#3F51B5");
                 Drawing.drawRobot(packet.fieldOverlay(), pose);
                 FtcDashboard.getInstance().sendTelemetryPacket(packet);
+
+                startLaunchers(leftLauncherMotor, rightLauncherMotor, 1100);
+                if (gamepad1.a) {
+                    startFeeder(leftFeeder, rightFeeder);
+                } else {
+                    stopFeeder(leftFeeder, rightFeeder);
+                }
             }
         } else if (TuningOpModes.DRIVE_CLASS.equals(TankDrive.class)) {
             TankDrive drive = new TankDrive(hardwareMap, new Pose2d(0, 0, 0));
