@@ -80,15 +80,15 @@ public class M3_TeleOp extends OpMode {
         maxPower = Math.max(maxPower, Math.abs(backRightPower));
 
         // the stuff below sends the power to the motor so it works! 🎉🎉🎉
-    frontLeftDrive.setPower(frontLeftPower / maxPower);
-    frontRightDrive.setPower(frontRightPower / maxPower);
-    backLeftDrive.setPower(backLeftPower / maxPower);
-    backRightDrive.setPower(backRightPower / maxPower);
+        frontLeftDrive.setPower(frontLeftPower / maxPower);
+        frontRightDrive.setPower(frontRightPower / maxPower);
+        backLeftDrive.setPower(backLeftPower / maxPower);
+        backRightDrive.setPower(backRightPower / maxPower);
 
 
 
 
-    // INTAKE AND LAUNCHER CODE BELOW
+        // INTAKE AND LAUNCHER CODE BELOW
 
 
         intake1.setPower(-1.0);
@@ -97,9 +97,9 @@ public class M3_TeleOp extends OpMode {
         if (gamepad2.left_trigger < 0){
             intake2.setPower(-1.0);
 
-        if (gamepad2.left_bumper){
-            intake2.setPower(-1);
-        }
+            if (gamepad2.left_bumper){
+                intake2.setPower(-1);
+            }
 
         }
         // if nothing is pressed, intake 2 won't run
@@ -111,15 +111,15 @@ public class M3_TeleOp extends OpMode {
 
             launcher.setVelocity(1380);
 
-        if (gamepad2.right_bumper){
-            launcher.setVelocity(1800);
-        }
+            if (gamepad2.right_bumper){
+                launcher.setVelocity(1800);
+            }
         }
         // if x is unpressed it will stop moving
-         else {
+        else {
 
-             intake2.setPower(0);
-             launcher.setPower(0);
+            intake2.setPower(0);
+            launcher.setPower(0);
         }
     }
 
