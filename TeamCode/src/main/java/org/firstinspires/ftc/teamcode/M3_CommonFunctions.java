@@ -5,9 +5,21 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import java.util.concurrent.TimeUnit;
 
 
 public abstract class M3_CommonFunctions extends LinearOpMode {
+
     /**
      * Starts the launchers
      * @param leftLauncher
@@ -80,7 +92,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
      */
     public void startIntake(DcMotor intake1, DcMotor intake2) {
         intake1.setPower(1);
-        intake2.setPower(1);
+        intake2.setPower(-1);
     }
 
     /**
@@ -131,6 +143,28 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         leftFeeder.setDirection(LeftFeederDirection);
         leftLauncher.setDirection(LeftLauncherDirection);
         rightLauncher.setDirection(RightLauncherDirection);
+    }
+    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, double launcherVel) {
+
+        launcher.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(50,0.75,1.0,12.7);
+
+        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pid_right_new);
+        ElapsedTime runtime = new ElapsedTime();
+        while (runtime.seconds() < 4) {
+            launcher.setVelocity(-launcherVel);
+
+            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 50 && Math.abs(launcher.getVelocity()) <= launcherVel + 50;
+
+            if (launcherAtSpeed) {
+                startIntake(intake1, intake2);
+            }
+            telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
+            telemetry.update();
+        }
+        launcher.setVelocity(0);
+        intake2.setPower(0);
     }
 
 }

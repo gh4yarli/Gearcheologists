@@ -283,7 +283,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .turnTo(Math.toRadians(0))
+                //.turnTo(Math.toRadians(0))
                 .lineToX(15)
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-62)
@@ -309,7 +309,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
                 .turnTo(Math.toRadians(0))
                 .lineToX(-5)
-                .turnTo(Math.toRadians(90))
+                .turnTo(Math.toRadians(-90))
                 .lineToY(-65)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
@@ -331,8 +331,8 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
                 .turnTo(Math.toRadians(0))
-                .lineToX(-23)
-                .turnTo(Math.toRadians(90))
+                .lineToX(-27)
+                .turnTo(Math.toRadians(-90))
                 .lineToY(-65)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
