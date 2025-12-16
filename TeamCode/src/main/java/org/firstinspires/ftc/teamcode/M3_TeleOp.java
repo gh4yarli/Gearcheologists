@@ -93,25 +93,27 @@ public class M3_TeleOp extends OpMode {
 
         intake1.setPower(-1.0);
 
-        // this turns on both of the intakes 🎉
-        if (gamepad2.left_trigger < -0.1){
-            intake1.setPower(1.0);
-            intake2.setPower(1.0);
+        // this turns on both of the intake 2
+        if (gamepad2.left_trigger < 0){
+            intake2.setPower(-1.0);
+
+        if (gamepad2.left_bumper){
+            intake2.setPower(-1);
         }
-        // Reverse intakes in case the artifacts are jammed 😢
-        else if (gamepad2.a) {
-            intake2.setPower(1.0);
+
         }
-        // if nothing is pressed nothing will happen 😱🤯
+        // if nothing is pressed, intake 2 won't run
         else {
-            intake1.setPower(0);
             intake2.setPower(0);
         }
-        // if x is pressed it will launch the artifacts
-        if (gamepad2.right_trigger > 0.1){
+        // if right trigger is pressed, it will launch the artifacts
+        if (gamepad2.right_trigger > 0){
 
-            intake2.setPower(-1.0);
-            launcher.setVelocity(1400);
+            launcher.setVelocity(1380);
+
+        if (gamepad2.right_bumper){
+            launcher.setVelocity(1800);
+        }
         }
         // if x is unpressed it will stop moving
          else {
@@ -119,18 +121,6 @@ public class M3_TeleOp extends OpMode {
              intake2.setPower(0);
              launcher.setPower(0);
         }
-
-    /* YAY I NOW HAVE COMPLETED EXTREMELY EXTREMELY A LOT OF BASIC CODE 🥳🥳🥳🥳
-        Now if the code works, add the telemtry 👍👍👍
-        then make code for toggling field centric and slow mode🫡🫡🫡
-        and then test 🙂🙂🙂🙂
-        and the learn that it doesnt work 😡😤😡
-        and then become depressed😢🙁💔😔
-        and then get it 2 days before the due datedate 😎😎
-        and then cook the competition 🤩👍
-        (maybe)🤔💀💀💀💀
-          */
-
     }
 
 
