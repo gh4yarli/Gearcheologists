@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -22,6 +23,7 @@ public class M3_TeleOp extends OpMode {
     DcMotorEx launcher;
     DcMotor intake1; // <-- CHANGE THE NAME TO THE CORRECT ONE
     DcMotor intake2;
+    CRServo armServo;
 
     double forwardBackward;
     double strafeRightLeft;
@@ -35,10 +37,11 @@ public class M3_TeleOp extends OpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "leftBack");
         backRightDrive = hardwareMap.get(DcMotor.class, "rightBack");
 
-        // Intakes and Launcher
+        // Intakes, Servo,  and Launcher
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         intake1 = hardwareMap.get(DcMotor.class, "intake1");
         intake2 = hardwareMap.get(DcMotor.class, "intake2");
+        armServo = hardwareMap.get(CRServo.class,"armServo");
 
         // reverse the left motors just because that's how it works
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -93,6 +96,7 @@ public class M3_TeleOp extends OpMode {
         // this turns on both of the intake 2
         if (gamepad2.left_trigger > 0) {
             intake2.setPower(-1.0);
+        //We need to add servo here
 
         }
         // if left bumper isn't pressed, intake 2 won't run
@@ -118,7 +122,10 @@ public class M3_TeleOp extends OpMode {
                 launcher.setVelocity(0);
                 intake1.setPower(0);
                 intake2.setPower(0);
-
+                frontLeftDrive.setPower(0);
+                frontRightDrive.setPower(0);
+                backLeftDrive.setPower(0);
+                backRightDrive.setPower(0);
             }
 
             }
