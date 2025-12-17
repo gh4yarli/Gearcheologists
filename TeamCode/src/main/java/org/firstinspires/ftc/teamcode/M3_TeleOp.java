@@ -51,7 +51,7 @@ public class M3_TeleOp extends OpMode {
     }
 
     @Override
-    public void loop(){
+    public void loop() {
 
 
         // Driver Binds
@@ -60,7 +60,6 @@ public class M3_TeleOp extends OpMode {
         forwardBackward = -gamepad1.left_stick_y;
         strafeRightLeft = gamepad1.left_stick_x;
         rotate = gamepad1.right_stick_x;
-
 
 
         // Calculate power for each wheel
@@ -86,20 +85,14 @@ public class M3_TeleOp extends OpMode {
         backRightDrive.setPower(backRightPower / maxPower);
 
 
-
-
         // INTAKE AND LAUNCHER CODE BELOW
 
 
         intake1.setPower(1.0);
 
         // this turns on both of the intake 2
-        if (gamepad2.left_trigger < 0){
+        if (gamepad2.left_trigger > 0) {
             intake2.setPower(-1.0);
-
-            if (gamepad2.left_bumper){
-                intake2.setPower(-1);
-            }
 
         }
         // if left bumper isn't pressed, intake 2 won't run
@@ -107,11 +100,11 @@ public class M3_TeleOp extends OpMode {
             intake2.setPower(0);
         }
         // if right trigger is pressed, it will launch the artifacts
-        if (gamepad2.right_trigger > 0){
+        if (gamepad2.right_trigger > 0) {
 
             launcher.setVelocity(1380);
 
-            if (gamepad2.right_bumper){
+            if (gamepad2.right_bumper) {
                 launcher.setVelocity(1800);
             }
         }
@@ -120,9 +113,16 @@ public class M3_TeleOp extends OpMode {
 
             intake2.setPower(0);
             launcher.setPower(0);
+
+            if (gamepad2.b) {
+                launcher.setVelocity(0);
+                intake1.setPower(0);
+                intake2.setPower(0);
+
+            }
+
+            }
         }
+
+
     }
-
-
-
-}
