@@ -91,7 +91,7 @@ public class M3_TeleOp extends OpMode {
         // INTAKE AND LAUNCHER CODE BELOW
 
 
-        intake1.setPower(-1.0);
+        intake1.setPower(1.0);
 
         // this turns on both of the intake 2
         if (gamepad2.left_trigger < 0){
@@ -102,7 +102,7 @@ public class M3_TeleOp extends OpMode {
             }
 
         }
-        // if nothing is pressed, intake 2 won't run
+        // if left bumper isn't pressed, intake 2 won't run
         else {
             intake2.setPower(0);
         }
