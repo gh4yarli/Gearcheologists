@@ -73,10 +73,16 @@ public final class MecanumDrive {
         public double lateralGain = 0;
         public double lateralInPerTick = 0.001979;
         public double lateralVelGain = 0;
+        /*
         public double maxAngAccel = 3.141592653589793;
         public double maxAngVel = 3.141592653589793;
         public double maxProfileAccel = 50;
-        public double maxWheelVel = 50;
+        public double maxWheelVel = 50; */
+
+        public double maxAngAccel = Math.toRadians(300);
+        public double maxAngVel = Math.toRadians(300);
+        public double maxProfileAccel = 60.0;
+        public double maxWheelVel = 70.0;
         public double minProfileAccel = -30;
         public double trackWidthTicks = 7100;
 
