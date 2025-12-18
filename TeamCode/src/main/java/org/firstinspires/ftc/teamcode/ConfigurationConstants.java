@@ -38,6 +38,7 @@ public final class ConfigurationConstants {
 
         public static final String LEFT_FEEDER_SERVO = "leftFeeder";
         public static final String RIGHT_FEEDER_SERVO = "rightFeeder";
+        public static final String ARM_SERVO = "armServo";
 
         public static final String DISTANCE_SENSOR = "distance";
 
