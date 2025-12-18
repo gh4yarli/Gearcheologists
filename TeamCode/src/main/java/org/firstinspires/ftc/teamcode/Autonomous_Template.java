@@ -5,10 +5,8 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
@@ -43,17 +41,14 @@ public class Autonomous_Template extends M3_CommonFunctions {
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private VisionPortal visionPortal;               // Used to manage the video source.
-    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
+    AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive ;
     DcMotor backLeftDrive ;
     DcMotor backRightDrive ;
-    CRServo right_feeder ;
-    CRServo left_feeder;
     DcMotor intake1 ;
     DcMotor intake2 ;
-    DcMotorEx launcher_left ;
-    DcMotorEx launcher_right ;
+    DcMotorEx launcher ;
     double rangeError = 5000;
     int tagFound = 0;
     int tagNumber = 24;
@@ -68,12 +63,10 @@ public class Autonomous_Template extends M3_CommonFunctions {
         frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
         backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
         backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
-        right_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.RIGHT_FEEDER_SERVO);
-        left_feeder = hardwareMap.get(CRServo.class, ConfigurationConstants.Names.LEFT_FEEDER_SERVO);
         intake1 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
         intake2 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.SECOND_INTAKE_MOTOR);
-        launcher_left = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.LEFT_LAUNCHER_MOTOR);
-        launcher_right = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.RIGHT_LAUNCHER_MOTOR);
+        launcher = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
+
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -87,7 +80,6 @@ public class Autonomous_Template extends M3_CommonFunctions {
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
         if (opModeIsActive()) {
-            //startLaunchers(launcher_left, launcher_right,1800);
             telemetry.addData("Status", "First Shot");
             telemetry.update();
             firstShot();
@@ -103,7 +95,6 @@ public class Autonomous_Template extends M3_CommonFunctions {
             mecanumDrive.leftBack.setPower(0);
             mecanumDrive.rightFront.setPower(0);
             mecanumDrive.rightBack.setPower(0);
-            //stopLaunchers(launcher_left,launcher_right);
             stop();
         }
     }
@@ -256,8 +247,8 @@ public class Autonomous_Template extends M3_CommonFunctions {
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(-50)
-                .turnTo(Math.toRadians(-30))
+                .lineToX(10)
+                .turnTo(Math.toRadians(-47))
                 .build();
 
         if (USE_WEBCAM)
@@ -278,8 +269,7 @@ public class Autonomous_Template extends M3_CommonFunctions {
             telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
         }
-
-        aprilTagShoot();
+        aprilTagShoot(1200);
     }
     private void secondShot(@NonNull MecanumDrive mecanumDrive){
         mecanumDrive.updatePoseEstimate();
@@ -289,9 +279,8 @@ public class Autonomous_Template extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .turnTo(Math.toRadians(0))
                 .lineToX(15)
-                .turnTo(Math.toRadians(90))
+                .turnTo(Math.toRadians(-90))
                 .lineToY(-62)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-50))
@@ -301,7 +290,7 @@ public class Autonomous_Template extends M3_CommonFunctions {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
         }
 
-        aprilTagShoot();
+        aprilTagShoot(1250);
 
     }
 
@@ -315,17 +304,16 @@ public class Autonomous_Template extends M3_CommonFunctions {
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
                 .turnTo(Math.toRadians(0))
                 .lineToX(-5)
-                .turnTo(Math.toRadians(90))
+                .turnTo(Math.toRadians(-90))
                 .lineToY(-65)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
                 .build();
-
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
         }
 
-        aprilTagShoot();
+        aprilTagShoot(1200);
 
     }
     private void fourthShot(@NonNull MecanumDrive mecanumDrive ){
@@ -337,8 +325,8 @@ public class Autonomous_Template extends M3_CommonFunctions {
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
                 .turnTo(Math.toRadians(0))
-                .lineToX(-23)
-                .turnTo(Math.toRadians(90))
+                .lineToX(-27)
+                .turnTo(Math.toRadians(-90))
                 .lineToY(-65)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
@@ -348,9 +336,9 @@ public class Autonomous_Template extends M3_CommonFunctions {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
 
         }
-        aprilTagShoot();
+        aprilTagShoot(1200);
     }
-    private void aprilTagShoot(){
+    private void aprilTagShoot(double launcherVel){
         tagFound = 0;
         rangeError = 5000;
         while (rangeError > 2) {
@@ -379,7 +367,7 @@ public class Autonomous_Template extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            //shootBalls( launcher_left, launcher_right, left_feeder, right_feeder, intake1, intake2);
+            //shootArtifacts(launcher, intake1, intake2, launcherVel);
         }
     }
 }
