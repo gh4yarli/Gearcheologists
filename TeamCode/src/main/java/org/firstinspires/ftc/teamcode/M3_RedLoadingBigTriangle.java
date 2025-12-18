@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-@SuppressWarnings({"unused", "CommentedOutCode"})
+@SuppressWarnings({"unused"})
 public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
@@ -246,10 +246,6 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     private void firstShot(){
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
-       /* Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(-50)
-                .turnTo(Math.toRadians(-30))
-                .build(); */
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(10)
                 .turnTo(Math.toRadians(-47))
@@ -283,7 +279,6 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                //.turnTo(Math.toRadians(0))
                 .lineToX(15)
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-62)
@@ -314,7 +309,6 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
                 .build();
-
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
         }
@@ -373,7 +367,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootArtifacts(launcher, intake1, intake2, launcherVel);
+            //shootArtifacts(launcher, intake1, intake2, launcherVel);
         }
     }
 }
