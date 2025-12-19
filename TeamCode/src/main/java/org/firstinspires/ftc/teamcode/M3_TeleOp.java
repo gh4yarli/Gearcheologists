@@ -117,6 +117,7 @@ public class M3_TeleOp extends OpMode {
             intake2.setPower(0);
             launcher.setPower(0);
 
+            // Emergency Brake 😱
             if (gamepad2.b) {
                 launcher.setVelocity(0);
                 intake1.setPower(0);
@@ -125,6 +126,7 @@ public class M3_TeleOp extends OpMode {
                 frontRightDrive.setPower(0);
                 backLeftDrive.setPower(0);
                 backRightDrive.setPower(0);
+                armServo.setPower(0);
             }
 
             }
