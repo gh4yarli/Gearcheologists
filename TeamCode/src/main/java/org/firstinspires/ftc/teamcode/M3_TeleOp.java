@@ -92,16 +92,17 @@ public class M3_TeleOp extends OpMode {
 
 
         intake1.setPower(1.0);
-
+        intake2.setPower(-1.0);
         // this turns on both of the intake 2
         if (gamepad2.left_trigger > 0) {
-            intake2.setPower(-1.0);
+
         //We need to add servo here
 
         }
         // if left bumper isn't pressed, intake 2 won't run
         else {
             intake2.setPower(0);
+        // we need to switch intake 2, with servo
         }
         // if right trigger is pressed, it will launch the artifacts
         if (gamepad2.right_trigger > 0) {
