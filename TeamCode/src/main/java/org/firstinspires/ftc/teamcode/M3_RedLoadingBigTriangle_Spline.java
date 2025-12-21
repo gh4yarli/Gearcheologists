@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,8 +24,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-@SuppressWarnings({"unused"})
-public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
+@SuppressWarnings({"unused", "CommentedOutCode"})
+public class M3_RedLoadingBigTriangle_Spline extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
@@ -246,6 +247,10 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     private void firstShot(){
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
+       /* Action path = mecanumDrive.actionBuilder(startingPose)
+                .lineToX(-50)
+                .turnTo(Math.toRadians(-30))
+                .build(); */
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(10)
                 .turnTo(Math.toRadians(-47))
@@ -302,12 +307,19 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .turnTo(Math.toRadians(0))
+                /*.turnTo(Math.toRadians(0))
                 .lineToX(-5)
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-65)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
+                .build();*/
+                .strafeTo(new Vector2d(-15,-30))
+                .turnTo(Math.toRadians(-90))
+                .lineToY(-65)
+                .lineToY(-60)
+                .strafeTo(new Vector2d(pose.position.x,pose.position.y))
+                .turnTo((pose.heading.toDouble()))
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
@@ -324,12 +336,13 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .turnTo(Math.toRadians(0))
-                .lineToX(-27)
+                //.turnTo(Math.toRadians(0))
+                //.lineToX(-27)
+                .strafeTo(new Vector2d(-45,-30))
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-65)
-                .lineToY(-20)
-                .turnTo(Math.toRadians(-30))
+                .strafeTo(new Vector2d(pose.position.x, pose.position.y))
+                .turnTo(Math.toRadians(pose.heading.toDouble()))
                 .build();
 
         if (opModeIsActive()) {
