@@ -10,9 +10,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-
-
-
 @TeleOp(name = "M3_CompTeleop", group = "Competition")
 public class M3_TeleOp extends OpMode {
 
@@ -64,7 +61,6 @@ public class M3_TeleOp extends OpMode {
 
         // Driver Binds
 
-
         forwardBackward = -gamepad1.left_stick_y;
         strafeRightLeft = gamepad1.left_stick_x;
         rotate = gamepad1.right_stick_x;
@@ -110,7 +106,9 @@ public class M3_TeleOp extends OpMode {
         // if right trigger is pressed, it will launch the artifacts
         if (gamepad2.right_trigger > 0) {
 
-            launcher.setVelocity(1380);
+            //Calling shooter method that should dynamically set the velocity based on Apriltag detection
+            M3_ShootingTest shoot = new M3_ShootingTest();
+            shoot.shootBallInstantStart(1380);
 
             if (gamepad2.right_bumper) {
                 launcher.setVelocity(1800);
