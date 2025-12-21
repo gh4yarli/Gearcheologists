@@ -62,23 +62,29 @@ import java.util.List;
 @Config
 public final class MecanumDrive {
     public static class Params {
-        public static double axialGain = 0.2;
-        public static double axialVelGain = 0;
-        public static double headingGain = 0.1;
-        public static double headingVelGain = 0;
-        public static double inPerTick = 0.001979;
-        public static double kA = 0.000005;
-        public static double kS = 0.8136820285971191;
-        public static double kV = 0.00035098090173538014;
-        public static double lateralGain = 0;
-        public static double lateralInPerTick = 0.001979;
-        public static double lateralVelGain = 0;
-        public static double maxAngAccel = 3.141592653589793;
-        public static double maxAngVel = 3.141592653589793;
-        public static double maxProfileAccel = 50;
-        public static double maxWheelVel = 50;
-        public static double minProfileAccel = -30;
-        public static double trackWidthTicks = 7100;
+        public double axialGain = 0.2;
+        public double axialVelGain = 0;
+        public double headingGain = 0.1;
+        public double headingVelGain = 0;
+        public double inPerTick = 0.001979;
+        public double kA = 0.000005;
+        public double kS = 0.8136820285971191;
+        public double kV = 0.00035098090173538014;
+        public double lateralGain = 0;
+        public double lateralInPerTick = 0.001979;
+        public double lateralVelGain = 0;
+        /*
+        public double maxAngAccel = 3.141592653589793;
+        public double maxAngVel = 3.141592653589793;
+        public double maxProfileAccel = 50;
+        public double maxWheelVel = 50; */
+
+        public double maxAngAccel = Math.toRadians(300);
+        public double maxAngVel = Math.toRadians(300);
+        public double maxProfileAccel = 60.0;
+        public double maxWheelVel = 70.0;
+        public double minProfileAccel = -30;
+        public double trackWidthTicks = 7100;
 
         // IMU orientation
         // TODO: fill in these values based on
