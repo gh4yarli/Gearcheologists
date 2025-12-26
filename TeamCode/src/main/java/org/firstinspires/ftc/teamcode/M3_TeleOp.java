@@ -3,12 +3,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
 @TeleOp(name = "M3_CompTeleop", group = "Competition")
 public class M3_TeleOp extends OpMode {
@@ -21,9 +24,15 @@ public class M3_TeleOp extends OpMode {
 
     // Intake/Launcher
     DcMotorEx launcher;
+<<<<<<< Updated upstream
     DcMotor intake1, intake2;
     Servo armServo;
 
+=======
+    DcMotor intake1; // <-- CHANGE THE NAME TO THE CORRECT ONE
+    DcMotor intake2;
+    Servo armServo;
+>>>>>>> Stashed changes
 
     double forwardBackward;
     double strafeRightLeft;
@@ -43,7 +52,11 @@ public class M3_TeleOp extends OpMode {
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         intake1 = hardwareMap.get(DcMotor.class, "intake1");
         intake2 = hardwareMap.get(DcMotor.class, "intake2");
+<<<<<<< Updated upstream
         armServo = (Servo) hardwareMap.get(CRServo.class,"armServo");
+=======
+        armServo = hardwareMap.get(Servo.class,"armServo");
+>>>>>>> Stashed changes
 
         // reverse the left motors just because that's how it works
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
