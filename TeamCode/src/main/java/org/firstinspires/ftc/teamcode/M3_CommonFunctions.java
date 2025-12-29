@@ -169,13 +169,14 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < 3) {
+        while (runtime.seconds() < 2.25) {
             boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 50 && Math.abs(launcher.getVelocity()) <= launcherVel + 50;
 
             if (launcherAtSpeed) {
                 //startIntake(intake1, intake2);
                 arm.setPosition(0);
                 intake2.setPower(-1);
+                intake1.setPower(1);
             }
             telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
             telemetry.update();
