@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.meet2;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -31,6 +32,8 @@ import org.slf4j.LoggerFactory;
  */
 
 @TeleOp(name = "M2_CompTeleop", group = "Competition")
+@Disabled
+
 public class M2_CompTeleop extends OpMode {
 
     private static final Logger log = LoggerFactory.getLogger(M2_CompTeleop.class);
