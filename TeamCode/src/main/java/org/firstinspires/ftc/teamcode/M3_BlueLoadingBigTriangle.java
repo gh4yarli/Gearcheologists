@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -170,8 +171,7 @@ public class M3_BlueLoadingBigTriangle extends M3_CommonFunctions {
         Pose2d startingPose = new Pose2d(-60, 12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(10)
-                .turnTo(Math.toRadians(49))
+                .splineToLinearHeading(new Pose2d(10, 12, Math.toRadians(47)), Math.toRadians(47))
                 .build();
 
         if (USE_WEBCAM)
@@ -200,7 +200,6 @@ public class M3_BlueLoadingBigTriangle extends M3_CommonFunctions {
 
         telemetry.addData("Second Shot Pose", pose);
         telemetry.update();
-
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
                 .lineToX(10)
                 .turnTo(Math.toRadians(90))
@@ -212,9 +211,7 @@ public class M3_BlueLoadingBigTriangle extends M3_CommonFunctions {
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
         }
-
         aprilTagShoot();
-
     }
 
     private void thirdShot(@NonNull MecanumDrive mecanumDrive){
@@ -245,7 +242,7 @@ public class M3_BlueLoadingBigTriangle extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-36,30))
+                .strafeTo(new Vector2d(-46,30))
                 .turnTo(Math.toRadians(90))
                 .endTrajectory()
                 .build();

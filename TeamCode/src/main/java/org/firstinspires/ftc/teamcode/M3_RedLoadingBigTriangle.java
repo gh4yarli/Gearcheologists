@@ -21,7 +21,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @Autonomous
-@SuppressWarnings({"unused", "CommentedOutCode"})
+@SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression"})
 public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
@@ -29,9 +29,9 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.025  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.01 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  = 0.025;  //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN = 0.01;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   = 0.01;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE = 0.75;   //  Clip the strafing speed to this max value (adjust for your robot)
@@ -168,8 +168,9 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(10)
-                .turnTo(Math.toRadians(-48))
+                /*.lineToX(10)
+                .turnTo(Math.toRadians(-48))*/
+                .splineToLinearHeading(new Pose2d(10, -12, Math.toRadians(-47)), Math.toRadians(-47))
                 .build();
 
         if (USE_WEBCAM)
@@ -196,7 +197,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("Second Shot Pose", pose);
+        telemetry.addData("First Shot Pose", pose);
         telemetry.update();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
@@ -219,11 +220,11 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("Third Shot Pose", pose);
+        telemetry.addData("Second Shot Pose", pose);
         telemetry.update();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-15,-30))
+                .strafeTo(new Vector2d(-18,-30))
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-66)
                 .lineToY(-59)
@@ -253,8 +254,8 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
         }
-        if (opModeIsActive())
-        {   aprilTagShoot();
+        if (opModeIsActive()) {
+            aprilTagShoot();
         }
     }
     private void aprilTagShoot(){
