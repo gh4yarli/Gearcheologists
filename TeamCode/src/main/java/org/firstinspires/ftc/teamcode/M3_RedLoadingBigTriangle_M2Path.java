@@ -21,7 +21,7 @@ import java.util.List;
 
 @Autonomous
 @SuppressWarnings({"unused", "CommentedOutCode"})
-public class M3_RedLoadingBigTriangle_AdjustedVelocity extends M3_CommonFunctions {
+public class M3_RedLoadingBigTriangle_M2Path extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
