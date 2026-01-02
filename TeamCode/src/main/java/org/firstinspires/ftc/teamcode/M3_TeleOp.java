@@ -55,8 +55,6 @@ public class M3_TeleOp extends OpMode {
 
         initAprilTag();
 
-        armServo.scaleRange(0.5, 1);
-
         // reverse the left motors just because that's how it works
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -66,6 +64,10 @@ public class M3_TeleOp extends OpMode {
 
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
+    }
+    @Override
+    public void start(){
+        launcher.setVelocity(1300);
     }
 
     @Override
@@ -108,7 +110,7 @@ public class M3_TeleOp extends OpMode {
 
         //Servo Bind
 
-        if (gamepad2.left_trigger > 0) {
+        if (gamepad2.x) {
             armServo.setPosition(0);
         }
         // if left bumper isn't pressed, intake 2 won't run
@@ -133,7 +135,7 @@ public class M3_TeleOp extends OpMode {
                 frontRightDrive.setPower(0);
                 backLeftDrive.setPower(0);
                 backRightDrive.setPower(0);
-                armServo.setPosition(0);
+                armServo.setPosition(1);
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
