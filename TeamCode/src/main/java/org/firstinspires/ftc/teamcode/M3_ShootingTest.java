@@ -17,7 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @TeleOp
-@SuppressWarnings({"unused", "FieldCanBeLocal"})
+@SuppressWarnings({"", "FieldCanBeLocal"})
 @Config
 public final class M3_ShootingTest extends M3_CommonFunctions {
     private DcMotorEx launcher;
@@ -45,20 +45,13 @@ public final class M3_ShootingTest extends M3_CommonFunctions {
         arm = hardwareMap.get(Servo.class, ConfigurationConstants.Names.ARM_SERVO);
 
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        arm.scaleRange(0.5, 1.0);
+        //arm.scaleRange(0.5, 1.0);
         initAprilTag();
         setManualExposure(visionPortal);
 
         // 1450 for big triangle, 1800 for small triangle
-        double rightLauncherPower = 0.35;
-        double leftLauncherPower = 0.35;
-        double velRange = 100;
-        double minVel = PARAMS.launcherVel - velRange;
-        double maxVel = PARAMS.launcherVel + velRange;
         launcher.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        PIDFCoefficients pid_right = launcher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-        PIDFCoefficients pid_left_new = new PIDFCoefficients(50, 0.75, 1.0, 12.5);
         PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
 
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pid_right_new);
