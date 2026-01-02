@@ -60,6 +60,7 @@ public class M3_TeleOp extends OpMode {
         // reverse the left motors just because that's how it works
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        launcher.setDirection(DcMotorSimple.Direction.REVERSE);
 
         PIDFCoefficients pidf = new PIDFCoefficients(50,0.75,1.0,12.7);
 
@@ -120,9 +121,6 @@ public class M3_TeleOp extends OpMode {
             //Calling shooter method that should dynamically set the velocity based on Apriltag detection
             shootBallAprilTagDistance(launcher, intake1, intake2, armServo, aprilTag);
 
-
-
-
         } else if (gamepad2.right_bumper) {
             launcher.setVelocity(1800);
         }
@@ -136,10 +134,14 @@ public class M3_TeleOp extends OpMode {
                 backLeftDrive.setPower(0);
                 backRightDrive.setPower(0);
                 armServo.setPosition(0);
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    // needed this to not have warning
+                }
             }
     }
     public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag) {
-        //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 50;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
         AprilTagDetection desiredTag = detectAprilTag(24, currentDetections);
@@ -167,6 +169,7 @@ public class M3_TeleOp extends OpMode {
                 //  Check to see if we want to track towards this tag.
                 if ((detection.id == tag)) {
                     // Yes, we want to use this tag.
+                    telemetry.addData("\n\n\n\n", "TAG FOUND!!!!!!!");
                     return detection;
                 } else {
                     // This tag is in the library, but we do not want to track it right now.
