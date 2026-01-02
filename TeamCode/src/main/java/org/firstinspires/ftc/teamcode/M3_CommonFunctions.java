@@ -20,7 +20,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings({"unused", "FieldCanBeLocal", "ParameterCanBeLocal"})
+@SuppressWarnings({/*"unused",*/ "FieldCanBeLocal", "ParameterCanBeLocal"})
 public abstract class M3_CommonFunctions extends LinearOpMode {
 
     /**
@@ -169,12 +169,12 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < 2.25) {
+        while (runtime.seconds() < 4) {
             boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 50 && Math.abs(launcher.getVelocity()) <= launcherVel + 50;
 
             if (launcherAtSpeed) {
-                //startIntake(intake1, intake2);
                 arm.setPosition(0);
+                sleep(400);
                 intake2.setPower(-1);
                 intake1.setPower(1);
             }
@@ -182,6 +182,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
             telemetry.update();
         }
         arm.setPosition(1);
+        intake2.setPower(0);
     }
     public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, double launcherVel) {
 
@@ -207,21 +208,28 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         intake2.setPower(0);
     }
     public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range) {
-        //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 50;
+        //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
-        AprilTagDetection desiredTag = detectAprilTag(24, currentDetections);
-        if (desiredTag.id != 24) {
+        AprilTagDetection desiredTag1 = detectAprilTag(24, currentDetections);
+        AprilTagDetection desiredTag2 = detectAprilTag(20, currentDetections);
+        AprilTagDetection desiredTag;
+
+        if (desiredTag1.id == 24) {
+            desiredTag = desiredTag1;
+        } else if (desiredTag2.id == 20) {
+            desiredTag = desiredTag2;
+        } else {
             return;
         }
+
         range = desiredTag.ftcPose.range;
 
-        double launcherVel = 973.7734 * Math.pow(1.00616, range) + 50;
+        double launcherVel = 973.7734 * Math.pow(1.00616, range);
         if (range > 90) {
             launcherVel -= 100;
         }
         launcher.setVelocity(launcherVel);
-        //startIntake(intake1, intake2);
         shootArtifacts(launcher, intake1, intake2, arm, launcherVel);
 
     }

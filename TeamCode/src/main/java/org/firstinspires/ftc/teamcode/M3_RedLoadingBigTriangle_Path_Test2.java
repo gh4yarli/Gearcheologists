@@ -77,7 +77,6 @@ public class M3_RedLoadingBigTriangle_Path_Test2 extends M3_CommonFunctions {
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        arm.scaleRange(0.5, 1);
 
 
         Pose2d startingPose = new Pose2d(57, -57, Math.toRadians(-45));
@@ -85,7 +84,7 @@ public class M3_RedLoadingBigTriangle_Path_Test2 extends M3_CommonFunctions {
         waitForStart();
         startLaunchers(launcher, 1400);
         if (opModeIsActive()) {
-            arm.setPosition(1);
+            // arm.setPosition(1);
             startIntake(intake1, intake2);
             telemetry.addData("Status", "First Shot");
             telemetry.update();
@@ -230,7 +229,7 @@ public class M3_RedLoadingBigTriangle_Path_Test2 extends M3_CommonFunctions {
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
                 .turnTo(Math.toRadians(0))
                 .lineToX(-5)
-                .turnTo(Math.toRadians(-90))
+                .turnTo(Math.toRadians(-80))
                 .lineToY(-65)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-30))
