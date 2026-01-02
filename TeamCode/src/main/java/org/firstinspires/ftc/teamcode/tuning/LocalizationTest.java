@@ -19,18 +19,9 @@ import org.firstinspires.ftc.teamcode.meet1.TankDrive;
 @TeleOp
 @SuppressWarnings("unused")
 public class LocalizationTest extends M3_CommonFunctions {
-    DcMotorEx leftLauncherMotor;
-    DcMotorEx rightLauncherMotor;
-    CRServo leftFeeder;
-    CRServo rightFeeder;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
-        leftLauncherMotor = hardwareMap.get(DcMotorEx.class, "leftLauncher");
-        rightLauncherMotor = hardwareMap.get(DcMotorEx.class, "rightLauncher");
-        leftFeeder = hardwareMap.get(CRServo.class, "leftFeeder");
-        rightFeeder = hardwareMap.get(CRServo.class, "rightFeeder");
 
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -61,13 +52,6 @@ public class LocalizationTest extends M3_CommonFunctions {
                 packet.fieldOverlay().setStroke("#3F51B5");
                 Drawing.drawRobot(packet.fieldOverlay(), pose);
                 FtcDashboard.getInstance().sendTelemetryPacket(packet);
-
-                startLaunchers(leftLauncherMotor, rightLauncherMotor, 1100);
-                if (gamepad1.a) {
-                    startFeeder(leftFeeder, rightFeeder);
-                } else {
-                    stopFeeder(leftFeeder, rightFeeder);
-                }
             }
         } else if (TuningOpModes.DRIVE_CLASS.equals(TankDrive.class)) {
             TankDrive drive = new TankDrive(hardwareMap, new Pose2d(0, 0, 0));

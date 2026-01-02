@@ -13,6 +13,7 @@ Notes:
 package org.firstinspires.ftc.teamcode.meet1;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -27,6 +28,8 @@ import org.firstinspires.ftc.teamcode.ConfigurationConstants;
 
 
 @TeleOp
+@Disabled
+
 public class ControllerDriveCompetition extends LinearOpMode {
     CRServo right_feeder, left_feeder;
     DcMotor launcher, front_left_drive, front_right_drive, back_left_drive, back_right_drive;

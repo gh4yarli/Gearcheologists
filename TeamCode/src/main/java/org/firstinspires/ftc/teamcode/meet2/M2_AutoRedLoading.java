@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
+@Disabled
+
 public class M2_AutoRedLoading extends M2_Functions
 {
     // Adjust these numbers to suit your robot.
