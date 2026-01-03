@@ -183,6 +183,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
                 arm.setPosition(0);
                 sleep(400);
                 intake2.setPower(-1);
+                sleep(400);
                 intake1.setPower(1);
             }
             telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
