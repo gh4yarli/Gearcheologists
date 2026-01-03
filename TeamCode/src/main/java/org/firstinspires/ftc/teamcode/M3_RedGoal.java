@@ -81,7 +81,7 @@ public class M3_RedGoal extends M3_CommonFunctions {
         //arm.scaleRange(0.5, 1);
 
 
-        Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-45));
+        Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
         startLaunchers(launcher, 1240);
@@ -165,7 +165,7 @@ public class M3_RedGoal extends M3_CommonFunctions {
     }
 
     private void firstShot(){
-        Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-45));
+        Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(26)
@@ -202,7 +202,7 @@ public class M3_RedGoal extends M3_CommonFunctions {
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
                 .lineToX(17)
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-60)
+                .lineToY(-64)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-50))
                 .build();
@@ -223,9 +223,9 @@ public class M3_RedGoal extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-15,-30))
+                .strafeTo(new Vector2d(-17,-30))
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-70)
+                .lineToY(-73)
                 .lineToY(-59)
                 .strafeTo(new Vector2d(pose.position.x+5,-30))
                 .turnTo(pose.heading.toDouble())
