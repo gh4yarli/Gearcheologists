@@ -206,10 +206,10 @@ public class M3_BlueLoadingSmallTriangle extends M3_CommonFunctions {
 
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .splineTo(new Vector2d(-37, 30), Math.toRadians(92.5))
-                .lineToY(40)
-                .lineToY(30)
-                .splineToLinearHeading(new Pose2d(-67, 4, Math.toRadians(30)), Math.toRadians(30))
+                .splineTo(new Vector2d(-42, 30), Math.toRadians(92.5))
+                .lineToY(35)
+                .lineToY(25)
+                .splineToLinearHeading(new Pose2d(-65, 2, Math.toRadians(19)), Math.toRadians(19))
                 .build();
 
         if (opModeIsActive()) {
@@ -233,11 +233,11 @@ public class M3_BlueLoadingSmallTriangle extends M3_CommonFunctions {
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
 
-                .splineTo(new Vector2d(-18,25),Math.toRadians(90))
+                .splineTo(new Vector2d(-20,25),Math.toRadians(90))
 
-                .lineToY(63)
-                //.lineToY(-50)
-                .strafeTo(new Vector2d(15,20))
+                .lineToY(35)
+                .lineToY(20)
+                .strafeTo(new Vector2d(12,-5))
                 .turnTo(Math.toRadians(45))
 
                 .build();
@@ -258,7 +258,7 @@ public class M3_BlueLoadingSmallTriangle extends M3_CommonFunctions {
         telemetry.update();
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
                 .turnTo(Math.toRadians(90))
-                .lineToY(62)
+                .lineToY(32)
                 // .lineToY(-20)
                 //.turnTo(Math.toRadians(-50))
                 .build();

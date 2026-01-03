@@ -159,7 +159,7 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
             backRightPower /= max;
         }
 
-        // Send powers to the wheels.
+        
         frontLeftDrive.setPower(frontLeftPower);
         frontRightDrive.setPower(frontRightPower);
         backLeftDrive.setPower(backLeftPower);
