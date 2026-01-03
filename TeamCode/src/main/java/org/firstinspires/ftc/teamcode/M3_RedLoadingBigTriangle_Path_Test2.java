@@ -171,7 +171,7 @@ public class M3_RedLoadingBigTriangle_Path_Test2 extends M3_CommonFunctions {
                 .turnTo(Math.toRadians(-30))
                 .build(); */
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(10)
+                .lineToX(20)
                 .turnTo(Math.toRadians(-47))
                 .build();
 
@@ -204,9 +204,9 @@ public class M3_RedLoadingBigTriangle_Path_Test2 extends M3_CommonFunctions {
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
                 //.turnTo(Math.toRadians(0))
-                .lineToX(15)
+                .lineToX(17)
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-62)
+                .lineToY(-60)
                 .lineToY(-20)
                 .turnTo(Math.toRadians(-50))
                 .build();
@@ -228,7 +228,7 @@ public class M3_RedLoadingBigTriangle_Path_Test2 extends M3_CommonFunctions {
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
                 .turnTo(Math.toRadians(0))
-                .lineToX(-5)
+                .lineToX(-8)
                 .turnTo(Math.toRadians(-80))
                 .lineToY(-65)
                 .lineToY(-20)

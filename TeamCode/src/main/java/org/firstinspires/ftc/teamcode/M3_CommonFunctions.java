@@ -169,8 +169,8 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < 4) {
-            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 50 && Math.abs(launcher.getVelocity()) <= launcherVel + 50;
+        while (runtime.seconds() < 2.20) {
+            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 60 && Math.abs(launcher.getVelocity()) <= launcherVel + 60;
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
@@ -225,9 +225,9 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
 
         range = desiredTag.ftcPose.range;
 
-        double launcherVel = 973.7734 * Math.pow(1.00616, range);
+        double launcherVel = 973.7734 * Math.pow(1.00616, range) - 40;
         if (range > 90) {
-            launcherVel -= 100;
+            launcherVel -= 140;
         }
         launcher.setVelocity(launcherVel);
         shootArtifacts(launcher, intake1, intake2, arm, launcherVel);
