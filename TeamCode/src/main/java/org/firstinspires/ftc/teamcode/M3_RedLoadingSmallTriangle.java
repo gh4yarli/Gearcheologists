@@ -159,7 +159,7 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
             backRightPower /= max;
         }
 
-        
+
         frontLeftDrive.setPower(frontLeftPower);
         frontRightDrive.setPower(frontRightPower);
         backLeftDrive.setPower(backLeftPower);
@@ -209,7 +209,8 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
                 .splineTo(new Vector2d(-34, -30), Math.toRadians(-90))
                 .lineToY(-63)
                 .lineToY(-30)
-                .splineToLinearHeading(new Pose2d(-53, -30, Math.toRadians(-28)), Math.toRadians(-28))
+                .splineToLinearHeading(new Pose2d(-53, -30, Math.toRadians(-27.5)), Math.toRadians(-27.5))
+
                 .build();
 
         if (opModeIsActive()) {
