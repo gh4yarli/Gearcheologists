@@ -47,6 +47,9 @@ public class M3_TeleOp extends OpMode {
 
     M3_StaticCommonFunctions scuff = new M3_StaticCommonFunctions();
 
+    boolean toggle = false; //this checks if a has been toggled
+    boolean last = false; //checks the value given the last time a was pressed
+
     @Override
     public void init() {
 
@@ -102,34 +105,7 @@ public class M3_TeleOp extends OpMode {
 
         pinpoint.update();
 
-        // Driver Binds
-
-//        forwardBackward = -gamepad1.left_stick_y;
-//        strafeRightLeft = gamepad1.left_stick_x;
-//        rotate = gamepad1.right_stick_x;
-//
-//
-//        // Calculate power for each wheel
-//
-//        double frontLeftPower = forwardBackward + strafeRightLeft + rotate;
-//        double frontRightPower = forwardBackward - strafeRightLeft - rotate;
-//        double backLeftPower = forwardBackward - strafeRightLeft + rotate;
-//        double backRightPower = forwardBackward + strafeRightLeft - rotate;
-//
-//        // setting the maximum power value so IT doesn't mess it up
-//        //note: scaling it down proportionally in case value comes at to be more than 1
-//        double maxPower = 1.0;
-//
-//        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
-//        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
-//        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
-//        maxPower = Math.max(maxPower, Math.abs(backRightPower));
-//
-//        // the stuff below sends the power to the motor so it works! 🎉🎉🎉
-//        frontLeftDrive.setPower(frontLeftPower / maxPower);
-//        frontRightDrive.setPower(frontRightPower / maxPower);
-//        backLeftDrive.setPower(backLeftPower / maxPower);
-//        backRightDrive.setPower(backRightPower / maxPower);
+        boolean currentButton = gamepad1.a; //sets which button i want to toggle
 
 
         // INTAKE AND LAUNCHER CODE BELOW
@@ -148,11 +124,25 @@ public class M3_TeleOp extends OpMode {
         if (gamepad1.a){
             pinpoint.resetPosAndIMU();
         }
-        if (gamepad1.left_bumper) {
+
+        /* if (gamepad1.left_bumper) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
+
+         */
+
+        if (gamepad1.b && !last) toggle = !toggle; // this flips the value of the variable to the opposite
+        last = gamepad1.a; //adds current button's value so it can be compared for the next loop
+
+       // depending on the value (true or false) it will go to either robot centric or field centric
+        if (toggle) {
+            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        } else {
+            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
+
         if (gamepad2.left_bumper) {
             intake2.setPower(-1.0);
         }
