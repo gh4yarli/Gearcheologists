@@ -36,6 +36,7 @@ public class M3_BlueGoal extends M3_CommonFunctions {
     final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE = 0.75;   //  Clip the strafing speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.45;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double SHOOTING_TIME = 2.3;
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private VisionPortal visionPortal;               // Used to manage the video source.
@@ -286,7 +287,7 @@ public class M3_BlueGoal extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError, SHOOTING_TIME);
         }
     }
     public void initAprilTag() {

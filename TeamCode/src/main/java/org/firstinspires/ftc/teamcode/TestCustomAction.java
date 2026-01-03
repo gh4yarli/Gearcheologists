@@ -65,7 +65,7 @@ public class TestCustomAction extends M3_CommonFunctions {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    shootBallAprilTagDistance(motor, intake1, intake2, arm, aprilTag, 0);
+                    shootBallAprilTagDistance(motor, intake1, intake2, arm, aprilTag, 0, 3);
                     initialized = true;
                 }
 

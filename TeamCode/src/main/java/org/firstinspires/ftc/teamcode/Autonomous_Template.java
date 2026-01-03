@@ -179,7 +179,7 @@ public class Autonomous_Template extends M3_CommonFunctions {
             desiredTag = null;
             tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            desiredTag = detectAprilTag(tagNumber, currentDetections);
+            desiredTag = detectAprilTag( currentDetections);
             if (desiredTag.id == tagNumber) {
                 rangeError = moveToDesiredLocation(desiredTag, DESIRED_DISTANCE, SPEED_GAIN, STRAFE_GAIN, TURN_GAIN, MAX_AUTO_SPEED, MAX_AUTO_STRAFE, MAX_AUTO_TURN);
                 tagFound = 1;
@@ -201,7 +201,7 @@ public class Autonomous_Template extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootArtifacts(launcher, intake1, intake2, arm, launcherVel);
+            shootArtifacts(launcher, intake1, intake2, arm, launcherVel, 2.5);
         }
     }
 }

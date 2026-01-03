@@ -84,7 +84,7 @@ public class M3_BlueLoadingBigTriangle extends M3_CommonFunctions {
         Pose2d startingPose = new Pose2d(-60, 12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .splineToLinearHeading(new Pose2d(15, 12, Math.toRadians(47)), Math.toRadians(47))
+                .splineToLinearHeading(new Pose2d(10, 7, Math.toRadians(47)), Math.toRadians(47))
                 .build();
 
         if (USE_WEBCAM)
@@ -136,7 +136,7 @@ public class M3_BlueLoadingBigTriangle extends M3_CommonFunctions {
                 .turnTo(Math.toRadians(90))
                 .lineToY(65)
                 .lineToY(50)
-                .strafeTo(new Vector2d(pose.position.x+20,30))
+                .strafeTo(new Vector2d(pose.position.x+12,22))
                 .turnTo(pose.heading.toDouble())
                 .build();
         if (opModeIsActive()) {
@@ -171,7 +171,7 @@ public class M3_BlueLoadingBigTriangle extends M3_CommonFunctions {
             desiredTag = null;
             tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            desiredTag = detectAprilTag(tagNumber, currentDetections);
+            desiredTag = detectAprilTag( currentDetections);
             if (desiredTag.id == tagNumber) {
                 rangeError = moveToDesiredLocation(desiredTag, DESIRED_DISTANCE, SPEED_GAIN, STRAFE_GAIN, TURN_GAIN, MAX_AUTO_SPEED, MAX_AUTO_STRAFE, MAX_AUTO_TURN);
                 tagFound = 1;
@@ -189,12 +189,12 @@ public class M3_BlueLoadingBigTriangle extends M3_CommonFunctions {
                 telemetry.update();
                 sleep(10);
                 moveRobot(0, 0, 0);*/
-                shootArtifacts(launcher, intake1, intake2, arm, 1300);
+                shootArtifacts(launcher, intake1, intake2, arm, 1300, 2.3);
             }
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError, 2.3);
         }
     }
 }

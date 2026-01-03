@@ -20,6 +20,7 @@ import java.util.List;
 public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
+    final double SHOOTING_TIME = 2.3;
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -178,7 +179,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
             desiredTag = null;
             tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            desiredTag = detectAprilTag(tagNumber, currentDetections);
+            desiredTag = detectAprilTag( currentDetections);
             if (desiredTag.id == tagNumber) {
                 rangeError = moveToDesiredLocation(desiredTag, DESIRED_DISTANCE, SPEED_GAIN, STRAFE_GAIN, TURN_GAIN, MAX_AUTO_SPEED, MAX_AUTO_STRAFE, MAX_AUTO_TURN);
                 tagFound = 1;
@@ -196,12 +197,12 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 telemetry.update();
                 sleep(10);
                 moveRobot(0, 0, 0);*/
-                shootArtifacts(launcher, intake1, intake2, arm, 1300);
+                shootArtifacts(launcher, intake1, intake2, arm, 1300, SHOOTING_TIME);
             }
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError ,SHOOTING_TIME);
         }
     }
 }

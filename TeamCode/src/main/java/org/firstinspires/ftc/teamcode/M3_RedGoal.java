@@ -286,7 +286,7 @@ public class M3_RedGoal extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError, 2.3);
         }
     }
     public void initAprilTag() {

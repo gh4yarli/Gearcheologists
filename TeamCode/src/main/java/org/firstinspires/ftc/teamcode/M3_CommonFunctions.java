@@ -30,7 +30,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
     protected AprilTagProcessor aprilTag;
     final int RED_TAG_ID = 24;
     final int BLUE_TAG_ID = 20;
-    final double SHOOTING_TIME_SEC = 2.20;
+    final double SHOOTING_TIME_SEC = 3;
     final int PLUS_OR_MINUS_VEL_THRESHOLD = 60;
 
     /**
@@ -169,7 +169,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         leftLauncher.setDirection(LeftLauncherDirection);
         rightLauncher.setDirection(RightLauncherDirection);
     }
-    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel) {
+    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel, double shootingTime) {
 
         launcher.setDirection(DcMotorEx.Direction.REVERSE);
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -179,7 +179,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < SHOOTING_TIME_SEC) {
+        while (runtime.seconds() < shootingTime) {
             boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
 
             if (launcherAtSpeed) {
@@ -195,7 +195,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         arm.setPosition(1);
         intake2.setPower(0);
     }
-    public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range) {
+    public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range, double shootingTime) {
         //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
@@ -216,7 +216,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
             launcherVel -= 140;
         }
         launcher.setVelocity(launcherVel);
-        shootArtifacts(launcher, intake1, intake2, arm, launcherVel);
+        shootArtifacts(launcher, intake1, intake2, arm, launcherVel, shootingTime);
     }
     public AprilTagDetection detectAprilTag ( List<AprilTagDetection> currentDetections ){
 

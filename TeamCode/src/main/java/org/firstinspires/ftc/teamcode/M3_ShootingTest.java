@@ -53,13 +53,13 @@ public final class M3_ShootingTest extends M3_CommonFunctions {
             double range;
             AprilTagDetection desiredTag;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            desiredTag = detectAprilTag(24, currentDetections);
+            desiredTag = detectAprilTag( currentDetections);
             if (desiredTag.id == 24) {
                 range = desiredTag.ftcPose.range;
                 telemetry.addData("Found", "ID %d (%s), Range %5.1f inches, Bearing %3.0f degrees,  Yaw %3.0f degrees", desiredTag.id, desiredTag.metadata.name, desiredTag.ftcPose.range, desiredTag.ftcPose.bearing, desiredTag.ftcPose.yaw);
                 telemetry.addData("range error inside", range);
                 telemetry.update();
-                shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, range);
+                shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, range, 300);
             } else {
                 telemetry.addData("Tag Not Found, ID %d (%s)", desiredTag.id);
                 telemetry.update();
