@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-@SuppressWarnings({"unused"})
 public class RedLoadingZone_WithFunctions extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
@@ -192,7 +191,8 @@ public class RedLoadingZone_WithFunctions extends M3_CommonFunctions {
     /**
      * Initialize the AprilTag processor.
      */
-    private void initAprilTag() {
+    @Override
+    public void initAprilTag() {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
 
@@ -219,7 +219,7 @@ public class RedLoadingZone_WithFunctions extends M3_CommonFunctions {
         }
     }
 
-    private void setManualExposure() {
+    public void setManualExposure() {
         // Wait for the camera to be open, then use the controls
 
         if (visionPortal == null) {

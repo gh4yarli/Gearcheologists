@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-@TeleOp @SuppressWarnings("unused")
+@TeleOp
 public class ServoTest extends M3_CommonFunctions {
     @Override
     public void runOpMode() {

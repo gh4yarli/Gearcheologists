@@ -7,8 +7,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.M3_CommonFunctions;
@@ -17,7 +15,6 @@ import org.firstinspires.ftc.teamcode.meet1.TankDrive;
 
 
 @TeleOp
-@SuppressWarnings("unused")
 public class LocalizationTest extends M3_CommonFunctions {
 
     @Override

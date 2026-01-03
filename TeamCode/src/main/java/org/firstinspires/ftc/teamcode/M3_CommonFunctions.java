@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -20,8 +21,14 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings({/*"unused",*/ "FieldCanBeLocal", "ParameterCanBeLocal"})
 public abstract class M3_CommonFunctions extends LinearOpMode {
+
+    protected DcMotor frontLeftDrive;
+    protected DcMotor frontRightDrive;
+    protected DcMotor backLeftDrive;
+    protected DcMotor backRightDrive;
+    protected VisionPortal visionPortal;
+    protected AprilTagProcessor aprilTag;
 
     /**
      * Starts the launchers
@@ -256,7 +263,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         }
         return dummyTag;
     }
-    public void initAprilTag(AprilTagProcessor aprilTag, VisionPortal visionPortal) {
+    public void initAprilTag() {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
 
@@ -276,7 +283,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
                 .build();
     }
 
-    public void setManualExposure(VisionPortal visionPortal) {
+    public void setManualExposure() {
         // Wait for the camera to be open, then use the controls
 
         if (visionPortal == null) {
@@ -308,6 +315,66 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
             gainControl.setGain(250);
             sleep(20);
         }
+    }
+
+    public void initHardware() {
+        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
+        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
+        backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
+        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
+
+        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
+        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
+    }
+
+    public double moveToDesiredLocation (AprilTagDetection desiredTag, double desiredDistance, double speedGain, double strafeGain, double turnGain, double maxAutoSpeed, double maxAutoStrafe, double maxAutoTurn){
+        // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+        double rangeError      = (desiredTag.ftcPose.range - desiredDistance);
+        double  headingError    = desiredTag.ftcPose.bearing;
+        double  yawError        = desiredTag.ftcPose.yaw;
+
+        double  drive;       // Desired forward power/speed (-1 to +1)
+        double  strafe;      // Desired strafe power/speed (-1 to +1)
+        double  turn;        // Desired turning power/speed (-1 to +1)
+
+        // Use the speed and turn "gains" to calculate how we want the robot to move.
+        drive  = Range.clip(rangeError * speedGain, -maxAutoSpeed, maxAutoSpeed);
+        turn   = Range.clip(headingError * turnGain, -maxAutoTurn, maxAutoTurn) ;
+        strafe = Range.clip(-yawError * strafeGain, -maxAutoStrafe, maxAutoStrafe);
+
+        telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        telemetry.addLine("Starting to move to the desired location");
+        telemetry.update();
+        moveRobot(drive, strafe, turn);
+        return rangeError;
+    }
+
+    public void moveRobot(double x, double y, double yaw) {
+        // Calculate wheel powers.
+        double frontLeftPower    =  x - y - yaw;
+        double frontRightPower   =  x + y + yaw;
+        double backLeftPower     =  x + y - yaw;
+        double backRightPower    =  x - y + yaw;
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
+        max = Math.max(max, Math.abs(backLeftPower));
+        max = Math.max(max, Math.abs(backRightPower));
+
+        if (max > 1.0) {
+            frontLeftPower /= max;
+            frontRightPower /= max;
+            backLeftPower /= max;
+            backRightPower /= max;
+        }
+
+        // Send powers to the wheels.
+        frontLeftDrive.setPower(frontLeftPower);
+        frontRightDrive.setPower(frontRightPower);
+        backLeftDrive.setPower(backLeftPower);
+        backRightDrive.setPower(backRightPower);
     }
     
 }

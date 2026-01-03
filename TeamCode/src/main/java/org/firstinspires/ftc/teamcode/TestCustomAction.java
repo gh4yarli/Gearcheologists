@@ -18,7 +18,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-@SuppressWarnings({"FieldMayBeFinal", "unused", "InnerClassMayBeStatic", "Parameter"})
 @Autonomous
 public class TestCustomAction extends M3_CommonFunctions {
     public class Shooter {
