@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
-import org.firstinspires.ftc.teamcode.meet1.AprilTag;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -29,6 +28,10 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
     protected DcMotor backRightDrive;
     protected VisionPortal visionPortal;
     protected AprilTagProcessor aprilTag;
+    final int RED_TAG_ID = 24;
+    final int BLUE_TAG_ID = 20;
+    final double SHOOTING_TIME_SEC = 2.20;
+    final int PLUS_OR_MINUS_VEL_THRESHOLD = 60;
 
     /**
      * Starts the launchers
@@ -176,8 +179,8 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < 2.20) {
-            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 60 && Math.abs(launcher.getVelocity()) <= launcherVel + 60;
+        while (runtime.seconds() < SHOOTING_TIME_SEC) {
+            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
@@ -192,41 +195,15 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         arm.setPosition(1);
         intake2.setPower(0);
     }
-    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, double launcherVel) {
-
-        launcher.setDirection(DcMotorEx.Direction.REVERSE);
-        launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(100,1.5,3.0,10);
-
-        launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
-
-        ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < 10) {
-            launcher.setVelocity(-launcherVel);
-
-            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 50 && Math.abs(launcher.getVelocity()) <= launcherVel + 50;
-
-            if (launcherAtSpeed) {
-                startIntake(intake1, intake2);
-            }
-            telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
-            telemetry.update();
-        }
-        intake2.setPower(0);
-    }
     public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range) {
         //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
-        AprilTagDetection desiredTag1 = detectAprilTag(24, currentDetections);
-        AprilTagDetection desiredTag2 = detectAprilTag(20, currentDetections);
+        AprilTagDetection desiredTag1 = detectAprilTag(currentDetections);
         AprilTagDetection desiredTag;
 
-        if (desiredTag1.id == 24) {
+        if (desiredTag1.id == RED_TAG_ID || desiredTag1.id == BLUE_TAG_ID) {
             desiredTag = desiredTag1;
-        } else if (desiredTag2.id == 20) {
-            desiredTag = desiredTag2;
         } else {
             return;
         }
@@ -234,14 +211,14 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         range = desiredTag.ftcPose.range;
 
         double launcherVel = 973.7734 * Math.pow(1.00616, range) - 40;
+
         if (range > 90) {
             launcherVel -= 140;
         }
         launcher.setVelocity(launcherVel);
         shootArtifacts(launcher, intake1, intake2, arm, launcherVel);
-
     }
-    public AprilTagDetection detectAprilTag (int tag, List<AprilTagDetection> currentDetections ){
+    public AprilTagDetection detectAprilTag ( List<AprilTagDetection> currentDetections ){
 
         // Step through the list of detected tags and look for a matching tag
         AprilTagDetection dummyTag = new AprilTagDetection(-1, -1 , 1.900F, null, null, null, null, null, null, 123);
@@ -250,7 +227,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
             // Look to see if we have size info on this tag.
             if (detection.metadata != null) {
                 //  Check to see if we want to track towards this tag.
-                if ((detection.id == tag)) {
+                if ((detection.id == RED_TAG_ID) || (detection.id == BLUE_TAG_ID)) {
                     // Yes, we want to use this tag.
                     return detection;
                 } else {
@@ -352,12 +329,12 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         return rangeError;
     }
 
-    public void moveRobot(double x, double y, double yaw) {
+    public void moveRobot(double x, double y, double h) {
         // Calculate wheel powers.
-        double frontLeftPower    =  x - y - yaw;
-        double frontRightPower   =  x + y + yaw;
-        double backLeftPower     =  x + y - yaw;
-        double backRightPower    =  x - y + yaw;
+        double frontLeftPower    =  x - y - h;
+        double frontRightPower   =  x + y + h;
+        double backLeftPower     =  x + y - h;
+        double backRightPower    =  x - y + h;
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
