@@ -83,7 +83,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .splineToLinearHeading(new Pose2d(10, -12, Math.toRadians(-47)), Math.toRadians(-47))
+                .splineToLinearHeading(new Pose2d(15, -12, Math.toRadians(-47)), Math.toRadians(-47))
                 .build();
 
         if (USE_WEBCAM)
@@ -191,11 +191,12 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 tagFound = 0;
             }
             if (tagFound == 0) {
-                moveRobot(0, 0, -0.1);
+                /*moveRobot(0, 0, -0.1);
                 telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
                 telemetry.update();
                 sleep(10);
-                moveRobot(0, 0, 0);
+                moveRobot(0, 0, 0);*/
+                shootArtifacts(launcher, intake1, intake2, arm, 1300);
             }
         }
         moveRobot(0, 0, 0);
