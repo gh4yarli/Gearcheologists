@@ -20,8 +20,6 @@ import java.util.List;
 public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
-    final double SHOOTING_TIME = 2.3;
-
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
@@ -197,12 +195,12 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 telemetry.update();
                 sleep(10);
                 moveRobot(0, 0, 0);*/
-                shootArtifacts(launcher, intake1, intake2, arm, 1300, SHOOTING_TIME);
+                shootArtifacts(launcher, intake1, intake2, arm, 1300, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
             }
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError ,SHOOTING_TIME);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError ,ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
     }
 }

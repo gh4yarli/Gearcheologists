@@ -101,7 +101,7 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
             Actions.runBlocking(new SequentialAction(path));
         }
         stopIntake(intake1, intake2);
-        shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError, 3);
+        shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError, ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
     }
 
     private void secondShot(@NonNull MecanumDrive mecanumDrive) {
@@ -123,7 +123,7 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
         }
 
-        shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError, 3);
+        shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError, ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
 
     }
 
@@ -196,7 +196,7 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError, 2.3);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
     }
 }

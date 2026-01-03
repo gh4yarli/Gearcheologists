@@ -40,8 +40,8 @@ public final class ConfigurationConstants {
         public static final String RIGHT_FEEDER_SERVO = "rightFeeder";
         public static final String ARM_SERVO = "armServo";
 
-        public static final String DISTANCE_SENSOR = "distance";
-
         public static final String ODOMETRY_COMPUTER = "pinpoint";
     }
+    public static final double SMALL_TRI_SHOOTING_TIME = 3.0;
+    public static final double BIG_TRI_SHOOTING_TIME = 2.3;
 }
