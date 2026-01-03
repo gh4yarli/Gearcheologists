@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +12,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.meet2.M2_CompTeleop;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -31,16 +35,21 @@ public class M3_TeleOp extends OpMode {
     DcMotor intake1, intake2;
     Servo armServo;
 
-    double forwardBackward;
-    double strafeRightLeft;
-    double rotate = 0;
+    //double forwardBackward;
+    //double strafeRightLeft;
+    //double rotate = 0;
     AprilTagProcessor aprilTag;
     VisionPortal visionPortal;
 
+    public static M2_CompTeleop.Params PARAMS = new M2_CompTeleop.Params();
 
+    public GoBildaPinpointDriver pinpoint;
+
+    M3_StaticCommonFunctions scuff = new M3_StaticCommonFunctions();
 
     @Override
     public void init() {
+
         // initializing stuff
         frontLeftDrive = hardwareMap.get(DcMotor.class, "leftFront");
         frontRightDrive = hardwareMap.get(DcMotor.class, "rightFront");
@@ -64,6 +73,24 @@ public class M3_TeleOp extends OpMode {
 
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
+        // Pinpoint
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Names.ODOMETRY_COMPUTER);
+
+        double mmPerTick = PARAMS.inPerTick * 25.4;
+        pinpoint.setEncoderResolution(1 / mmPerTick, DistanceUnit.MM);
+        pinpoint.setOffsets(mmPerTick * PARAMS.parYTicks, mmPerTick * PARAMS.perpXTicks, DistanceUnit.MM);
+
+        //Encoder Directions
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
+                GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        //double mmPerTick = PARAMS.inPerTick * 25.4;
+        pinpoint.setEncoderResolution(1 / mmPerTick, DistanceUnit.MM);
+        pinpoint.setOffsets(mmPerTick * PARAMS.parYTicks, mmPerTick * PARAMS.perpXTicks, DistanceUnit.MM);
+        //Encoder Directions
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
+                GoBildaPinpointDriver.EncoderDirection.REVERSED);
+
+        pinpoint.resetPosAndIMU();
     }
     @Override
     public void start(){
@@ -73,40 +100,41 @@ public class M3_TeleOp extends OpMode {
     @Override
     public void loop() {
 
+        pinpoint.update();
 
         // Driver Binds
 
-        forwardBackward = -gamepad1.left_stick_y;
-        strafeRightLeft = gamepad1.left_stick_x;
-        rotate = gamepad1.right_stick_x;
-
-
-        // Calculate power for each wheel
-
-        double frontLeftPower = forwardBackward + strafeRightLeft + rotate;
-        double frontRightPower = forwardBackward - strafeRightLeft - rotate;
-        double backLeftPower = forwardBackward - strafeRightLeft + rotate;
-        double backRightPower = forwardBackward + strafeRightLeft - rotate;
-
-        // setting the maximum power value so IT doesn't mess it up
-        //note: scaling it down proportionally in case value comes at to be more than 1
-        double maxPower = 1.0;
-
-        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
-        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
-        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
-        maxPower = Math.max(maxPower, Math.abs(backRightPower));
-
-        // the stuff below sends the power to the motor so it works! 🎉🎉🎉
-        frontLeftDrive.setPower(frontLeftPower / maxPower);
-        frontRightDrive.setPower(frontRightPower / maxPower);
-        backLeftDrive.setPower(backLeftPower / maxPower);
-        backRightDrive.setPower(backRightPower / maxPower);
+//        forwardBackward = -gamepad1.left_stick_y;
+//        strafeRightLeft = gamepad1.left_stick_x;
+//        rotate = gamepad1.right_stick_x;
+//
+//
+//        // Calculate power for each wheel
+//
+//        double frontLeftPower = forwardBackward + strafeRightLeft + rotate;
+//        double frontRightPower = forwardBackward - strafeRightLeft - rotate;
+//        double backLeftPower = forwardBackward - strafeRightLeft + rotate;
+//        double backRightPower = forwardBackward + strafeRightLeft - rotate;
+//
+//        // setting the maximum power value so IT doesn't mess it up
+//        //note: scaling it down proportionally in case value comes at to be more than 1
+//        double maxPower = 1.0;
+//
+//        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
+//        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
+//        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
+//        maxPower = Math.max(maxPower, Math.abs(backRightPower));
+//
+//        // the stuff below sends the power to the motor so it works! 🎉🎉🎉
+//        frontLeftDrive.setPower(frontLeftPower / maxPower);
+//        frontRightDrive.setPower(frontRightPower / maxPower);
+//        backLeftDrive.setPower(backLeftPower / maxPower);
+//        backRightDrive.setPower(backRightPower / maxPower);
 
 
         // INTAKE AND LAUNCHER CODE BELOW
         intake1.setPower(1.0);
-        intake2.setPower(-1.0);
+        //intake2.setPower(-1.0);
 
         //Servo Bind
 
@@ -117,49 +145,44 @@ public class M3_TeleOp extends OpMode {
         else {
             armServo.setPosition(1);
         }
-        // if right trigger is pressed, it will launch the artifacts
+        if (gamepad1.a){
+            pinpoint.resetPosAndIMU();
+        }
+        if (gamepad1.left_bumper) {
+            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        } else {
+            driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        }
+        if (gamepad2.left_bumper) {
+            intake2.setPower(-1.0);
+        }
+            // if right trigger is pressed, it will launch the artifacts
         if (gamepad2.right_trigger > 0) {
 
             //Calling shooter method that should dynamically set the velocity based on Apriltag detection
-            shootBallAprilTagDistance(launcher, intake1, intake2, armServo, aprilTag);
+            scuff.shootBallAprilTagDistance(launcher, intake1, intake2, armServo, aprilTag, this);
 
         } else if (gamepad2.right_bumper) {
             launcher.setVelocity(1800);
         }
-            // Emergency Brake
-            if (gamepad2.b) {
-                launcher.setVelocity(0);
-                intake1.setPower(0);
-                intake2.setPower(0);
-                frontLeftDrive.setPower(0);
-                frontRightDrive.setPower(0);
-                backLeftDrive.setPower(0);
-                backRightDrive.setPower(0);
-                armServo.setPosition(1);
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    // needed this to not have warning
-                }
+        // Emergency Brake
+        if (gamepad2.b) {
+            launcher.setVelocity(0);
+            intake1.setPower(0);
+            intake2.setPower(0);
+            frontLeftDrive.setPower(0);
+            frontRightDrive.setPower(0);
+            backLeftDrive.setPower(0);
+            backRightDrive.setPower(0);
+            armServo.setPosition(1);
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                // needed this to not have warning
             }
-    }
-    public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag) {
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-
-        AprilTagDetection desiredTag = detectAprilTag(24, currentDetections);
-        if (desiredTag.id != 24) {
-            return;
         }
-        double range = desiredTag.ftcPose.range;
-
-        double launcherVel = 973.7734 * Math.pow(1.00616, range) + 50;
-        if (range > 90) {
-            launcherVel -= 100;
-        }
-        launcher.setVelocity(launcherVel);
-        //startIntake(intake1, intake2);
-        shootArtifacts(launcher, intake1, intake2, arm, launcherVel);
     }
+
     public AprilTagDetection detectAprilTag (int tag, List<AprilTagDetection> currentDetections ){
 
         // Step through the list of detected tags and look for a matching tag
@@ -184,43 +207,59 @@ public class M3_TeleOp extends OpMode {
         }
         return dummyTag;
     }
-    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel) {
 
-        launcher.setDirection(DcMotorEx.Direction.REVERSE);
-        launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        //launcher.setVelocity(launcherVel);
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(50,0.75,1.0,12.7);
+    public void drive(double forwardBackward, double strafeRightLeft, double rotate) {
+        // This calculates the power needed for each wheel based on the amount of forward,
+        // strafe right, and rotate
+        double frontLeftPower = forwardBackward + strafeRightLeft + rotate;
+        double frontRightPower = forwardBackward - strafeRightLeft - rotate;
+        double backRightPower = forwardBackward + strafeRightLeft - rotate;
+        double backLeftPower = forwardBackward - strafeRightLeft + rotate;
 
-        launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
+        double maxPower = 1.0;
+        double maxSpeed = 1.0;  // make this slower for outreaches
 
-        ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < 3) {
-            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 50 && Math.abs(launcher.getVelocity()) <= launcherVel + 50;
+        // This is needed to make sure we don't pass > 1.0 to any wheel
+        // It allows us to keep all of the motors in proportion to what they should
+        // be and not get clipped
+        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
+        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
 
-            if (launcherAtSpeed) {
-                //startIntake(intake1, intake2);
-                arm.setPosition(0);
-                intake2.setPower(-1);
-            }
-            telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
-            telemetry.update();
-        }
-        arm.setPosition(1);
+        // We multiply by maxSpeed so that it can be set lower for outreaches
+        // When a young child is driving the robot, we may not want to allow full
+        // speed.
+        frontLeftDrive.setPower(maxSpeed * (frontLeftPower / maxPower));
+        frontRightDrive.setPower(maxSpeed * (frontRightPower / maxPower));
+        backLeftDrive.setPower(maxSpeed * (backLeftPower / maxPower));
+        backRightDrive.setPower(maxSpeed * (backRightPower / maxPower));
+    }
+    private void driveFieldRelative(double forwardBackward, double strafeRightLeft, double rotate) {
+
+        telemetry.addLine("Hold left bumper to drive in robot relative");
+        telemetry.addLine("The left joystick sets the robot direction");
+        telemetry.addLine("Moving the right joystick left and right turns the robot");
+        // First, convert direction being asked to drive to polar coordinates
+        double theta = Math.atan2(forwardBackward, strafeRightLeft);
+        double r = Math.hypot(strafeRightLeft, forwardBackward);
+        double pinpoint_Heading = pinpoint.getHeading(AngleUnit.RADIANS);
+        // Second, rotate angle by the angle the robot is pointing
+        theta = AngleUnit.normalizeRadians(theta -
+                pinpoint_Heading);
+
+        // Third, convert back to cartesian
+        double newForwardBackward = r * Math.sin(theta);
+        double newStrafeRightLeft = r * Math.cos(theta);
+
+        // Finally, call the drive method with robot relative forward and right amounts
+        drive(newForwardBackward, newStrafeRightLeft, rotate);
+
     }
     public void initAprilTag() {
-        // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
-
-        // Adjust Image Decimation to trade-off detection-range for detection-rate.
-        // e.g. Some typical detection data using a Logitech C920 WebCam
-        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
-        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
-        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
-        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
-        // Note: Decimation can be changed on-the-fly to adapt during a match.
         aprilTag.setDecimation(2);
 
-        // Create the vision portal by using a builder.
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(aprilTag)
