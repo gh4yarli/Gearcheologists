@@ -79,13 +79,13 @@ public class M3_BlueGoal extends M3_CommonFunctions {
 
         //arm.scaleRange(0.5, 1);
 
-
         Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
         startLaunchers(launcher, 1240);
         if (opModeIsActive()) {
             arm.setPosition(1);
+            intake1.setPower(1);
             telemetry.addData("Status", "First Shot");
             telemetry.update();
             firstShot();
@@ -276,16 +276,17 @@ public class M3_BlueGoal extends M3_CommonFunctions {
                 tagFound = 0;
             }
             if (tagFound == 0) {
-                /*moveRobot(0, 0, -0.1);
+                moveRobot(0, 0, -0.1);
                 telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
                 telemetry.update();
                 sleep(10);
-                moveRobot(0, 0, 0);*/
-                shootArtifacts(launcher, intake1, intake2, arm, 1300, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
+                moveRobot(0, 0, 0);
             }
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
+            intake1.setPower(0);
+            intake2.setPower(0);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
     }

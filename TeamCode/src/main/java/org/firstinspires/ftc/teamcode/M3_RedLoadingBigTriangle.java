@@ -113,7 +113,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
                 .lineToX(15)
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-62)
+                .lineToY(-58)
                 .lineToY(-25)
                 .turnTo(Math.toRadians(-48))
                 .build();
@@ -190,16 +190,17 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 tagFound = 0;
             }
             if (tagFound == 0) {
-                /*moveRobot(0, 0, -0.1);
+                moveRobot(0, 0, -0.1);
                 telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
                 telemetry.update();
                 sleep(10);
-                moveRobot(0, 0, 0);*/
-                shootArtifacts(launcher, intake1, intake2, arm, 1300, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
+                moveRobot(0, 0, 0);
             }
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
+            intake1.setPower(0);
+            intake2.setPower(0);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError ,ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
     }

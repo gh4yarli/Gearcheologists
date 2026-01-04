@@ -184,9 +184,8 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
-                sleep(400);
+                sleep(750);
                 intake2.setPower(-1);
-                sleep(400);
                 intake1.setPower(1);
             }
             telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
@@ -210,7 +209,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
 
         range = desiredTag.ftcPose.range;
 
-        double launcherVel = 973.7734 * Math.pow(1.00616, range) - 40;
+        double launcherVel = 973.7734 * Math.pow(1.00616, range) - 20;
 
         if (range > 90) {
             launcherVel -= 140;
