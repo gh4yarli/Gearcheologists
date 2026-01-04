@@ -180,6 +180,10 @@ public class M3_TeleOp extends OpMode {
                 // needed this to not have warning
             }
         }
+        else {
+            launcher.setVelocity(1300);
+            intake1.setPower(1);
+        }
     }
 
     public AprilTagDetection detectAprilTag (int tag, List<AprilTagDetection> currentDetections ){
