@@ -179,17 +179,17 @@ public class M3_StaticCommonFunctions {
             boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 50 && Math.abs(launcher.getVelocity()) <= launcherVel + 50;
 
             if (launcherAtSpeed) {
-                //
                 startIntake(intake1, intake2);
                 arm.setPosition(0);
+                sleep(600);
                 intake2.setPower(-1);
-                //
                 intake1.setPower(1);
+
             }
             opMode.telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
             opMode.telemetry.update();
         }
-        arm.setPosition(1);
+        //arm.setPosition(1);
     }
     public static void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, double launcherVel, OpMode opMode) {
 
@@ -216,6 +216,7 @@ public class M3_StaticCommonFunctions {
     }
     public static void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, OpMode opMode) {
         //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 50;
+        M3_TeleOp.shootBallsRunning = true;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
         AprilTagDetection desiredTag = detectAprilTag(24, currentDetections, opMode);
@@ -228,9 +229,10 @@ public class M3_StaticCommonFunctions {
         if (range > 90) {
             launcherVel -= 100;
         }
-        launcher.setVelocity(launcherVel);
+        launcher.setVelocity(launcherVel-50);
         //startIntake(intake1, intake2);
         shootArtifacts(launcher, intake1, intake2, arm, launcherVel, opMode);
+        M3_TeleOp.shootBallsRunning = false;
 
     }
     public static AprilTagDetection detectAprilTag (int tag, List<AprilTagDetection> currentDetections, OpMode opMode ){

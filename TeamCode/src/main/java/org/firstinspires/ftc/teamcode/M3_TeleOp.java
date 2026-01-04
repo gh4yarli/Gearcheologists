@@ -47,6 +47,8 @@ public class M3_TeleOp extends OpMode {
 
     M3_StaticCommonFunctions scuff = new M3_StaticCommonFunctions();
 
+    static boolean shootBallsRunning = false;
+
     @Override
     public void init() {
 
@@ -102,36 +104,6 @@ public class M3_TeleOp extends OpMode {
 
         pinpoint.update();
 
-        // Driver Binds
-
-//        forwardBackward = -gamepad1.left_stick_y;
-//        strafeRightLeft = gamepad1.left_stick_x;
-//        rotate = gamepad1.right_stick_x;
-//
-//
-//        // Calculate power for each wheel
-//
-//        double frontLeftPower = forwardBackward + strafeRightLeft + rotate;
-//        double frontRightPower = forwardBackward - strafeRightLeft - rotate;
-//        double backLeftPower = forwardBackward - strafeRightLeft + rotate;
-//        double backRightPower = forwardBackward + strafeRightLeft - rotate;
-//
-//        // setting the maximum power value so IT doesn't mess it up
-//        //note: scaling it down proportionally in case value comes at to be more than 1
-//        double maxPower = 1.0;
-//
-//        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
-//        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
-//        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
-//        maxPower = Math.max(maxPower, Math.abs(backRightPower));
-//
-//        // the stuff below sends the power to the motor so it works! 🎉🎉🎉
-//        frontLeftDrive.setPower(frontLeftPower / maxPower);
-//        frontRightDrive.setPower(frontRightPower / maxPower);
-//        backLeftDrive.setPower(backLeftPower / maxPower);
-//        backRightDrive.setPower(backRightPower / maxPower);
-
-
         // INTAKE AND LAUNCHER CODE BELOW
         intake1.setPower(1.0);
         //intake2.setPower(-1.0);
@@ -165,6 +137,9 @@ public class M3_TeleOp extends OpMode {
         } else if (gamepad2.right_bumper) {
             launcher.setVelocity(1800);
         }
+        if (!shootBallsRunning){
+            intake2.setPower(0);
+        }
         // Emergency Brake
         if (gamepad2.b) {
             launcher.setVelocity(0);
@@ -180,6 +155,10 @@ public class M3_TeleOp extends OpMode {
             } catch (InterruptedException e) {
                 // needed this to not have warning
             }
+        }
+        else {
+            intake1.setPower(1);
+            launcher.setVelocity(1300);
         }
     }
 
