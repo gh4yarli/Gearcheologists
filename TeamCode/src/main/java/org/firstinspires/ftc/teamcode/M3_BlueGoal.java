@@ -276,11 +276,12 @@ public class M3_BlueGoal extends M3_CommonFunctions {
                 tagFound = 0;
             }
             if (tagFound == 0) {
-                moveRobot(0, 0, -0.1);
+                /*moveRobot(0, 0, -0.1);
                 telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
                 telemetry.update();
                 sleep(10);
-                moveRobot(0, 0, 0);
+                moveRobot(0, 0, 0);*/
+                shootArtifacts(launcher, intake1, intake2, arm, 1300, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
             }
         }
         moveRobot(0, 0, 0);
