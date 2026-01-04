@@ -87,7 +87,6 @@ public class M3_RedGoal extends M3_CommonFunctions {
         startLaunchers(launcher, 1240);
         if (opModeIsActive()) {
             arm.setPosition(1);
-            intake1.setPower(1);
             telemetry.addData("Status", "First Shot");
             telemetry.update();
             firstShot();
@@ -166,10 +165,11 @@ public class M3_RedGoal extends M3_CommonFunctions {
     }
 
     private void firstShot(){
+        intake1.setPower(1);
         Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(26)
+                .lineToX(33)
                 .turnTo(Math.toRadians(-47))
                 .build();
 
@@ -204,7 +204,7 @@ public class M3_RedGoal extends M3_CommonFunctions {
                 .lineToX(17)
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-64)
-                .lineToY(-20)
+                .lineToY(-35)
                 .turnTo(Math.toRadians(-50))
                 .build();
 
@@ -286,7 +286,7 @@ public class M3_RedGoal extends M3_CommonFunctions {
             }
         }
         moveRobot(0, 0, 0);
-        if (opModeIsActive()) {
+        if (opModeIsActive() && tagFound == 1) {
             intake1.setPower(0);
             intake2.setPower(0);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);

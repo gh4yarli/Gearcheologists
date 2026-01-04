@@ -192,6 +192,8 @@ public class M3_BlueLoadingBigTriangle extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
+            intake1.setPower(0);
+            intake2.setPower(0);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
     }
