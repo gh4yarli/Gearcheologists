@@ -24,7 +24,7 @@ import java.util.List;
 @SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression"})
 public class M3_RedGoal extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 51.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -165,10 +165,11 @@ public class M3_RedGoal extends M3_CommonFunctions {
     }
 
     private void firstShot(){
+        intake1.setPower(1);
         Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(26)
+                .lineToX(33)
                 .turnTo(Math.toRadians(-47))
                 .build();
 
@@ -203,7 +204,7 @@ public class M3_RedGoal extends M3_CommonFunctions {
                 .lineToX(17)
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-64)
-                .lineToY(-20)
+                .lineToY(-35)
                 .turnTo(Math.toRadians(-50))
                 .build();
 
@@ -277,16 +278,18 @@ public class M3_RedGoal extends M3_CommonFunctions {
                 tagFound = 0;
             }
             if (tagFound == 0) {
-                /*moveRobot(0, 0, -0.1);
+                moveRobot(0, 0, -0.1);
                 telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
                 telemetry.update();
                 sleep(10);
-                moveRobot(0, 0, 0);*/
-                shootArtifacts(launcher, intake1, intake2, arm, 1300, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
+                moveRobot(0, 0, 0);
+                //shootArtifacts(launcher, intake1, intake2, arm, 1300, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
             }
         }
         moveRobot(0, 0, 0);
-        if (opModeIsActive()) {
+        if (opModeIsActive() && tagFound == 1) {
+            intake1.setPower(0);
+            intake2.setPower(-0);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
     }
