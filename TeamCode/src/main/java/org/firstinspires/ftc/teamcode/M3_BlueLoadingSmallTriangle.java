@@ -210,6 +210,7 @@ public class M3_BlueLoadingSmallTriangle extends M3_CommonFunctions {
                 .lineToY(35)
                 .lineToY(25)
                 .splineToLinearHeading(new Pose2d(-65, 2, Math.toRadians(19)), Math.toRadians(19))
+
                 .build();
 
         if (opModeIsActive()) {
