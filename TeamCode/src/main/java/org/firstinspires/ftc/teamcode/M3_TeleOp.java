@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -33,6 +34,7 @@ public class M3_TeleOp extends OpMode {
     DcMotorEx launcher;
     DcMotor intake1, intake2;
     Servo armServo;
+    ElapsedTime timer;
 
     //double forwardBackward;
     //double strafeRightLeft;
@@ -134,8 +136,11 @@ public class M3_TeleOp extends OpMode {
 
          */
 
-        if (gamepad1.b && !last) toggle = !toggle; // this flips the value of the variable to the opposite
-        last = gamepad1.a; //adds current button's value so it can be compared for the next loop
+        if (gamepad1.b && !last && timer.milliseconds() > 1000) {
+            toggle = !toggle; // this flips the value of the variable to the opposite
+            last = gamepad1.b; //adds current button's value so it can be compared for the next loop
+            timer.reset();
+        }
 
        // depending on the value (true or false) it will go to either robot centric or field centric
         if (toggle) {
