@@ -49,6 +49,8 @@ public class M3_TeleOp extends OpMode {
     boolean toggle = false; //this checks if a has been toggled
     boolean last = false; //checks the value given the last time a was pressed
 
+    static boolean shootBallsRunning = false;
+
     @Override
     public void init() {
 
@@ -153,6 +155,9 @@ public class M3_TeleOp extends OpMode {
 
         } else if (gamepad2.right_bumper) {
             launcher.setVelocity(1800);
+        }
+        if (!shootBallsRunning){
+            intake2.setPower(0);
         }
         // Emergency Brake
         if (gamepad2.b) {
