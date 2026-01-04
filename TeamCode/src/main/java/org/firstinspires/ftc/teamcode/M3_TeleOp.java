@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -66,16 +65,17 @@ public class M3_TeleOp extends OpMode {
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         intake1 = hardwareMap.get(DcMotor.class, "intake1");
         intake2 = hardwareMap.get(DcMotor.class, "intake2");
-        armServo = hardwareMap.get(Servo.class,"armServo");
+        armServo = hardwareMap.get(Servo.class, "armServo");
 
         initAprilTag();
+        timer = new ElapsedTime();
 
         // reverse the left motors just because that's how it works
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         launcher.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        PIDFCoefficients pidf = new PIDFCoefficients(50,0.75,1.0,12.7);
+        PIDFCoefficients pidf = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
 
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
