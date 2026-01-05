@@ -212,7 +212,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         double launcherVel = 973.7734 * Math.pow(1.00616, range) - 20;
 
         if (range > 90) {
-            launcherVel -= 140;
+            launcherVel -= 100;
         }
         launcher.setVelocity(launcherVel);
         shootArtifacts(launcher, intake1, intake2, arm, launcherVel, shootingTime);

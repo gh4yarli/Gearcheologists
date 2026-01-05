@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -22,7 +21,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @Autonomous
-@SuppressWarnings({"unused", "CommentedOutCode"})
+@SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression", "FieldCanBeLocal"})
 public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
@@ -192,7 +191,7 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
             telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
         }
-        sleep(1000);
+        sleep(1500);
         shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
 
     }
@@ -215,7 +214,7 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
         }
-        sleep(1000);
+        sleep(1500);
         shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         launcher.setVelocity(1300);
 
@@ -303,6 +302,8 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
 
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
+            intake1.setPower(0);
+            intake2.setPower(0);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError,ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
     }

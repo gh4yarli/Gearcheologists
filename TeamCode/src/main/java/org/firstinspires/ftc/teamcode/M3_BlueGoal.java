@@ -36,6 +36,7 @@ public class M3_BlueGoal extends M3_CommonFunctions {
     final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE = 0.75;   //  Clip the strafing speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.45;   //  Clip the turn speed to this max value (adjust for your robot)
+
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private VisionPortal visionPortal;               // Used to manage the video source.
     AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
@@ -79,13 +80,13 @@ public class M3_BlueGoal extends M3_CommonFunctions {
 
         //arm.scaleRange(0.5, 1);
 
+
         Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
         startLaunchers(launcher, 1240);
         if (opModeIsActive()) {
             arm.setPosition(1);
-            intake1.setPower(1);
             telemetry.addData("Status", "First Shot");
             telemetry.update();
             firstShot();
@@ -164,10 +165,11 @@ public class M3_BlueGoal extends M3_CommonFunctions {
     }
 
     private void firstShot(){
+        intake1.setPower(1);
         Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(26)
+                .lineToX(33)
                 .turnTo(Math.toRadians(47))
                 .build();
 
@@ -199,10 +201,10 @@ public class M3_BlueGoal extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .lineToX(17)
+                .lineToX(21)
                 .turnTo(Math.toRadians(90))
                 .lineToY(64)
-                .lineToY(20)
+                .lineToY(30)
                 .turnTo(Math.toRadians(50))
                 .build();
 
@@ -222,11 +224,11 @@ public class M3_BlueGoal extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-17,30))
+                .strafeTo(new Vector2d(-13,30))
                 .turnTo(Math.toRadians(90))
                 .lineToY(73)
                 .lineToY(59)
-                .strafeTo(new Vector2d(pose.position.x+5,30))
+                .strafeTo(new Vector2d(pose.position.x+10,30))
                 .turnTo(pose.heading.toDouble())
                 .build();
         if (opModeIsActive()) {
@@ -243,7 +245,7 @@ public class M3_BlueGoal extends M3_CommonFunctions {
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
                 .strafeTo(new Vector2d(-36,30))
-                .turnTo(Math.toRadians(-90))
+                .turnTo(Math.toRadians(90))
                 .lineToY(65)
                 .lineToY(60)
                 .strafeTo(new Vector2d(pose.position.x,30))
@@ -251,9 +253,6 @@ public class M3_BlueGoal extends M3_CommonFunctions {
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
-        }
-        if (opModeIsActive()) {
-            aprilTagShoot();
         }
     }
     private void aprilTagShoot(){
@@ -263,7 +262,7 @@ public class M3_BlueGoal extends M3_CommonFunctions {
             desiredTag = null;
             tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            desiredTag = detectAprilTag(currentDetections);
+            desiredTag = detectAprilTag( currentDetections);
             if (desiredTag.id == tagNumber) {
                 rangeError = MoveToDesiredLocation(desiredTag);
                 tagFound = 1;
@@ -284,7 +283,7 @@ public class M3_BlueGoal extends M3_CommonFunctions {
             }
         }
         moveRobot(0, 0, 0);
-        if (opModeIsActive()) {
+        if (opModeIsActive() && tagFound == 1) {
             intake1.setPower(0);
             intake2.setPower(0);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
