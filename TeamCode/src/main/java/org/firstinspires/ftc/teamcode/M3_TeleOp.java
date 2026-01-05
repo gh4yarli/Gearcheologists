@@ -100,7 +100,7 @@ public class M3_TeleOp extends OpMode {
     }
     @Override
     public void start(){
-        launcher.setVelocity(1300);
+        launcher.setVelocity(1380);
     }
 
     @Override
