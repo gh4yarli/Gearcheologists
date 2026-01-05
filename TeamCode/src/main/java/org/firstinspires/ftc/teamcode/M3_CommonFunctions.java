@@ -169,12 +169,12 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < 2.20) {
+        while (runtime.seconds() < 2.5) {
             boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 60 && Math.abs(launcher.getVelocity()) <= launcherVel + 60;
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
-                sleep(400);
+                sleep(750);
                 intake2.setPower(-1);
                 intake1.setPower(1);
             }
@@ -182,29 +182,6 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
             telemetry.update();
         }
         arm.setPosition(1);
-        intake2.setPower(0);
-    }
-    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, double launcherVel) {
-
-        launcher.setDirection(DcMotorEx.Direction.REVERSE);
-        launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(100,1.5,3.0,10);
-
-        launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
-
-        ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < 10) {
-            launcher.setVelocity(-launcherVel);
-
-            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 50 && Math.abs(launcher.getVelocity()) <= launcherVel + 50;
-
-            if (launcherAtSpeed) {
-                startIntake(intake1, intake2);
-            }
-            telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
-            telemetry.update();
-        }
         intake2.setPower(0);
     }
     public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range) {
@@ -217,21 +194,19 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
 
         if (desiredTag1.id == 24) {
             desiredTag = desiredTag1;
-        } else if (desiredTag2.id == 20) {
+        } else if (desiredTag2.id == 20){
             desiredTag = desiredTag2;
-        } else {
-            return;
-        }
+        } else return;
 
         range = desiredTag.ftcPose.range;
 
-        double launcherVel = 973.7734 * Math.pow(1.00616, range) - 40;
+        double launcherVel = 973.7734 * Math.pow(1.00616, range) - 20;
+
         if (range > 90) {
             launcherVel -= 140;
         }
         launcher.setVelocity(launcherVel);
         shootArtifacts(launcher, intake1, intake2, arm, launcherVel);
-
     }
     public AprilTagDetection detectAprilTag (int tag, List<AprilTagDetection> currentDetections ){
 

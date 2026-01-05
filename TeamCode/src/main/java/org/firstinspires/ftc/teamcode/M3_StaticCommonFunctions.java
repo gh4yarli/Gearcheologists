@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import android.graphics.Path;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -164,76 +166,56 @@ public class M3_StaticCommonFunctions {
         rightLauncher.setDirection(RightLauncherDirection);
     }
 
-    public static void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel, OpMode opMode) {
+    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel, OpMode opMode) {
 
         launcher.setDirection(DcMotorEx.Direction.REVERSE);
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        //
-        launcher.setVelocity(launcherVel);
+        //launcher.setVelocity(launcherVel);
         PIDFCoefficients pid_right_new = new PIDFCoefficients(50,0.75,1.0,12.7);
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < 3) {
-            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 50 && Math.abs(launcher.getVelocity()) <= launcherVel + 50;
+        while (runtime.seconds() < 1.1) {
+            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 60 && Math.abs(launcher.getVelocity()) <= launcherVel + 60;
 
             if (launcherAtSpeed) {
-                startIntake(intake1, intake2);
                 arm.setPosition(0);
-                sleep(600);
+                sleep(400);
                 intake2.setPower(-1);
                 intake1.setPower(1);
-
             }
             opMode.telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
             opMode.telemetry.update();
         }
-        //arm.setPosition(1);
-    }
-    public static void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, double launcherVel, OpMode opMode) {
-
-        launcher.setDirection(DcMotorEx.Direction.REVERSE);
-        launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(100,1.5,3.0,10);
-
-        launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
-
-        ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < 10) {
-            launcher.setVelocity(-launcherVel);
-
-            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 50 && Math.abs(launcher.getVelocity()) <= launcherVel + 50;
-
-            if (launcherAtSpeed) {
-                startIntake(intake1, intake2);
-            }
-            opMode.telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
-            opMode.telemetry.update();
-        }
+        arm.setPosition(1);
         intake2.setPower(0);
     }
-    public static void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, OpMode opMode) {
-        //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 50;
-        M3_TeleOp.shootBallsRunning = true;
+    public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, OpMode opMode) {
+        //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
-        AprilTagDetection desiredTag = detectAprilTag(24, currentDetections, opMode);
-        if (desiredTag.id != 24) {
-            return;
-        }
+        AprilTagDetection desiredTag1 = detectAprilTag(24, currentDetections, opMode);
+        AprilTagDetection desiredTag2 = detectAprilTag(20, currentDetections, opMode);
+        AprilTagDetection desiredTag;
+
+        if (desiredTag1.id == 24) {
+            desiredTag = desiredTag1;
+        } else if (desiredTag2.id == 20){
+            desiredTag = desiredTag2;
+        } else return;
+
         double range = desiredTag.ftcPose.range;
 
-        double launcherVel = 973.7734 * Math.pow(1.00616, range) + 50;
-        if (range > 90) {
-            launcherVel -= 100;
-        }
-        launcher.setVelocity(launcherVel-50);
-        //startIntake(intake1, intake2);
-        shootArtifacts(launcher, intake1, intake2, arm, launcherVel, opMode);
-        M3_TeleOp.shootBallsRunning = false;
+        double launcherVel = 973.7734 * Math.pow(1.00616, range) - 20;
 
+        if (range > 90) {
+            launcherVel -= 140;
+        }
+        intake1.setPower(0);
+        intake2.setPower(0);
+        launcher.setVelocity(launcherVel);
+        shootArtifacts(launcher, intake1, intake2, arm, launcherVel, opMode);
     }
     public static AprilTagDetection detectAprilTag (int tag, List<AprilTagDetection> currentDetections, OpMode opMode ){
 
