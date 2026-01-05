@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode;
 
 
@@ -48,6 +49,7 @@ public class M3_TeleOp extends OpMode {
     M3_StaticCommonFunctions scuff = new M3_StaticCommonFunctions();
 
     boolean toggle = false; //this checks if a has been toggled
+    boolean prevButton;
     boolean last = false; //checks the value given the last time a was pressed
 
     static boolean shootBallsRunning = false;
@@ -108,7 +110,7 @@ public class M3_TeleOp extends OpMode {
 
         pinpoint.update();
 
-        boolean currentButton = gamepad1.a; //sets which button i want to toggle
+        boolean currentButton;
 
 
         // INTAKE AND LAUNCHER CODE BELOW
@@ -136,12 +138,12 @@ public class M3_TeleOp extends OpMode {
 
          */
 
-        if (gamepad1.b && !last && timer.milliseconds() > 1000) {
-            toggle = !toggle; // this flips the value of the variable to the opposite
-            last = gamepad1.b; //adds current button's value so it can be compared for the next loop
+        currentButton = gamepad1.b;
+        if (currentButton && !prevButton && timer.seconds() > 0.3) {
+            toggle = !toggle;
             timer.reset();
         }
-
+        prevButton = currentButton;
         // depending on the value (true or false) it will go to either robot centric or field centric
         if (toggle) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
@@ -149,12 +151,16 @@ public class M3_TeleOp extends OpMode {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
 
+
         if (gamepad2.left_bumper) {
             intake2.setPower(-1.0);
         }
         // if right trigger is pressed, it will launch the artifacts
         if (gamepad2.right_trigger > 0) {
-
+            frontLeftDrive.setPower(0);
+            frontRightDrive.setPower(0);
+            backRightDrive.setPower(0);
+            backLeftDrive.setPower(0);
             //Calling shooter method that should dynamically set the velocity based on Apriltag detection
             scuff.shootBallAprilTagDistance(launcher, intake1, intake2, armServo, aprilTag, this);
 
@@ -184,6 +190,7 @@ public class M3_TeleOp extends OpMode {
             launcher.setVelocity(1300);
             intake1.setPower(1);
         }
+
     }
 
     public AprilTagDetection detectAprilTag (int tag, List<AprilTagDetection> currentDetections ){
