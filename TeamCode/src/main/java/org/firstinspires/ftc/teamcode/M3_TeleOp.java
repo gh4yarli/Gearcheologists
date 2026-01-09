@@ -227,7 +227,6 @@ public class M3_TeleOp extends OpMode {
             armServo.setPosition(1);
             intake2.setPower(0);
             intake1.setPower(0);
-            launcher.setVelocity(1400);
         }
         if (gamepad2.right_bumper) {
             launcher.setVelocity(1800);
@@ -248,7 +247,7 @@ public class M3_TeleOp extends OpMode {
                 // needed this to not have warning
             }
         }
-        else {
+        else if (gamepad2.right_trigger < 0.85 && !gamepad2.right_bumper){
             launcher.setVelocity(1300);
             intake1.setPower(1);
         }

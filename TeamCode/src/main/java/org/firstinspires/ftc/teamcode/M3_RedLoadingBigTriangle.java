@@ -59,8 +59,6 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         startLaunchers(launcher, 1260);
         if (opModeIsActive()) {
             arm.setPosition(1);
-            telemetry.addData("Status", "First Shot");
-            telemetry.update();
             firstShot();
             secondShot(mecanumDrive);
             thirdShot(mecanumDrive);
@@ -83,56 +81,44 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .splineToLinearHeading(new Pose2d(15, -12, Math.toRadians(-47)), Math.toRadians(-47))
+                .lineToX(10)
+                .turnTo(Math.toRadians(-50))
+                //.splineToLinearHeading(new Pose2d(15, -12, Math.toRadians(-47)), Math.toRadians(-47))
                 .build();
 
         if (USE_WEBCAM)
             setManualExposure();  // Use low exposure time to reduce motion blur
 
-        telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch START to start OpMode");
-        telemetry.update();
 
         if (opModeIsActive()) {
-            Pose2d newPose = mecanumDrive.localizer.getPose();
-            telemetry.addData("X", newPose.position.x);
-            telemetry.addData("Y", newPose.position.y);
-            telemetry.addData("A", Math.toDegrees(newPose.heading.toDouble()));
-            telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
+            sleep(200);
+            aprilTagShoot();
         }
-        aprilTagShoot();
     }
 
     private void secondShot(@NonNull MecanumDrive mecanumDrive) {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("First Shot Pose", pose);
-        telemetry.update();
-
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .lineToX(15)
+                //.lineToX(16)
+                .strafeTo(new Vector2d(14, pose.position.y))
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-58)
-                .lineToY(-25)
+                .lineToY(-23)
                 .turnTo(Math.toRadians(-48))
                 .build();
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
+            aprilTagShoot();
         }
-
-        aprilTagShoot();
-
     }
 
     private void thirdShot(@NonNull MecanumDrive mecanumDrive) {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
-
-        telemetry.addData("Second Shot Pose", pose);
-        telemetry.update();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
                 .strafeTo(new Vector2d(-18, -30))
@@ -144,16 +130,13 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
+            aprilTagShoot();
         }
-        aprilTagShoot();
     }
 
     private void fourthShot(@NonNull MecanumDrive mecanumDrive) {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
-
-        telemetry.addData("Third Shot Pose", pose);
-        telemetry.update();
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
                 .strafeTo(new Vector2d(-36, -30))
@@ -165,8 +148,6 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
-        }
-        if (opModeIsActive()) {
             aprilTagShoot();
         }
     }
@@ -208,11 +189,11 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 tagFound = 0;
             }
             if (tagFound == 0) {
-                moveRobot(0, 0, -0.1);
+                moveRobot(0, 0, 0.1);
                 telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
                 telemetry.addData("range error inside", rangeError);
                 telemetry.update();
-                sleep(10);
+                sleep(100);
                 moveRobot(0, 0, 0);
             }
         }

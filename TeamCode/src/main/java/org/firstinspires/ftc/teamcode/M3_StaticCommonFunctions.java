@@ -30,9 +30,11 @@ import java.util.concurrent.TimeUnit;
 public class M3_StaticCommonFunctions {
     volatile static boolean stopRequested = false;
 
+    final int PLUS_OR_MINUS_VEL_THRESHOLD = 40;
+
     /**
      * Starts the launchers
-     * @param leftLauncher
+     * @param leftLauncher 4
      * left launcher motor
      * @param rightLauncher
      * right launcher motor
@@ -178,11 +180,11 @@ public class M3_StaticCommonFunctions {
 
         ElapsedTime runtime = new ElapsedTime();
         while (runtime.seconds() < 1.1) {
-            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 60 && Math.abs(launcher.getVelocity()) <= launcherVel + 60;
+            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
-                sleep(400);
+                sleep(300);
                 intake2.setPower(-1);
                 intake1.setPower(1);
             }

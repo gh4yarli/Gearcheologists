@@ -7,5 +7,6 @@ public class ShootingTriangle {
             this.shootingVel = shootingVel;
         }
     }
-    public Triangle bigTriangle;
+    public Triangle bigTriangle = new Triangle(1380);
+    public Triangle smallTriangle = new Triangle(1780);
 }

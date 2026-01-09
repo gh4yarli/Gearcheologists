@@ -78,8 +78,6 @@ public class M3_RedGoal extends M3_CommonFunctions {
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        //arm.scaleRange(0.5, 1);
-
 
         Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
@@ -87,8 +85,6 @@ public class M3_RedGoal extends M3_CommonFunctions {
         startLaunchers(launcher, 1240);
         if (opModeIsActive()) {
             arm.setPosition(1);
-            telemetry.addData("Status", "First Shot");
-            telemetry.update();
             firstShot();
             secondShot(mecanumDrive);
             thirdShot(mecanumDrive);
@@ -127,7 +123,6 @@ public class M3_RedGoal extends M3_CommonFunctions {
         telemetry.update();
         moveRobot(drive, strafe, turn);
         return rangeError;
-        //moveRobot(0,0,0);
     }
 
     /**
@@ -177,55 +172,37 @@ public class M3_RedGoal extends M3_CommonFunctions {
         if (USE_WEBCAM)
             setManualExposure();  // Use low exposure time to reduce motion blur
 
-        // Wait for driver to press start
-        telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch START to start OpMode");
-        telemetry.update();
-
-        //waitForStart();
-
         if (opModeIsActive()) {
-            Pose2d newPose = mecanumDrive.localizer.getPose();
-            telemetry.addData("X", newPose.position.x);
-            telemetry.addData("Y", newPose.position.y);
-            telemetry.addData("A", Math.toDegrees(newPose.heading.toDouble()));
-            telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
+            sleep(200);
+            aprilTagShoot();
         }
-        aprilTagShoot();
     }
     private void secondShot(@NonNull MecanumDrive mecanumDrive){
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("First Shot Pose", pose);
-        telemetry.update();
-
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .lineToX(17)
+                .strafeTo(new Vector2d(14, pose.position.y))
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-64)
-                .lineToY(-35)
-                .turnTo(Math.toRadians(-50))
+                .lineToY(-58)
+                .lineToY(-23)
+                .turnTo(Math.toRadians(-48))
                 .build();
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
+            sleep(100);
+            aprilTagShoot();
         }
-
-        aprilTagShoot();
-
     }
 
     private void thirdShot(@NonNull MecanumDrive mecanumDrive){
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("Second Shot Pose", pose);
-        telemetry.update();
-
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-17,-30))
+                .strafeTo(new Vector2d(-12,-30))
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-73)
                 .lineToY(-59)
@@ -234,15 +211,12 @@ public class M3_RedGoal extends M3_CommonFunctions {
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
+            aprilTagShoot();
         }
-        aprilTagShoot();
     }
     private void fourthShot(@NonNull MecanumDrive mecanumDrive ){
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
-
-        telemetry.addData("Third Shot Pose", pose);
-        telemetry.update();
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
                 .strafeTo(new Vector2d(-36,-30))
@@ -254,8 +228,6 @@ public class M3_RedGoal extends M3_CommonFunctions {
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
-        }
-        if (opModeIsActive()) {
             aprilTagShoot();
         }
     }
@@ -286,6 +258,7 @@ public class M3_RedGoal extends M3_CommonFunctions {
             desiredTag = detectAprilTag( currentDetections);
             if (desiredTag.id == tagNumber) {
                 rangeError = MoveToDesiredLocation(desiredTag);
+                sleep(100);
                 tagFound = 1;
                 telemetry.addData("Found", "ID %d (%s), Range %5.1f inches, Bearing %3.0f degrees,  Yaw %3.0f degrees", desiredTag.id, desiredTag.metadata.name, desiredTag.ftcPose.range, desiredTag.ftcPose.bearing, desiredTag.ftcPose.yaw);
                 telemetry.addData("range error inside", rangeError);
