@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @TeleOp
 @Config
+@Disabled
 public final class M3_ShootingTest extends M3_CommonFunctions {
     private DcMotorEx launcher;
     DcMotor intake1, intake2;

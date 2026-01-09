@@ -92,7 +92,8 @@ public class M3_RedGoal extends M3_CommonFunctions {
             firstShot();
             secondShot(mecanumDrive);
             thirdShot(mecanumDrive);
-            fourthShot(mecanumDrive);
+            exitBigTriangle(mecanumDrive);
+            //fourthShot(mecanumDrive);
             stop();
         }
         if (isStopRequested()) {
@@ -256,6 +257,23 @@ public class M3_RedGoal extends M3_CommonFunctions {
         }
         if (opModeIsActive()) {
             aprilTagShoot();
+        }
+    }
+
+    private void exitBigTriangle(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+        telemetry.addData("Exit Big Triangle", pose);
+        telemetry.update();
+
+        Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
+                .strafeTo(new Vector2d(-36,-40))
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path_exitBigTri));
         }
     }
     private void aprilTagShoot(){

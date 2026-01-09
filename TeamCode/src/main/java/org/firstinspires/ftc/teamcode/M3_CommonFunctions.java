@@ -183,9 +183,12 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         ElapsedTime runtime = new ElapsedTime();
         while (runtime.seconds() < shootingTime) {
             boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
+            telemetry.addLine("Setting motor velocity");
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
+                telemetry.addLine("Motor at velocity");
+                telemetry.update();
                 sleep(750);
                 intake2.setPower(-1);
                 intake1.setPower(1);
@@ -197,15 +200,19 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         intake2.setPower(0);
     }
     public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range, double shootingTime) {
+
         //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-
+        telemetry.addData("Tag Id shootBallAprilTagDistance", currentDetections);
+        telemetry.update();
         AprilTagDetection desiredTag1 = detectAprilTag(currentDetections);
         AprilTagDetection desiredTag;
 
         if (desiredTag1.id == RED_TAG_ID || desiredTag1.id == BLUE_TAG_ID) {
             desiredTag = desiredTag1;
         } else {
+            telemetry.addLine("April Tag Not Detected");
+            telemetry.update();
             return;
         }
 
@@ -215,6 +222,41 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         if (range > 90) {
             launcherVel -= 100;
         }
+        launcher.setVelocity(launcherVel);
+        shootArtifacts(launcher, intake1, intake2, arm, launcherVel, shootingTime);
+    }
+    public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range, double shootingTime, String shootingTriangle) {
+
+        //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        double launcherVel;
+
+        AprilTagDetection desiredTag1 = detectAprilTag(currentDetections);
+        AprilTagDetection desiredTag;
+        telemetry.addData("Tag Id", desiredTag1.id);
+        telemetry.update();
+        if (desiredTag1.id == RED_TAG_ID || desiredTag1.id == BLUE_TAG_ID) {
+            desiredTag = desiredTag1;
+            range = desiredTag.ftcPose.range;
+
+            launcherVel = 973.7734 * Math.pow(1.00616, range);
+            if (range > 90) {
+                launcherVel -= 100;
+            }
+        } else if (desiredTag1.id == -1){
+            if (shootingTriangle.equals(ConfigurationConstants.BIG_TRIANGLE)){
+                launcherVel = 1360;
+            } else if (shootingTriangle.equals(ConfigurationConstants.SMALL_TRIANGLE)){
+                launcherVel = 1780;
+            } else {
+                launcherVel = 1360;
+            }
+        } else {
+            telemetry.addLine("April Tag Not Detected");
+            telemetry.update();
+            return;
+        }
+
         launcher.setVelocity(launcherVel);
         shootArtifacts(launcher, intake1, intake2, arm, launcherVel, shootingTime);
     }
@@ -229,6 +271,8 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
                 //  Check to see if we want to track towards this tag.
                 if ((detection.id == RED_TAG_ID) || (detection.id == BLUE_TAG_ID)) {
                     // Yes, we want to use this tag.
+                    telemetry.addData("AprilTagDetection ID", detection.id);
+                    telemetry.update();
                     return detection;
                 } else {
                     // This tag is in the library, but we do not want to track it right now.
@@ -354,5 +398,4 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         backLeftDrive.setPower(backLeftPower);
         backRightDrive.setPower(backRightPower);
     }
-
 }

@@ -92,8 +92,10 @@ public class M3_BlueLoadingSmallTriangle extends M3_CommonFunctions {
             telemetry.update();
             firstShot();
             secondShot(mecanumDrive);
-            thirdShot(mecanumDrive);
-            fourthShot(mecanumDrive);
+            exitSmallTriangle(mecanumDrive);
+            //thirdShot(mecanumDrive);
+            //exitBigTriangle(mecanumDrive);
+            //fourthShot(mecanumDrive);
             stop();
         }
         if (isStopRequested()) {
@@ -191,7 +193,6 @@ public class M3_BlueLoadingSmallTriangle extends M3_CommonFunctions {
             telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
         }
-        sleep(1500);
         shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
 
     }
@@ -214,7 +215,6 @@ public class M3_BlueLoadingSmallTriangle extends M3_CommonFunctions {
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
         }
-        sleep(1500);
         shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         launcher.setVelocity(1300);
 
@@ -262,6 +262,40 @@ public class M3_BlueLoadingSmallTriangle extends M3_CommonFunctions {
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
+        }
+    }
+
+    private void exitBigTriangle(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+        telemetry.addData("Exit Big Triangle", pose);
+        telemetry.update();
+
+        Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
+                .strafeTo(new Vector2d(-36,40))
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path_exitBigTri));
+        }
+    }
+
+    private void exitSmallTriangle(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+        telemetry.addData("Exit Small Triangle", pose);
+        telemetry.update();
+
+        Action path_exitSmallTri = mecanumDrive.actionBuilder(pose)
+                .strafeTo(new Vector2d(pose.position.x,30))
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path_exitSmallTri));
         }
     }
     private void aprilTagShoot(){

@@ -93,7 +93,8 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
             firstShot();
             secondShot(mecanumDrive);
             thirdShot(mecanumDrive);
-            fourthShot(mecanumDrive);
+            exitBigTriangle(mecanumDrive);
+            //fourthShot(mecanumDrive);
             stop();
         }
         if (isStopRequested()) {
@@ -184,14 +185,8 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
         //waitForStart();
 
         if (opModeIsActive()) {
-            Pose2d newPose = mecanumDrive.localizer.getPose();
-            telemetry.addData("X", newPose.position.x);
-            telemetry.addData("Y", newPose.position.y);
-            telemetry.addData("A", Math.toDegrees(newPose.heading.toDouble()));
-            telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
         }
-        sleep(1500);
         shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
 
     }
@@ -214,7 +209,6 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
         }
-        sleep(1500);
         shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         launcher.setVelocity(1300);
 
@@ -237,7 +231,7 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
                 .lineToY(-63)
                 //.lineToY(-50)
                 .strafeTo(new Vector2d(15,-22))
-                .turnTo(Math.toRadians(-45))
+                .turnTo(Math.toRadians(-50))
 
                 .build();
 
@@ -271,28 +265,67 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
             aprilTagShoot();
         }
     }
+
+    private void exitBigTriangle(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+        telemetry.addData("Exit Big Triangle", pose);
+        telemetry.update();
+
+        Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
+                .strafeTo(new Vector2d(-36,-40))
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path_exitBigTri));
+        }
+    }
+    private void exitSmallTriangle(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+        telemetry.addData("Exit Big Triangle", pose);
+        telemetry.update();
+
+        Action path_exitSmallTri = mecanumDrive.actionBuilder(pose)
+                .strafeTo(new Vector2d(pose.position.x,-40))
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path_exitSmallTri));
+        }
+    }
     private void aprilTagShoot(){
         tagFound = 0;
         rangeError = 2.01;
+        telemetry.addData("RangeError Initial", rangeError);
         while (rangeError > 2) {
+            telemetry.addLine("Inside While loop");
+            telemetry.update();
             desiredTag = null;
             tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             desiredTag = detectAprilTag(currentDetections);
             if (desiredTag.id == tagNumber) {
                 rangeError = MoveToDesiredLocation(desiredTag);
+
                 tagFound = 1;
                 telemetry.addData("Found", "ID %d (%s), Range %5.1f inches, Bearing %3.0f degrees,  Yaw %3.0f degrees", desiredTag.id, desiredTag.metadata.name, desiredTag.ftcPose.range, desiredTag.ftcPose.bearing, desiredTag.ftcPose.yaw);
                 telemetry.addData("range error inside", rangeError);
                 telemetry.update();
             } else {
                 telemetry.addData("Tag Not Found, ID %d (%s)", desiredTag.id);
+                telemetry.addData("RangeError", rangeError);
                 telemetry.update();
                 tagFound = 0;
             }
             if (tagFound == 0) {
                 moveRobot(0, 0, 0.1);
                 telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
+                telemetry.addData("range error inside", rangeError);
                 telemetry.update();
                 sleep(10);
                 moveRobot(0, 0, 0);

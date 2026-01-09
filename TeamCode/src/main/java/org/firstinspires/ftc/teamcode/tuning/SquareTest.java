@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode.tuning;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 @TeleOp
+@Disabled
 public final class SquareTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {

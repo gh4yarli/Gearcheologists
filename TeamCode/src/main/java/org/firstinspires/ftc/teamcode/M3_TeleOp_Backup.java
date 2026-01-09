@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,8 +22,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@TeleOp(name = "M3_CompTeleop", group = "Competition")
-public class M3_TeleOp extends OpMode {
+@TeleOp
+@Disabled
+public class M3_TeleOp_Backup extends OpMode {
 
     // Mecanum Wheels
     DcMotor frontLeftDrive;
@@ -45,7 +47,6 @@ public class M3_TeleOp extends OpMode {
     public static M2_CompTeleop.Params PARAMS = new M2_CompTeleop.Params();
 
     public GoBildaPinpointDriver pinpoint;
-    ElapsedTime launchTimer;
 
     M3_StaticCommonFunctions scuff = new M3_StaticCommonFunctions();
 
@@ -57,7 +58,6 @@ public class M3_TeleOp extends OpMode {
 
     @Override
     public void init() {
-        // Set these ONCE during initialization
 
         // initializing stuff
         frontLeftDrive = hardwareMap.get(DcMotor.class, "leftFront");
@@ -74,17 +74,14 @@ public class M3_TeleOp extends OpMode {
         initAprilTag();
         timer = new ElapsedTime();
 
-        launcher.setDirection(DcMotorEx.Direction.REVERSE);
-        launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
-        launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
-
-        // Create a timer for the launch delay
-        launchTimer = new ElapsedTime();
-
         // reverse the left motors just because that's how it works
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        launcher.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        PIDFCoefficients pidf = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
+
+        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
 
         // Pinpoint
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, ConfigurationConstants.Names.ODOMETRY_COMPUTER);
@@ -128,7 +125,7 @@ public class M3_TeleOp extends OpMode {
             armServo.setPosition(0);
         }
         // if left bumper isn't pressed, intake 2 won't run
-        else if (gamepad2.right_trigger < 0.85){
+        else {
             armServo.setPosition(1);
         }
         if (gamepad1.a){
@@ -152,11 +149,6 @@ public class M3_TeleOp extends OpMode {
         // depending on the value (true or false) it will go to either robot centric or field centric
         if (toggle) {
             drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        }
-        // If you press the left bumper, you get a drive from the point of view of the robot
-        // (much like driving an RC vehicle)
-        else if (gamepad1.left_bumper) {
-            drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
@@ -166,71 +158,19 @@ public class M3_TeleOp extends OpMode {
             intake2.setPower(-1.0);
         }
         // if right trigger is pressed, it will launch the artifacts
-        // In your main loop (not a blocking while loop)
-        if (gamepad2.right_trigger > 0.85) {
-            // Stop driving
+        if (gamepad2.right_trigger > 0) {
             frontLeftDrive.setPower(0);
             frontRightDrive.setPower(0);
             backRightDrive.setPower(0);
             backLeftDrive.setPower(0);
+            //Calling shooter method that should dynamically set the velocity based on Apriltag detection
+            scuff.shootBallAprilTagDistance(launcher, intake1, intake2, armServo, aprilTag, this);
 
-            // Get AprilTag detections
-            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-
-            AprilTagDetection desiredTag1 = detectAprilTag(24, currentDetections);
-            AprilTagDetection desiredTag2 = detectAprilTag(20, currentDetections);
-            AprilTagDetection desiredTag = null;
-
-            // Safely check for tags
-            if (desiredTag1 != null && desiredTag1.id == 24) {
-                desiredTag = desiredTag1;
-            } else if (desiredTag2 != null && desiredTag2.id == 20) {
-                desiredTag = desiredTag2;
-            }
-
-            if (desiredTag != null) {
-                double range = desiredTag.ftcPose.range;
-                double launcherVel = 973.7734 * Math.pow(1.00616, range) - 20;
-
-                if (range > 90) {
-                    launcherVel -= 140;
-                }
-
-                launcher.setVelocity(launcherVel);
-
-                boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - 60
-                        && Math.abs(launcher.getVelocity()) <= launcherVel + 60;
-
-                if (launcherAtSpeed) {
-                    armServo.setPosition(0);
-                    // Use a timer instead of sleep
-                    if (launchTimer.milliseconds() > 150) {
-                        intake2.setPower(-1);
-                        intake1.setPower(1);
-                    }
-                } else {
-                    launchTimer.reset(); // Reset timer if not at speed
-                }
-
-                telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
-                telemetry.addData("range", range);
-                telemetry.addData("target velocity", launcherVel);
-            } else {
-                telemetry.addData("Status", "No AprilTag detected");
-            }
-
-            telemetry.addData("gamepad 2 right trigger value", gamepad2.right_trigger);
-            telemetry.update();
-
-        } else {
-            // Reset when trigger is released
-            armServo.setPosition(1);
-            intake2.setPower(0);
-            intake1.setPower(0);
-            launcher.setVelocity(1400);
-        }
-        if (gamepad2.right_bumper) {
+        } else if (gamepad2.right_bumper) {
             launcher.setVelocity(1800);
+        }
+        if (!shootBallsRunning){
+            intake2.setPower(0);
         }
         // Emergency Brake
         if (gamepad2.b) {
