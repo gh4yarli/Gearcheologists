@@ -1,6 +1,12 @@
+
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+import android.graphics.Path;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -8,8 +14,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
@@ -20,30 +26,22 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings({/*"unused",*/ "FieldCanBeLocal", "ParameterCanBeLocal"})
-public abstract class M3_CommonFunctions extends LinearOpMode {
+@SuppressWarnings({"unused", "FieldCanBeLocal", "ParameterCanBeLocal"})
+public class M3_StaticCommonFunctions {
+    volatile static boolean stopRequested = false;
 
-    protected DcMotor frontLeftDrive;
-    protected DcMotor frontRightDrive;
-    protected DcMotor backLeftDrive;
-    protected DcMotor backRightDrive;
-    protected VisionPortal visionPortal;
-    protected AprilTagProcessor aprilTag;
-    final int RED_TAG_ID = 24;
-    final int BLUE_TAG_ID = 20;
-    final double SHOOTING_TIME_SEC = 3;
     final int PLUS_OR_MINUS_VEL_THRESHOLD = 40;
 
     /**
      * Starts the launchers
-     * @param leftLauncher
+     * @param leftLauncher 4
      * left launcher motor
      * @param rightLauncher
      * right launcher motor
      * @param launcherVel
      * power to shoot balls
      */
-    public void startLaunchers(DcMotorEx leftLauncher, DcMotorEx rightLauncher, double launcherVel) {
+    public static void startLaunchers(DcMotorEx leftLauncher, DcMotorEx rightLauncher, double launcherVel, OpMode opMode) {
         leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -54,15 +52,14 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         leftLauncher.setVelocity(launcherVel);
         rightLauncher.setVelocity(-launcherVel);
     }
-    public void startLaunchers(DcMotorEx launcher, double launcherVel) {
+    public static void startLaunchers(DcMotorEx launcher, double launcherVel, OpMode opMode) {
 
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        launcher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        //launcher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
         PIDFCoefficients pid_right_new = new PIDFCoefficients(50,0.75,1.0,12.7);
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
-
         launcher.setDirection(DcMotorSimple.Direction.REVERSE);
         launcher.setVelocity(launcherVel);
     }
@@ -74,7 +71,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
      * @param rightLauncher
      * right launcher motor
      */
-    public void stopLaunchers(DcMotorEx leftLauncher, DcMotorEx rightLauncher) {
+    public static void stopLaunchers(DcMotorEx leftLauncher, DcMotorEx rightLauncher) {
         // setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE) tries to stop the DcMotor instead of just letting it spin
         // when a power of 0 is requested
         leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -90,7 +87,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
      * @param rightFeeder
      * right feeder servo
      */
-    public void startFeeder(CRServo leftFeeder, CRServo rightFeeder) {
+    public static void startFeeder(CRServo leftFeeder, CRServo rightFeeder) {
         leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFeeder.setPower(-1);
         rightFeeder.setPower(-1);
@@ -103,7 +100,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
      * @param rightFeeder
      * right feeder servo
      */
-    public void stopFeeder(CRServo leftFeeder, CRServo rightFeeder) {
+    public static void stopFeeder(CRServo leftFeeder, CRServo rightFeeder) {
         leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFeeder.setPower(0);
         rightFeeder.setPower(0);
@@ -116,7 +113,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
      * @param intake2
      * second intake
      */
-    public void startIntake(DcMotor intake1, DcMotor intake2) {
+    public static void startIntake(DcMotor intake1, DcMotor intake2) {
         intake1.setPower(1);
         //intake2.setPower(-1);
     }
@@ -128,7 +125,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
      * @param intake2
      * second intake
      */
-    public void stopIntake(DcMotor intake1, DcMotor intake2) {
+    public static void stopIntake(DcMotor intake1, DcMotor intake2) {
         intake1.setPower(0);
         intake2.setPower(0);
     }
@@ -149,8 +146,9 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
      * @param intake2
      * second intake
      */
-    public void shootBalls(DcMotorEx leftLauncher, DcMotorEx rightLauncher, CRServo leftFeeder,
-                           CRServo rightFeeder, DcMotor intake1, DcMotor intake2) {
+
+    public static void shootBalls(DcMotorEx leftLauncher, DcMotorEx rightLauncher, CRServo leftFeeder,
+                                  CRServo rightFeeder, DcMotor intake1, DcMotor intake2) {
         DcMotorEx.Direction LeftFeederDirection = leftFeeder.getDirection();
         DcMotorEx.Direction LeftLauncherDirection = leftLauncher.getDirection();
         DcMotorEx.Direction RightLauncherDirection = rightLauncher.getDirection();
@@ -170,7 +168,8 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         leftLauncher.setDirection(LeftLauncherDirection);
         rightLauncher.setDirection(RightLauncherDirection);
     }
-    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel, double shootingTime) {
+
+    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel, OpMode opMode) {
 
         launcher.setDirection(DcMotorEx.Direction.REVERSE);
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -180,76 +179,79 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < shootingTime) {
+        while (runtime.seconds() < 1.1) {
             boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
-            telemetry.addLine("Setting motor velocity");
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
-                telemetry.addLine("Motor at velocity");
-                telemetry.update();
-                sleep(700);
+                sleep(300);
                 intake2.setPower(-1);
                 intake1.setPower(1);
             }
-            telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
-            telemetry.update();
+            opMode.telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
+            opMode.telemetry.update();
         }
         arm.setPosition(1);
         intake2.setPower(0);
     }
-    public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range, double shootingTime) {
-
+    public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, OpMode opMode) {
         //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("Tag Id shootBallAprilTagDistance", currentDetections);
-        telemetry.update();
-        AprilTagDetection desiredTag1 = detectAprilTag(currentDetections);
+
+        AprilTagDetection desiredTag1 = detectAprilTag(24, currentDetections, opMode);
+        AprilTagDetection desiredTag2 = detectAprilTag(20, currentDetections, opMode);
         AprilTagDetection desiredTag;
 
-        if (desiredTag1.id == RED_TAG_ID || desiredTag1.id == BLUE_TAG_ID) {
+        if (desiredTag1.id == 24) {
             desiredTag = desiredTag1;
-        } else {
-            telemetry.addLine("April Tag Not Detected");
-            telemetry.update();
-            return;
-        }
+        } else if (desiredTag2.id == 20){
+            desiredTag = desiredTag2;
+        } else return;
 
-        range = desiredTag.ftcPose.range;
+        double range = desiredTag.ftcPose.range;
+    /*
+        double launcherVel = 973.7734 * Math.pow(1.00616, range) + 60;
+
+        if (range > 90) {
+            launcherVel -= 220;
+        }
+        */
+
 
         double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
         if (range > 90) {
             launcherVel -= 160;
         }
+        intake1.setPower(0);
+        intake2.setPower(0);
         launcher.setVelocity(launcherVel);
-        shootArtifacts(launcher, intake1, intake2, arm, launcherVel, shootingTime);
+        shootArtifacts(launcher, intake1, intake2, arm, launcherVel, opMode);
     }
-
-    public AprilTagDetection detectAprilTag ( List<AprilTagDetection> currentDetections ){
+    public static AprilTagDetection detectAprilTag (int tag, List<AprilTagDetection> currentDetections, OpMode opMode ){
 
         // Step through the list of detected tags and look for a matching tag
         AprilTagDetection dummyTag = new AprilTagDetection(-1, -1 , 1.900F, null, null, null, null, null, null, 123);
+
         for (AprilTagDetection detection : currentDetections) {
             // Look to see if we have size info on this tag.
             if (detection.metadata != null) {
                 //  Check to see if we want to track towards this tag.
-                if ((detection.id == RED_TAG_ID) || (detection.id == BLUE_TAG_ID)) {
+                if ((detection.id == tag)) {
                     // Yes, we want to use this tag.
-                    telemetry.addData("AprilTagDetection ID", detection.id);
-                    telemetry.update();
+                    opMode.telemetry.addData("April Tag Detected", detection.id);
                     return detection;
                 } else {
                     // This tag is in the library, but we do not want to track it right now.
-                    telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                    opMode.telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
                 }
             } else {
                 // This tag is NOT in the library, so we don't have enough information to track to it.
-                telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+                opMode.telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
             }
         }
         return dummyTag;
     }
-    public void initAprilTag() {
+    public static void initAprilTag(AprilTagProcessor aprilTag, VisionPortal visionPortal, OpMode opMode) {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
 
@@ -264,12 +266,11 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
 
         // Create the vision portal by using a builder.
         visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(opMode.hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(aprilTag)
                 .build();
     }
-
-    public void setManualExposure() {
+    public static void setManualExposure(VisionPortal visionPortal, OpMode opMode) {
         // Wait for the camera to be open, then use the controls
 
         if (visionPortal == null) {
@@ -278,13 +279,13 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
 
         // Make sure camera is streaming before we try to set the exposure controls
         if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            telemetry.addData("Camera", "Waiting");
-            telemetry.update();
+            opMode.telemetry.addData("Camera", "Waiting");
+            opMode.telemetry.update();
             while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
                 sleep(20);
             }
-            telemetry.addData("Camera", "Ready");
-            telemetry.update();
+            opMode.telemetry.addData("Camera", "Ready");
+            opMode.telemetry.update();
         }
 
         // Set camera controls unless we are stopping.
@@ -302,64 +303,31 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
             sleep(20);
         }
     }
-
-    public void initHardware() {
-        frontLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_LEFT_DRIVE_MOTOR);
-        frontRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FRONT_RIGHT_DRIVE_MOTOR);
-        backLeftDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_LEFT_DRIVE_MOTOR);
-        backRightDrive = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.BACK_RIGHT_DRIVE_MOTOR);
-
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.FORWARD);
-    }
-
-    public double moveToDesiredLocation (AprilTagDetection desiredTag, double desiredDistance, double speedGain, double strafeGain, double turnGain, double maxAutoSpeed, double maxAutoStrafe, double maxAutoTurn){
-        // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-        double rangeError      = (desiredTag.ftcPose.range - desiredDistance);
-        double  headingError    = desiredTag.ftcPose.bearing;
-        double  yawError        = desiredTag.ftcPose.yaw;
-
-        double  drive;       // Desired forward power/speed (-1 to +1)
-        double  strafe;      // Desired strafe power/speed (-1 to +1)
-        double  turn;        // Desired turning power/speed (-1 to +1)
-
-        // Use the speed and turn "gains" to calculate how we want the robot to move.
-        drive  = Range.clip(rangeError * speedGain, -maxAutoSpeed, maxAutoSpeed);
-        turn   = Range.clip(headingError * turnGain, -maxAutoTurn, maxAutoTurn) ;
-        strafe = Range.clip(-yawError * strafeGain, -maxAutoStrafe, maxAutoStrafe);
-
-        telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-        telemetry.addLine("Starting to move to the desired location");
-        telemetry.update();
-        moveRobot(drive, strafe, turn);
-        sleep(100);
-        return rangeError;
-    }
-    public void moveRobot(double x, double y, double h) {
-        // Calculate wheel powers.
-        double frontLeftPower    =  x - y - h;
-        double frontRightPower   =  x + y + h;
-        double backLeftPower     =  x + y - h;
-        double backRightPower    =  x - y + h;
-
-        // Normalize wheel powers to be less than 1.0
-        double max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
-        max = Math.max(max, Math.abs(backLeftPower));
-        max = Math.max(max, Math.abs(backRightPower));
-
-        if (max > 1.0) {
-            frontLeftPower /= max;
-            frontRightPower /= max;
-            backLeftPower /= max;
-            backRightPower /= max;
+    /**
+     * Sleeps for the given amount of milliseconds, or until the thread is interrupted (which usually
+     * indicates that the OpMode has been stopped).
+     * <p>This is simple shorthand for {@link Thread#sleep(long) sleep()}, but it does not throw {@link InterruptedException}.</p>
+     *
+     * @param milliseconds amount of time to sleep, in milliseconds
+     * @see Thread#sleep(long)
+     */
+    public static void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
-
-        // Send powers to the wheels.
-        frontLeftDrive.setPower(frontLeftPower);
-        frontRightDrive.setPower(frontRightPower);
-        backLeftDrive.setPower(backLeftPower);
-        backRightDrive.setPower(backRightPower);
     }
+    /**
+     * Determine whether the OpMode has been asked to stop.
+     *
+     * <p>If this method returns false, you should break out of any loops
+     * and allow the OpMode to exit at its earliest convenience.</p>
+     *
+     * @return Whether the OpMode has been asked to stop
+     */
+    public static boolean isStopRequested() {
+        return stopRequested || Thread.currentThread().isInterrupted();
+    }
+
 }

@@ -5,8 +5,10 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -20,22 +22,22 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @Autonomous
-@SuppressWarnings({"unused", "CommentedOutCode"})
-public class M3_RedLoadingBigTriangle_M2Path extends M3_CommonFunctions {
+@Disabled
+@SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression"})
+public class M3_BlueGoal_Backup extends M3_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.025  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.01 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  = 0.025;  //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN = 0.01;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   = 0.01;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE = 0.75;   //  Clip the strafing speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.45;   //  Clip the turn speed to this max value (adjust for your robot)
-
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private VisionPortal visionPortal;               // Used to manage the video source.
     AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
@@ -49,7 +51,7 @@ public class M3_RedLoadingBigTriangle_M2Path extends M3_CommonFunctions {
     Servo arm;
     double rangeError = 5000;
     int tagFound = 0;
-    int tagNumber = 24;
+    int tagNumber = 20;
     AprilTagDetection desiredTag;
     double range;
 
@@ -77,16 +79,15 @@ public class M3_RedLoadingBigTriangle_M2Path extends M3_CommonFunctions {
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        arm.scaleRange(0.5, 1);
+        //arm.scaleRange(0.5, 1);
 
-
-        Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
+        Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
-        startLaunchers(launcher, 1400);
+        startLaunchers(launcher, 1240);
         if (opModeIsActive()) {
             arm.setPosition(1);
-            startIntake(intake1, intake2);
+            intake1.setPower(1);
             telemetry.addData("Status", "First Shot");
             telemetry.update();
             firstShot();
@@ -165,19 +166,15 @@ public class M3_RedLoadingBigTriangle_M2Path extends M3_CommonFunctions {
     }
 
     private void firstShot(){
-        Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
+        Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(52));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
-       /* Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(-50)
-                .turnTo(Math.toRadians(-30))
-                .build(); */
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(10)
-                .turnTo(Math.toRadians(-47))
+                .lineToX(26)
+                .turnTo(Math.toRadians(47))
                 .build();
 
         if (USE_WEBCAM)
-            setManualExposure(visionPortal);  // Use low exposure time to reduce motion blur
+            setManualExposure();  // Use low exposure time to reduce motion blur
 
         // Wait for driver to press start
         telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
@@ -200,16 +197,15 @@ public class M3_RedLoadingBigTriangle_M2Path extends M3_CommonFunctions {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("Second Shot Pose", pose);
+        telemetry.addData("First Shot Pose", pose);
         telemetry.update();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                //.turnTo(Math.toRadians(0))
-                .lineToX(15)
-                .turnTo(Math.toRadians(-90))
-                .lineToY(-62)
-                .lineToY(-20)
-                .turnTo(Math.toRadians(-50))
+                .lineToX(17)
+                .turnTo(Math.toRadians(90))
+                .lineToY(64)
+                .lineToY(20)
+                .turnTo(Math.toRadians(50))
                 .build();
 
         if (opModeIsActive()) {
@@ -224,24 +220,21 @@ public class M3_RedLoadingBigTriangle_M2Path extends M3_CommonFunctions {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("Third Shot Pose", pose);
+        telemetry.addData("Second Shot Pose", pose);
         telemetry.update();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .turnTo(Math.toRadians(0))
-                .lineToX(-5)
-                .turnTo(Math.toRadians(-90))
-                .lineToY(-65)
-                .lineToY(-20)
-                .turnTo(Math.toRadians(-30))
+                .strafeTo(new Vector2d(-17,30))
+                .turnTo(Math.toRadians(93))
+                .lineToY(73)
+                .lineToY(59)
+                .strafeTo(new Vector2d(pose.position.x+5,30))
+                .turnTo(pose.heading.toDouble())
                 .build();
-
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
         }
-
         aprilTagShoot();
-
     }
     private void fourthShot(@NonNull MecanumDrive mecanumDrive ){
         mecanumDrive.updatePoseEstimate();
@@ -251,19 +244,19 @@ public class M3_RedLoadingBigTriangle_M2Path extends M3_CommonFunctions {
         telemetry.update();
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .turnTo(Math.toRadians(0))
-                .lineToX(-27)
+                .strafeTo(new Vector2d(-36,30))
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-65)
-                .lineToY(-20)
-                .turnTo(Math.toRadians(-30))
+                .lineToY(65)
+                .lineToY(60)
+                .strafeTo(new Vector2d(pose.position.x,30))
+                .endTrajectory()
                 .build();
-
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
-
         }
-        aprilTagShoot();
+        if (opModeIsActive()) {
+            aprilTagShoot();
+        }
     }
     private void aprilTagShoot(){
         tagFound = 0;
@@ -272,7 +265,7 @@ public class M3_RedLoadingBigTriangle_M2Path extends M3_CommonFunctions {
             desiredTag = null;
             tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            desiredTag = detectAprilTag(tagNumber, currentDetections);
+            desiredTag = detectAprilTag(currentDetections);
             if (desiredTag.id == tagNumber) {
                 rangeError = MoveToDesiredLocation(desiredTag);
                 tagFound = 1;
@@ -294,7 +287,9 @@ public class M3_RedLoadingBigTriangle_M2Path extends M3_CommonFunctions {
         }
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError);
+            intake1.setPower(0);
+            intake2.setPower(0);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
     }
     public void initAprilTag() {

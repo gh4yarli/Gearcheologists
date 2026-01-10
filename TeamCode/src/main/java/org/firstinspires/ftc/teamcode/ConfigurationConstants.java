@@ -24,8 +24,6 @@ public final class ConfigurationConstants {
          * name for back right drive motor
          */
         public static final String BACK_RIGHT_DRIVE_MOTOR = "rightBack";
-
-        //public static final String FIRST_INTAKE_MOTOR = "feeder";
         // For Meet 3
         public static final String FIRST_INTAKE_MOTOR = "intake1";
         public static final String SECOND_INTAKE_MOTOR = "intake2";
@@ -40,8 +38,8 @@ public final class ConfigurationConstants {
         public static final String RIGHT_FEEDER_SERVO = "rightFeeder";
         public static final String ARM_SERVO = "armServo";
 
-        public static final String DISTANCE_SENSOR = "distance";
-
         public static final String ODOMETRY_COMPUTER = "pinpoint";
     }
+    public static final double SMALL_TRI_SHOOTING_TIME = 3.8;
+    public static final double BIG_TRI_SHOOTING_TIME = 2.6;
 }
