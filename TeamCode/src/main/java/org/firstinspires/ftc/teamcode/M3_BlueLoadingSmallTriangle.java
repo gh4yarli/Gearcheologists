@@ -177,7 +177,7 @@ public class M3_BlueLoadingSmallTriangle extends M3_CommonFunctions {
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path));
-            sleep(200);
+            sleep(300);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         }
     }

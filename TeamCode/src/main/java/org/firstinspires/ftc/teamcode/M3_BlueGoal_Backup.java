@@ -225,7 +225,7 @@ public class M3_BlueGoal_Backup extends M3_CommonFunctions {
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
                 .strafeTo(new Vector2d(-17,30))
-                .turnTo(Math.toRadians(90))
+                .turnTo(Math.toRadians(93))
                 .lineToY(73)
                 .lineToY(59)
                 .strafeTo(new Vector2d(pose.position.x+5,30))

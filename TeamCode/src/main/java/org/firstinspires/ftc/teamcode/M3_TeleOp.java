@@ -190,11 +190,13 @@ public class M3_TeleOp extends OpMode {
 
             if (desiredTag != null) {
                 double range = desiredTag.ftcPose.range;
-                double launcherVel = 973.7734 * Math.pow(1.00616, range) - 20;
+                double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
 
                 if (range > 90) {
-                    launcherVel -= 140;
+                    launcherVel -= 180;
                 }
+
+
 
                 launcher.setVelocity(launcherVel);
 
@@ -207,9 +209,14 @@ public class M3_TeleOp extends OpMode {
                     if (launchTimer.milliseconds() > 150) {
                         intake2.setPower(-1);
                         intake1.setPower(1);
+                    } else {
+                        intake1.setPower(0);
+                        intake2.setPower(0);
                     }
                 } else {
                     launchTimer.reset(); // Reset timer if not at speed
+                    intake1.setPower(0);
+                    intake1.setPower(0);
                 }
 
                 telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));

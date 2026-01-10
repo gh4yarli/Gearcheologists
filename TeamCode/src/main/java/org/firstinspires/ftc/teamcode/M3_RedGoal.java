@@ -183,11 +183,11 @@ public class M3_RedGoal extends M3_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(14, pose.position.y))
+                .strafeTo(new Vector2d(12, pose.position.y))
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-58)
-                .lineToY(-23)
-                .turnTo(Math.toRadians(-48))
+                .lineToY(-57)
+                .lineToY(-25)
+                .turnTo(Math.toRadians(-50))
                 .build();
 
         if (opModeIsActive()) {
@@ -207,7 +207,8 @@ public class M3_RedGoal extends M3_CommonFunctions {
                 .lineToY(-73)
                 .lineToY(-59)
                 .strafeTo(new Vector2d(pose.position.x+5,-30))
-                .turnTo(pose.heading.toDouble())
+                .turnTo(Math.toRadians(-50))
+                //.turnTo(pose.heading.toDouble())
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));

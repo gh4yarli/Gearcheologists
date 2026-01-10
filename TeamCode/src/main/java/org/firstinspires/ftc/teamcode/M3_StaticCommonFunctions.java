@@ -209,11 +209,18 @@ public class M3_StaticCommonFunctions {
         } else return;
 
         double range = desiredTag.ftcPose.range;
-
-        double launcherVel = 973.7734 * Math.pow(1.00616, range) - 20;
+    /*
+        double launcherVel = 973.7734 * Math.pow(1.00616, range) + 60;
 
         if (range > 90) {
-            launcherVel -= 140;
+            launcherVel -= 220;
+        }
+        */
+
+
+        double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
+        if (range > 90) {
+            launcherVel -= 160;
         }
         intake1.setPower(0);
         intake2.setPower(0);

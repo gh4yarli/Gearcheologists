@@ -192,9 +192,9 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .splineTo(new Vector2d(-34, -30), Math.toRadians(-92))
+                .splineTo(new Vector2d(-34, -30), Math.toRadians(-94))
                 .lineToY(-65)
-                .lineToY(-30)
+                .lineToY(-35)
                 .splineToLinearHeading(new Pose2d(-57, -30, Math.toRadians(-27.5)), Math.toRadians(-27.5))
                 .build();
 
@@ -216,7 +216,7 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
 
-                .splineTo(new Vector2d(-16,-25),Math.toRadians(-90))
+                .splineTo(new Vector2d(-16,-25),Math.toRadians(-94))
                 .lineToY(-63)
                 .lineToY(-50)
                 .strafeTo(new Vector2d(pose.position.x + 78, -22))

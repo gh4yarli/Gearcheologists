@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
-import org.firstinspires.ftc.teamcode.meet1.AprilTag;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -335,6 +334,7 @@ public abstract class M3_CommonFunctions extends LinearOpMode {
         telemetry.addLine("Starting to move to the desired location");
         telemetry.update();
         moveRobot(drive, strafe, turn);
+        sleep(100);
         return rangeError;
     }
     public void moveRobot(double x, double y, double h) {

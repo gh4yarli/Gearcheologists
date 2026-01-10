@@ -103,9 +103,9 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
                 //.lineToX(16)
-                .strafeTo(new Vector2d(14, pose.position.y))
+                .strafeTo(new Vector2d(12, pose.position.y))
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-58)
+                .lineToY(-56)
                 .lineToY(-23)
                 .turnTo(Math.toRadians(-48))
                 .build();
@@ -125,7 +125,7 @@ public class M3_RedLoadingBigTriangle extends M3_CommonFunctions {
                 .turnTo(Math.toRadians(-90))
                 .lineToY(-66)
                 .lineToY(-59)
-                .strafeTo(new Vector2d(pose.position.x + 5, -30))
+                .strafeTo(new Vector2d(pose.position.x + 8, -30))
                 .turnTo(pose.heading.toDouble())
                 .build();
         if (opModeIsActive()) {
