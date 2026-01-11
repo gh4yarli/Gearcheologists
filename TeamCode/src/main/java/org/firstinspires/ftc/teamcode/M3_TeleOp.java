@@ -142,6 +142,14 @@ public class M3_TeleOp extends OpMode {
             toggle = !toggle;
             timer.reset();
         }
+        if (gamepad1.dpad_down){
+            intake1.setPower(-1);
+            intake2.setPower(1);
+        }
+        else {
+            intake1.setPower(1);
+            intake2.setPower(0);
+        }
         prevButton = currentButton;
        // depending on the value (true or false) it will go to either robot centric or field centric
         if (toggle) {
