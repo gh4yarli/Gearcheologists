@@ -90,8 +90,8 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
             startIntake(intake1, intake2);
             firstShot();
             secondShot(mecanumDrive);
-            thirdShot(mecanumDrive);
-            exitBigTriangle(mecanumDrive);
+            //thirdShot(mecanumDrive);
+            exitSmallTriangle(mecanumDrive);
             //fourthShot(mecanumDrive);
             stop();
         }

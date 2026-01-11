@@ -185,7 +185,7 @@ public class M3_BlueGoal extends M3_CommonFunctions {
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
                 .lineToX(21)
                 .turnTo(Math.toRadians(90))
-                .lineToY(56)
+                .lineToY(58)
                 .lineToY(30)
                 .turnTo(Math.toRadians(50))
                 .build();
