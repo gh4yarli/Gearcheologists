@@ -11,14 +11,13 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
 @TeleOp
 @Config
 @Disabled
-public final class M3_ShootingTest extends M3_CommonFunctions {
+public final class ShootingTest extends Auto_CommonFunctions {
     private DcMotorEx launcher;
     DcMotor intake1, intake2;
     Servo arm;
