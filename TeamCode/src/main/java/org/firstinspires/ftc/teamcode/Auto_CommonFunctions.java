@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({/*"unused",*/ "FieldCanBeLocal", "ParameterCanBeLocal"})
-public abstract class M3_CommonFunctions extends LinearOpMode {
+public abstract class Auto_CommonFunctions extends LinearOpMode {
 
     protected DcMotor frontLeftDrive;
     protected DcMotor frontRightDrive;

@@ -22,7 +22,7 @@ import java.util.List;
 
 @Autonomous
 @SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression", "FieldCanBeLocal"})
-public class M3_BlueLoadingSmallTriangle extends M3_CommonFunctions {
+public class BlueLoadingSmallTriangle extends Auto_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 

@@ -22,7 +22,7 @@ import java.util.List;
 
 @Autonomous
 @SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression"})
-public class M3_BlueGoal extends M3_CommonFunctions {
+public class BlueGoal extends Auto_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
