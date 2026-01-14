@@ -4,6 +4,7 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,7 +12,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.ConfigurationConstants;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -20,6 +20,9 @@ public abstract class BaseTeleOp extends OpMode {
 
     // Drive
     protected DcMotor frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive;
+
+    //LED
+    protected LED rightRedLED, rightGreenLED, leftRedLED, leftGreenLED;
 
     // Shooter / Intake
     protected DcMotorEx launcher;
@@ -173,6 +176,10 @@ public abstract class BaseTeleOp extends OpMode {
         intake1 = hardwareMap.get(DcMotor.class, "intake1");
         intake2 = hardwareMap.get(DcMotor.class, "intake2");
         armServo = hardwareMap.get(Servo.class, "armServo");
+        rightRedLED = hardwareMap.get(LED.class, "rightLEDred");
+        rightGreenLED = hardwareMap.get(LED.class, "rightLEDgreen");
+        leftRedLED = hardwareMap.get(LED.class, "leftLEDred");
+        leftGreenLED = hardwareMap.get(LED.class, "leftLEDgreen");
 
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
