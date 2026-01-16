@@ -87,7 +87,7 @@ public class RedGoal extends Auto_CommonFunctions {
             arm.setPosition(1);
             firstShot();
             secondShot(mecanumDrive);
-            //thirdShot(mecanumDrive);
+            thirdShot(mecanumDrive);
             exitBigTriangle(mecanumDrive);
             //fourthShot(mecanumDrive);
             stop();
@@ -237,16 +237,16 @@ public class RedGoal extends Auto_CommonFunctions {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(12, pose.position.y))
-                .turnTo(Math.toRadians(-90))
-                .lineToY(-61)
+        telemetry.addData("Exit Big Triangle", pose);
+        telemetry.update();
+
+        Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
+                .strafeTo(new Vector2d(-36,-40))
+                .endTrajectory()
                 .build();
 
         if (opModeIsActive()) {
-            Actions.runBlocking(new SequentialAction(path_SecondShot));
-            sleep(100);
-            aprilTagShoot();
+            Actions.runBlocking(new SequentialAction(path_exitBigTri));
         }
     }
     private void aprilTagShoot(){

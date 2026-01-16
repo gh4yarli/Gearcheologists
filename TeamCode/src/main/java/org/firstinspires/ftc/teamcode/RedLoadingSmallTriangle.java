@@ -90,9 +90,9 @@ public class RedLoadingSmallTriangle extends Auto_CommonFunctions {
             startIntake(intake1, intake2);
             firstShot();
             secondShot(mecanumDrive);
-            //thirdShot(mecanumDrive);
-            exitSmallTriangle(mecanumDrive);
-            //fourthShot(mecanumDrive);
+            thirdShot(mecanumDrive);
+//            exitSmallTriangle(mecanumDrive);
+            fourthShot(mecanumDrive);
             stop();
         }
         if (isStopRequested()) {
