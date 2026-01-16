@@ -11,6 +11,10 @@ public class CompTeleOp extends BaseTeleOp {
         // Start launcher and intake
         launcher.setVelocity(1380);
         intake1.setPower(1);
+        rightGreenLED.enable(false);
+        rightRedLED.enable(true);
+        leftGreenLED.enable(false);
+        leftRedLED.enable(true);
     }
 
     @Override
@@ -18,6 +22,7 @@ public class CompTeleOp extends BaseTeleOp {
         handleShooter();
         handleIntake();
         handleServo();
+        handleLED();
     }
 
     @Override
@@ -56,10 +61,12 @@ public class CompTeleOp extends BaseTeleOp {
 
             boolean atSpeed = Math.abs(launcher.getVelocity() - targetVel) < 60;
 
-            if (atSpeed && launchTimer.milliseconds() > 150) {
+            if (atSpeed) {
                 armServo.setPosition(0);
-                intake2.setPower(-1);
-                intake1.setPower(1);
+                if (launchTimer.milliseconds() > 300) {
+                    intake2.setPower(-1);
+                    intake1.setPower(1);
+                }
             } else {
                 intake1.setPower(0);
                 intake2.setPower(0);
@@ -93,6 +100,23 @@ public class CompTeleOp extends BaseTeleOp {
             armServo.setPosition(0);
         } else if (!shootingActive) {
             armServo.setPosition(1);
+        }
+    }
+    protected void handleLED() {
+        AprilTagDetection tag = getDesiredTag();
+
+        if (tag == null) {
+            telemetry.addLine("No AprilTag detected");
+            leftGreenLED.enable(false);
+            leftRedLED.enable(true);
+            rightGreenLED.enable(false);
+            rightRedLED.enable(true);
+        } else {
+            telemetry.addLine("AprilTag detected, id " + tag.id);
+            leftGreenLED.enable(true);
+            leftRedLED.enable(false);
+            rightGreenLED.enable(true);
+            rightRedLED.enable(false);
         }
     }
 }
