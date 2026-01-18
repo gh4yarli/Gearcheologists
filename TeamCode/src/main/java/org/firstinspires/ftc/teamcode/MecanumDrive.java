@@ -48,6 +48,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.messages.MecanumCommandMessage;
@@ -73,15 +74,17 @@ public final class MecanumDrive {
         public double lateralInPerTick = 0.001979;
         public double lateralVelGain = 0;
         /*
-        public double maxAngAccel = 3.141592653589793;
-        public double maxAngVel = 3.141592653589793;
-        public double maxProfileAccel = 50;
-        public double maxWheelVel = 50; */
-
         public double maxAngAccel = Math.toRadians(300);
         public double maxAngVel = Math.toRadians(300);
         public double maxProfileAccel = 60.0;
         public double maxWheelVel = 70.0;
+
+         */
+        public double maxWheelVel = 100.0;
+        public double maxProfileAccel = 100.0;
+        public double maxAngVel = Math.toRadians(400);
+        public double maxAngAccel = Math.toRadians(400);
+
         public double minProfileAccel = -30;
         public double trackWidthTicks = 7100;
 
@@ -171,9 +174,9 @@ public final class MecanumDrive {
             FlightRecorder.write("MECANUM_LOCALIZER_INPUTS", new MecanumLocalizerInputsMessage(
                     leftFrontPosVel, leftBackPosVel, rightBackPosVel, rightFrontPosVel, angles));
 
-            Rotation2d heading = Rotation2d.exp(Math.toRadians(headingangle));
+            //Rotation2d heading = Rotation2d.exp(Math.toRadians(headingangle));
 
-            // Rotation2d heading = Rotation2d.exp(angles.getYaw(AngleUnit.RADIANS));
+            Rotation2d heading = Rotation2d.exp(angles.getYaw(AngleUnit.RADIANS));
 
             if (!initialized) {
                 initialized = true;

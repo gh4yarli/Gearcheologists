@@ -56,14 +56,16 @@ public class RedLoadingBigTriangle extends Auto_CommonFunctions {
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
+        arm.scaleRange(0.5, 1);
+
         startLaunchers(launcher, 1260);
         if (opModeIsActive()) {
             arm.setPosition(1);
             firstShot();
             secondShot(mecanumDrive);
             thirdShot(mecanumDrive);
+            fourthShot(mecanumDrive);
             exitBigTriangle(mecanumDrive);
-            //fourthShot(mecanumDrive);
             stop();
         }
         if (isStopRequested()) {
@@ -83,12 +85,10 @@ public class RedLoadingBigTriangle extends Auto_CommonFunctions {
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(10)
                 .turnTo(Math.toRadians(-50))
-                //.splineToLinearHeading(new Pose2d(15, -12, Math.toRadians(-47)), Math.toRadians(-47))
                 .build();
 
         if (USE_WEBCAM)
             setManualExposure();  // Use low exposure time to reduce motion blur
-
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path));
@@ -102,13 +102,18 @@ public class RedLoadingBigTriangle extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                //.lineToX(16)
                 .strafeTo(new Vector2d(12, pose.position.y))
                 .turnTo(Math.toRadians(-90))
+                .lineToY(-61)
+                .strafeTo(new Vector2d(pose.position.x+10, pose.position.y-10))
+                .turnTo(Math.toRadians(-50))
+                .build();
+        /*
                 .lineToY(-56)
                 .lineToY(-23)
                 .turnTo(Math.toRadians(-48))
                 .build();
+        */
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
@@ -121,12 +126,12 @@ public class RedLoadingBigTriangle extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-18, -30))
+                .strafeTo(new Vector2d(-16,-40))
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-66)
+                .lineToY(-73)
                 .lineToY(-59)
-                .strafeTo(new Vector2d(pose.position.x + 8, -30))
-                .turnTo(pose.heading.toDouble())
+                .strafeTo(new Vector2d(pose.position.x+5,-30))
+                .turnTo(Math.toRadians(-50))
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
@@ -139,12 +144,12 @@ public class RedLoadingBigTriangle extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-36, -30))
+                .strafeTo(new Vector2d(-40,-40))
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-65)
-                .lineToY(-60)
-                .strafeTo(new Vector2d(pose.position.x, -30))
-                .endTrajectory()
+                .lineToY(-73)
+                .lineToY(-59)
+                .strafeTo(new Vector2d(pose.position.x,-30))
+                .turnTo(pose.heading.toDouble())
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_fourthShot));

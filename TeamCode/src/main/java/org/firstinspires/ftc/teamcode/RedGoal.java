@@ -81,6 +81,8 @@ public class RedGoal extends Auto_CommonFunctions {
 
         Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
+        arm.scaleRange(0.5, 1);
+
         waitForStart();
         startLaunchers(launcher, 1240);
         if (opModeIsActive()) {

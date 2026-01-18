@@ -176,6 +176,37 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         //launcher.setVelocity(launcherVel);
         PIDFCoefficients pid_right_new = new PIDFCoefficients(50,0.75,1.0,12.7);
+        ElapsedTime timer = new ElapsedTime();
+
+        launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
+
+        ElapsedTime runtime = new ElapsedTime();
+        while (runtime.seconds() < shootingTime) {
+            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
+            telemetry.addLine("Setting motor velocity");
+
+            if (launcherAtSpeed) {
+                arm.setPosition(0);
+                telemetry.addLine("Motor at velocity");
+                telemetry.update();
+                sleep(400);
+                intake2.setPower(-0.5);
+                sleep(200);
+                intake1.setPower(1);
+            }
+            telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
+            telemetry.update();
+        }
+        arm.setPosition(1);
+        intake2.setPower(0);
+    }
+
+    public void shootArtifactsSmallTriangle(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel, double shootingTime) {
+
+        launcher.setDirection(DcMotorEx.Direction.REVERSE);
+        launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        //launcher.setVelocity(launcherVel);
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(50,0.75,1.0,12.7);
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
@@ -189,7 +220,12 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
                 telemetry.addLine("Motor at velocity");
                 telemetry.update();
                 sleep(700);
-                intake2.setPower(-1);
+                intake2.setPower(-0.5);
+                sleep(500);
+                intake1.setPower(1);
+                sleep(300);
+                intake1.setPower(0);
+                sleep(500);
                 intake1.setPower(1);
             }
             telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
@@ -198,6 +234,7 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         arm.setPosition(1);
         intake2.setPower(0);
     }
+
     public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range, double shootingTime) {
 
         //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
@@ -219,10 +256,37 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
 
         double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
         if (range > 90) {
-            launcherVel -= 160;
+            launcherVel -= 260;
         }
         launcher.setVelocity(launcherVel);
         shootArtifacts(launcher, intake1, intake2, arm, launcherVel, shootingTime);
+    }
+
+    public void shootBallAprilTagDistance_SmallTriangle(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range, double shootingTime) {
+
+        //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("Tag Id shootBallAprilTagDistance", currentDetections);
+        telemetry.update();
+        AprilTagDetection desiredTag1 = detectAprilTag(currentDetections);
+        AprilTagDetection desiredTag;
+
+        if (desiredTag1.id == RED_TAG_ID || desiredTag1.id == BLUE_TAG_ID) {
+            desiredTag = desiredTag1;
+        } else {
+            telemetry.addLine("April Tag Not Detected");
+            telemetry.update();
+            return;
+        }
+
+        range = desiredTag.ftcPose.range;
+
+        double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
+        if (range > 90) {
+            launcherVel -= 260;
+        }
+        launcher.setVelocity(launcherVel);
+        shootArtifactsSmallTriangle(launcher, intake1, intake2, arm, launcherVel, shootingTime);
     }
 
     public AprilTagDetection detectAprilTag ( List<AprilTagDetection> currentDetections ){
