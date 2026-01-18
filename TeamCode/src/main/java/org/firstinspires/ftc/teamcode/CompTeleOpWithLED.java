@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
@@ -16,6 +17,8 @@ public class CompTeleOpWithLED extends BaseTeleOp {
         rightRedLED.enable(true);
         leftGreenLED.enable(false);
         leftRedLED.enable(true);
+        armServo.scaleRange(0.5, 1);
+
     }
 
     @Override
@@ -37,6 +40,9 @@ public class CompTeleOpWithLED extends BaseTeleOp {
 
     @Override
     protected void handleShooter() {
+        double kP = 0.05;
+        double X_TOLERANCE = 1.0;  // Adjust this value - larger = less sensitive
+
         if (gamepad2.right_trigger > 0.85) {
 
             if (!shootingActive) {
@@ -44,16 +50,35 @@ public class CompTeleOpWithLED extends BaseTeleOp {
                 shootingActive = true;
             }
 
-            stopDrive();
-
             AprilTagDetection tag = getDesiredTag();
 
             if (tag == null) {
-                telemetry.addLine("No AprilTag detected");
+                telemetry.addLine("⚠️ No AprilTag detected - Not moving");
+                telemetry.update();
                 return;
             }
 
             double range = tag.ftcPose.range;
+            double x = tag.ftcPose.x;
+
+            telemetry.addData("X:", x);
+            telemetry.addData("X Error:", Math.abs(x));
+            telemetry.addData("Tolerance:", X_TOLERANCE);
+
+            // ✅ Only move if OUTSIDE tolerance range
+            if (Math.abs(x) > X_TOLERANCE) {
+                double strafePower = x * kP;
+                strafePower = Range.clip(strafePower, -0.2, 0.2);
+
+                telemetry.addData("Adjusting - Strafe Power:", strafePower);
+
+                drive(0.0, 0.0, strafePower);
+            } else {
+                // ✅ Within tolerance - stop and hold position
+                telemetry.addLine("✓ Within tolerance - holding");
+                stopDrive();
+            }
+
             double targetVel = 973.7734 * Math.pow(1.00616, range) + 20;
 
             if (range > 90) targetVel -= 180;
@@ -61,19 +86,29 @@ public class CompTeleOpWithLED extends BaseTeleOp {
             launcher.setVelocity(targetVel);
 
             boolean atSpeed = Math.abs(launcher.getVelocity() - targetVel) < 60;
+            boolean aligned = Math.abs(x) <= X_TOLERANCE;  // ✅ Check alignment
 
-            if (atSpeed && launchTimer.milliseconds() > 150) {
+            // ✅ Only shoot when aligned AND at speed
+            if (aligned && atSpeed) {
+                launchTimer.reset();
                 armServo.setPosition(0);
-                intake2.setPower(-1);
-                intake1.setPower(1);
+                sleep(200);
+                if (launchTimer.milliseconds() >= 200) {
+                    intake2.setPower(-1);
+                    intake1.setPower(1);
+                    telemetry.addLine("🚀 SHOOTING");
+                }
             } else {
                 intake1.setPower(0);
                 intake2.setPower(0);
+                if (!aligned) telemetry.addLine("⏳ Aligning...");
+                if (!atSpeed) telemetry.addLine("⏳ Spinning up...");
             }
 
             telemetry.addData("Range", range);
             telemetry.addData("Target Vel", targetVel);
             telemetry.addData("Actual Vel", launcher.getVelocity());
+            telemetry.update();
 
         } else {
             shootingActive = false;
@@ -116,6 +151,13 @@ public class CompTeleOpWithLED extends BaseTeleOp {
             leftRedLED.enable(false);
             rightGreenLED.enable(true);
             rightRedLED.enable(false);
+        }
+    }
+    public static void sleep(long milliseconds){
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e){
+            //
         }
     }
 }

@@ -70,6 +70,8 @@ public class M3_TeleOp extends OpMode {
         intake1 = hardwareMap.get(DcMotor.class, "intake1");
         intake2 = hardwareMap.get(DcMotor.class, "intake2");
         armServo = hardwareMap.get(Servo.class, "armServo");
+        armServo.scaleRange(0.5, 1);
+
 
         initAprilTag();
         timer = new ElapsedTime();

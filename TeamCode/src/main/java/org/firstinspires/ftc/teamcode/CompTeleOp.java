@@ -15,6 +15,8 @@ public class CompTeleOp extends BaseTeleOp {
         rightRedLED.enable(true);
         leftGreenLED.enable(false);
         leftRedLED.enable(true);
+        armServo.scaleRange(0.5, 1);
+
     }
 
     @Override
@@ -37,6 +39,9 @@ public class CompTeleOp extends BaseTeleOp {
     @Override
     protected void handleShooter() {
         if (gamepad2.right_trigger > 0.85) {
+
+            if (launchTimer.milliseconds() < 300)
+                intake1.setPower(0);
 
             if (!shootingActive) {
                 launchTimer.reset();
@@ -64,12 +69,18 @@ public class CompTeleOp extends BaseTeleOp {
             if (atSpeed) {
                 armServo.setPosition(0);
                 if (launchTimer.milliseconds() > 300) {
-                    intake2.setPower(-1);
                     intake1.setPower(1);
+                    if (launchTimer.milliseconds() > 500) {
+                        intake2.setPower(-0.5);
+                    }
+                } else {
+                    intake1.setPower(0);
                 }
-            } else {
+                checkSpeed = true;
+            } else if (!checkSpeed){
                 intake1.setPower(0);
                 intake2.setPower(0);
+                launchTimer.reset();
             }
 
             telemetry.addData("Range", range);
