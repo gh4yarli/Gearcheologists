@@ -80,6 +80,9 @@ public class BlueGoal extends Auto_CommonFunctions {
 
         Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
+
+        arm.scaleRange(0.5, 1);
+
         waitForStart();
         startLaunchers(launcher, 1240);
         if (opModeIsActive()) {
@@ -87,8 +90,8 @@ public class BlueGoal extends Auto_CommonFunctions {
             firstShot();
             secondShot(mecanumDrive);
             thirdShot(mecanumDrive);
+            fourthShot(mecanumDrive);
             exitBigTriangle(mecanumDrive);
-            //fourthShot(mecanumDrive);
             stop();
         }
         if (isStopRequested()) {
@@ -165,8 +168,8 @@ public class BlueGoal extends Auto_CommonFunctions {
         Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(33)
-                .turnTo(Math.toRadians(47))
+                .lineToX(35)
+                .turnTo(Math.toRadians(46))
                 .build();
 
         if (USE_WEBCAM)
@@ -183,11 +186,11 @@ public class BlueGoal extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .lineToX(21)
-                .turnTo(Math.toRadians(90))
+                .strafeTo(new Vector2d(12, pose.position.y+5))
+                .turnTo(Math.toRadians(88.5))
                 .lineToY(58)
                 .lineToY(30)
-                .turnTo(Math.toRadians(50))
+                .turnTo(Math.toRadians(45))
                 .build();
 
         if (opModeIsActive()) {
@@ -201,8 +204,8 @@ public class BlueGoal extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-13,30))
-                .turnTo(Math.toRadians(90))
+                .strafeTo(new Vector2d(-13,40))
+                .turnTo(Math.toRadians(88.5))
                 .lineToY(73)
                 .lineToY(59)
                 .strafeTo(new Vector2d(pose.position.x+10,30))
@@ -218,11 +221,12 @@ public class BlueGoal extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-36,30))
+                .strafeTo(new Vector2d(-36,40))
                 .turnTo(Math.toRadians(90))
                 .lineToY(65)
                 .lineToY(60)
                 .strafeTo(new Vector2d(pose.position.x,30))
+                .turnTo(pose.heading.toDouble())
                 .endTrajectory()
                 .build();
         if (opModeIsActive()) {

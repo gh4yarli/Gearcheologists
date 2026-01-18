@@ -57,6 +57,8 @@ public class BlueLoadingBigTriangle extends Auto_CommonFunctions {
         Pose2d startingPose = new Pose2d(-60, 12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         waitForStart();
+        arm.scaleRange(0.5, 1);
+
         startLaunchers(launcher, 1400);
         if (opModeIsActive()) {
             arm.setPosition(1);

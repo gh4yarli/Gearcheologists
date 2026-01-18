@@ -78,7 +78,7 @@ public class BlueLoadingSmallTriangle extends Auto_CommonFunctions {
         frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
-        //arm.scaleRange(0.5, 1);
+        arm.scaleRange(0.5, 1);
 
 
         Pose2d startingPose = new Pose2d(-60, 12, Math.toRadians(0));
