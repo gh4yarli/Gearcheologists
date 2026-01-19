@@ -16,6 +16,8 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
+import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
@@ -29,17 +31,17 @@ public class RedGoal extends Auto_CommonFunctions {
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  = 0.025;  //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN = 0.01;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   = 0.01;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  = 0.035;  //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN = 0.015;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   = 0.02;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE = 0.75;   //  Clip the strafing speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.45;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE = 0.9;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.6;   //  Clip the turn speed to this max value (adjust for your robot)
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private VisionPortal visionPortal;               // Used to manage the video source.
-    AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
+    AprilTagProcessor aprilTag;                      // Used for managing the AprilTag detection process.
     DcMotor frontLeftDrive;
     DcMotor frontRightDrive ;
     DcMotor backLeftDrive ;
@@ -53,6 +55,7 @@ public class RedGoal extends Auto_CommonFunctions {
     int tagNumber = 24;
     AprilTagDetection desiredTag;
     double range;
+    private MecanumDrive mecanumDrive;
 
 
     @Override
@@ -69,6 +72,8 @@ public class RedGoal extends Auto_CommonFunctions {
         launcher = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
         arm = hardwareMap.get(Servo.class, ConfigurationConstants.Names.ARM_SERVO);
 
+        AprilTagLibrary tagLibrary = AprilTagGameDatabase.getDecodeTagLibrary();
+
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -80,9 +85,9 @@ public class RedGoal extends Auto_CommonFunctions {
 
 
         Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
-        MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
-        arm.scaleRange(0.5, 1);
+        mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
 
+        arm.scaleRange(0.5, 1);
         waitForStart();
         startLaunchers(launcher, 1240);
         if (opModeIsActive()) {
@@ -90,13 +95,12 @@ public class RedGoal extends Auto_CommonFunctions {
             firstShot();
             secondShot(mecanumDrive);
             thirdShot(mecanumDrive);
-            exitBigTriangle(mecanumDrive);
             //fourthShot(mecanumDrive);
-            stop();
+            exitBigTriangle(mecanumDrive);
+            visionPortal.close();
+            requestOpModeStop();
         }
         if (isStopRequested()) {
-            telemetry.addData("Status", "Stopping");
-            telemetry.update();
             mecanumDrive.leftFront.setPower(0);
             mecanumDrive.leftBack.setPower(0);
             mecanumDrive.rightFront.setPower(0);
@@ -120,9 +124,6 @@ public class RedGoal extends Auto_CommonFunctions {
         turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
         strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-        telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-        telemetry.addLine("Starting to move to the desired location");
-        telemetry.update();
         moveRobot(drive, strafe, turn);
         return rangeError;
     }
@@ -167,7 +168,7 @@ public class RedGoal extends Auto_CommonFunctions {
         Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(33)
+                .lineToX(35)
                 .turnTo(Math.toRadians(-47))
                 .build();
 
@@ -185,10 +186,10 @@ public class RedGoal extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(12, pose.position.y))
+                .strafeTo(new Vector2d(12, pose.position.y-5))
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-61)
-                .lineToY(-25)
+                .lineToY(-63)
+                .strafeTo(new Vector2d(pose.position.x+10, pose.position.y-10))
                 .turnTo(Math.toRadians(-50))
                 .build();
 
@@ -204,9 +205,9 @@ public class RedGoal extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-12,-30))
+                .strafeTo(new Vector2d(-16,-40))
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-73)
+                .lineToY(-75)
                 .lineToY(-59)
                 .strafeTo(new Vector2d(pose.position.x+5,-30))
                 .turnTo(Math.toRadians(-50))
@@ -214,6 +215,7 @@ public class RedGoal extends Auto_CommonFunctions {
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
+            sleep(100);
             aprilTagShoot();
         }
     }
@@ -222,16 +224,20 @@ public class RedGoal extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-36,-30))
+                .strafeTo(new Vector2d(-40,-40))
                 .turnTo(Math.toRadians(-90))
-                .lineToY(-65)
-                .lineToY(-60)
+                .lineToY(-73)
+                .lineToY(-59)
+                .strafeTo(new Vector2d(0,-50))
+                /*
                 .strafeTo(new Vector2d(pose.position.x,-30))
-                .endTrajectory()
+                .turnTo(pose.heading.toDouble())
+                 */
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
-            aprilTagShoot();
+            sleep(100);
+            //aprilTagShoot();
         }
     }
 
@@ -243,7 +249,7 @@ public class RedGoal extends Auto_CommonFunctions {
         telemetry.update();
 
         Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-36,-40))
+                .strafeTo(new Vector2d(0,-50))
                 .endTrajectory()
                 .build();
 
@@ -261,21 +267,14 @@ public class RedGoal extends Auto_CommonFunctions {
             desiredTag = detectAprilTag( currentDetections);
             if (desiredTag.id == tagNumber) {
                 rangeError = MoveToDesiredLocation(desiredTag);
-                sleep(100);
+                //sleep(100);
                 tagFound = 1;
-                telemetry.addData("Found", "ID %d (%s), Range %5.1f inches, Bearing %3.0f degrees,  Yaw %3.0f degrees", desiredTag.id, desiredTag.metadata.name, desiredTag.ftcPose.range, desiredTag.ftcPose.bearing, desiredTag.ftcPose.yaw);
-                telemetry.addData("range error inside", rangeError);
-                telemetry.update();
             } else {
-                telemetry.addData("Tag Not Found, ID %d (%s)", desiredTag.id);
-                telemetry.update();
                 tagFound = 0;
             }
             if (tagFound == 0) {
-                moveRobot(0, 0, -0.1);
-                telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
-                telemetry.update();
-                sleep(10);
+                moveRobot(0, 0, -0.25);
+                sleep(6);
                 moveRobot(0, 0, 0);
             }
         }
