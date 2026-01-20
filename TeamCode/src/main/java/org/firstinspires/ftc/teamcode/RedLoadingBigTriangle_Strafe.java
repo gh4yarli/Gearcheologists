@@ -17,7 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import java.util.List;
 
 @Autonomous
-public class RedLoadingBigTriangle extends Auto_CommonFunctions {
+public class RedLoadingBigTriangle_Strafe extends Auto_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
@@ -108,12 +108,6 @@ public class RedLoadingBigTriangle extends Auto_CommonFunctions {
                 .strafeTo(new Vector2d(pose.position.x+10, pose.position.y-10))
                 .turnTo(Math.toRadians(-50))
                 .build();
-        /*
-                .lineToY(-56)
-                .lineToY(-23)
-                .turnTo(Math.toRadians(-48))
-                .build();
-        */
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));

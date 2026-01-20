@@ -24,7 +24,7 @@ import java.util.List;
 
 @Autonomous
 @SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression"})
-public class RedGoal_V3 extends Auto_CommonFunctions {
+public class BlueGoal_Strafe extends Auto_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
@@ -52,7 +52,7 @@ public class RedGoal_V3 extends Auto_CommonFunctions {
     Servo arm;
     double rangeError = 5000;
     int tagFound = 0;
-    int tagNumber = 24;
+    int tagNumber = 20;
     AprilTagDetection desiredTag;
     double range;
     private MecanumDrive mecanumDrive;
@@ -84,7 +84,7 @@ public class RedGoal_V3 extends Auto_CommonFunctions {
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
 
 
-        Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
+        Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(50));
         mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
 
         arm.scaleRange(0.5, 1);
@@ -96,7 +96,7 @@ public class RedGoal_V3 extends Auto_CommonFunctions {
             secondShot(mecanumDrive);
             thirdShot(mecanumDrive);
             fourthShot(mecanumDrive);
-            exitBigTriangle(mecanumDrive);
+            //exitBigTriangle(mecanumDrive);
             visionPortal.close();
             requestOpModeStop();
         }
@@ -165,11 +165,11 @@ public class RedGoal_V3 extends Auto_CommonFunctions {
 
     private void firstShot(){
         intake1.setPower(1);
-        Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
+        Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(50));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(35)
-                .turnTo(Math.toRadians(-47))
+                .turnTo(Math.toRadians(47))
                 .build();
 
         if (USE_WEBCAM)
@@ -186,11 +186,11 @@ public class RedGoal_V3 extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(12, pose.position.y-5))
-                .turnTo(Math.toRadians(-90))
-                .lineToY(-63)
-                .strafeTo(new Vector2d(pose.position.x+10, pose.position.y-10))
-                .turnTo(Math.toRadians(-50))
+                .strafeTo(new Vector2d(12, pose.position.y+5))
+                .turnTo(Math.toRadians(88))
+                .lineToY(63)
+                .strafeTo(new Vector2d(pose.position.x+10, pose.position.y+10))
+                .turnTo(Math.toRadians(50))
                 .build();
 
         if (opModeIsActive()) {
@@ -205,12 +205,12 @@ public class RedGoal_V3 extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-16,-40))
-                .turnTo(Math.toRadians(-90))
-                .lineToY(-75)
-                .lineToY(-59)
-                .strafeTo(new Vector2d(pose.position.x+5,-30))
-                .turnTo(Math.toRadians(-50))
+                .strafeTo(new Vector2d(-20,40))
+                .turnTo(Math.toRadians(88))
+                .lineToY(75)
+                .lineToY(59)
+                .strafeTo(new Vector2d(pose.position.x+5,30))
+                .turnTo(Math.toRadians(50))
                 //.turnTo(pose.heading.toDouble())
                 .build();
         if (opModeIsActive()) {
@@ -224,15 +224,19 @@ public class RedGoal_V3 extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-40,-40))
-                .turnTo(Math.toRadians(-90))
-                .lineToY(-73)
-                .lineToY(-59)
+                .strafeTo(new Vector2d(-40,40))
+                .turnTo(Math.toRadians(88))
+                .lineToY(73)
+                .lineToY(59)
+                .strafeTo(new Vector2d(0,50))
+                /*
                 .strafeTo(new Vector2d(pose.position.x,-30))
                 .turnTo(pose.heading.toDouble())
+                 */
                 .build();
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
+            sleep(100);
             aprilTagShoot();
         }
     }
@@ -245,7 +249,7 @@ public class RedGoal_V3 extends Auto_CommonFunctions {
         telemetry.update();
 
         Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-36,-40))
+                .strafeTo(new Vector2d(0,50))
                 .endTrajectory()
                 .build();
 

@@ -24,11 +24,11 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "RedGoal_V3_Optimized_Arun", group = "Competition")
+@Autonomous
 @SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression"})
-public class RedGoal_V3_Localized extends Auto_CommonFunctions {
+public class RedLoadingBigTriangle_Spline extends Auto_CommonFunctions {
     // Adjust these numbers to suit your robot.
-    private static final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
+    private static final double DESIRED_DISTANCE = 45.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -41,13 +41,13 @@ public class RedGoal_V3_Localized extends Auto_CommonFunctions {
     private static final double MAX_AUTO_TURN  = 0.6;
 
     private static final boolean USE_WEBCAM = true;
-    
+
     // Hardware (some inherited from Auto_CommonFunctions)
     private DcMotor intake1;
     private DcMotor intake2;
     private DcMotorEx launcher;
     private Servo arm;
-    
+
     // Vision / State
     private MecanumDrive mecanumDrive;
 
@@ -65,26 +65,26 @@ public class RedGoal_V3_Localized extends Auto_CommonFunctions {
         initHardware();
 
         // Initialize MecanumDrive with the starting pose
-        Pose2d startingPose = new Pose2d(58, -58, Math.toRadians(-50));
+        Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
 
         arm.scaleRange(0.5, 1);
-        
+
         waitForStart();
-        
+
         if (opModeIsActive()) {
             startLaunchers(launcher, 1240);
             arm.setPosition(1);
-            
+
             firstShot();
             secondShot();
             thirdShot();
             fourthShot();
             exitBigTriangle();
-            
+
             visionPortal.close();
         }
-        
+
         if (isStopRequested()) {
             stopDrive();
             launcher.setVelocity(0);
@@ -122,7 +122,7 @@ public class RedGoal_V3_Localized extends Auto_CommonFunctions {
         double br = x - y + yaw;
 
         double max = Math.max(Math.abs(fl), Math.max(Math.abs(fr),
-                     Math.max(Math.abs(bl), Math.abs(br))));
+                Math.max(Math.abs(bl), Math.abs(br))));
 
         if (max > 1.0) {
             fl /= max;
@@ -146,62 +146,94 @@ public class RedGoal_V3_Localized extends Auto_CommonFunctions {
 
     private void firstShot() {
         intake1.setPower(1);
-        Pose2d startingPose = mecanumDrive.localizer.getPose();
 
+        Pose2d startingPose = mecanumDrive.localizer.getPose();
+        /*
+        telemetry.addData("Starting Pose - First Shot Starting",startingPose);
+        telemetry.addData("Heading",Math.toDegrees(startingPose.heading.toDouble()));
+        telemetry.update();
+         */
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(35)
-                .turnTo(Math.toRadians(-47))
+                .lineToX(10)
+                .turnTo(Math.toRadians(-50))
                 .build();
 
         if (USE_WEBCAM) setManualExposure();
 
         Actions.runBlocking(path);
-        updatePoseFromAprilTag();
-        sleep(150);
+        /*
+        Pose2d pose = mecanumDrive.localizer.getPose();
+        telemetry.addData("Starting Pose - After Update",pose);
+        telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
+        telemetry.update();
+         */
+        telemetry.addData("Initial Velocity",Math.abs(launcher.getVelocity()));
+        telemetry.addLine("First Shot");
+        telemetry.update();
         aprilTagShoot();
+        updatePoseFromAprilTag();
+        //shootArtifacts();
     }
 
     private void secondShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
+        /*
+        telemetry.addData("Pose Second Shot", pose);
+        telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
+        telemetry.update();
+         */
 
         Action path = mecanumDrive.actionBuilder(pose)
-                .splineToLinearHeading(new Pose2d(12, -40, Math.toRadians(-90)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(14, -40, Math.toRadians(-90)), Math.toRadians(-90))
                 .lineToY(-61)
-                .splineToLinearHeading(pose, pose.heading.toDouble() - Math.toRadians(2))
+                .splineToLinearHeading(pose, pose.heading.toDouble())
                 .build();
 
         Actions.runBlocking(path);
+        telemetry.addLine("Second Shot");
+        telemetry.update();
         updatePoseFromAprilTag();
         aprilTagShoot();
-    }
+        //shootArtifacts();
 
+
+    }
     private void thirdShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path = mecanumDrive.actionBuilder(pose)
-                .splineToLinearHeading(new Pose2d(-22, -40, Math.toRadians(-90)), Math.toRadians(-87))
-                .lineToY(-75)
+                .splineToLinearHeading(new Pose2d(-27, -40, Math.toRadians(-90)), Math.toRadians(-86))
+                .lineToY(-73)
                 .lineToY(-61)
+                .setReversed(true)
                 .splineToLinearHeading(pose, pose.heading.toDouble() - Math.toRadians(5))
                 .build();
 
         Actions.runBlocking(path);
+        telemetry.addLine("Third Shot");
+        telemetry.update();
         updatePoseFromAprilTag();
         aprilTagShoot();
+        //shootArtifacts();
+
     }
 
     private void fourthShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path = mecanumDrive.actionBuilder(pose)
-                .splineToLinearHeading(new Pose2d(-65, -40, Math.toRadians(-90)), Math.toRadians(-80))
+                .strafeTo(new Vector2d(-40,-40))
+                .turnTo(Math.toRadians(-86))
                 .lineToY(-73)
-                .lineToY(-61)
-                .splineToLinearHeading(pose, pose.heading.toDouble() - Math.toRadians(5))
+                .lineToY(-59)
+                .strafeTo(new Vector2d(0,-50))
                 .build();
 
         Actions.runBlocking(path);
+        telemetry.addLine("Fourth Shot");
+        telemetry.update();
         updatePoseFromAprilTag();
+        //shootArtifacts();
         aprilTagShoot();
     }
 
@@ -221,46 +253,62 @@ public class RedGoal_V3_Localized extends Auto_CommonFunctions {
         ElapsedTime timer = new ElapsedTime();
         double lastRangeErr;
 
-        while (opModeIsActive() && timer.seconds() < 1.3) {
+        while (opModeIsActive() && timer.milliseconds() < 700) {
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             AprilTagDetection desiredTag = detectAprilTag(currentDetections);
-            
+
             if (desiredTag != null && desiredTag.id == tagNumber) {
                 tagFound = true;
                 lastRangeErr = moveToDesiredLocation(desiredTag);
-                
-                if (Math.abs(lastRangeErr) < 0.6 && 
-                    Math.abs(desiredTag.ftcPose.bearing) < 1.5 && 
-                    Math.abs(desiredTag.ftcPose.yaw) < 1.5) {
+                telemetry.addData("Tag",desiredTag.id);
+                telemetry.update();
+                if (Math.abs(lastRangeErr) < 0.6 &&
+                        Math.abs(desiredTag.ftcPose.bearing) < 1.5 &&
+                        Math.abs(desiredTag.ftcPose.yaw) < 1.5) {
                     break;
                 }
             } else {
-                moveRobot(0, 0, -0.2);
+                moveRobot(0, 0, 0.2);
             }
         }
-        
+
         stopDrive();
-        
+
         if (opModeIsActive() && tagFound) {
             intake1.setPower(0);
             intake2.setPower(0);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, 0, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
     }
-
+    private void shootArtifacts()
+    {
+        intake1.setPower(0);
+        intake2.setPower(0);
+        shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, 0, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
+    }
+    private static final boolean DEBUG = true;
     private void updatePoseFromAprilTag() {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         for (AprilTagDetection detection : currentDetections) {
             if (detection.metadata != null && !detection.metadata.name.contains("Obelisk")) {
                 if (detection.robotPose != null) {
-                    com.acmerobotics.roadrunner.Pose2d newPose = new com.acmerobotics.roadrunner.Pose2d(
-                            detection.robotPose.getPosition().x,
-                            detection.robotPose.getPosition().y,
-                            Math.toRadians(detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES))
+                    mecanumDrive.localizer.update();
+                    //if (DEBUG){
+                    //telemetry.addData("AprilTag Pose", detection.robotPose);
+                    //telemetry.addData("Current Pose", mecanumDrive.localizer.getPose());
+                    //telemetry.update();
+                    //}
+                    Pose2d newPose = new Pose2d(
+                            (detection.robotPose.getPosition().x * -1),
+                            (detection.robotPose.getPosition().y * -1),
+                            (Math.toRadians(detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)-80))
                     );
+                    Pose2d pose2d = mecanumDrive.localizer.getPose();
+                    //telemetry.addData("Pose Before", "X: %.2f,\nY: %.2f,\nAngle: %.2f", pose2d.position.x, pose2d.position.y, pose2d.heading.toDouble());
                     mecanumDrive.localizer.setPose(newPose);
-                    telemetry.addData("Pose Updated", newPose);
-                    telemetry.update();
+                    pose2d = newPose;
+                    //telemetry.addData("Pose After", "X: %.2f,\nY: %.2f,\nAngle: %.2f", pose2d.position.x, pose2d.position.y, pose2d.heading.toDouble());
+                    //telemetry.update();
                     break;
                 }
             }

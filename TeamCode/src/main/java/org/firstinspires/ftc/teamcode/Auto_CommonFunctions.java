@@ -31,7 +31,6 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
     protected AprilTagProcessor aprilTag;
     final int RED_TAG_ID = 24;
     final int BLUE_TAG_ID = 20;
-    final double SHOOTING_TIME_SEC = 3;
     final int PLUS_OR_MINUS_VEL_THRESHOLD = 40;
 
     /**
@@ -171,30 +170,26 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         rightLauncher.setDirection(RightLauncherDirection);
     }
     public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel, double shootingTime) {
-
         launcher.setDirection(DcMotorEx.Direction.REVERSE);
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         //launcher.setVelocity(launcherVel);
         PIDFCoefficients pid_right_new = new PIDFCoefficients(50,0.75,1.0,12.7);
-        ElapsedTime timer = new ElapsedTime();
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
         while (runtime.seconds() < shootingTime) {
             boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
-            telemetry.addLine("Setting motor velocity");
+            //telemetry.addLine("Setting motor velocity");
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
-                telemetry.addLine("Motor at velocity");
-                telemetry.update();
-                sleep(400);
+                sleep(300);
                 intake2.setPower(-0.5);
                 sleep(200);
                 intake1.setPower(1);
             }
-            telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
+            telemetry.addData("Motor velocity for Shooting", Math.abs(launcher.getVelocity()));
             telemetry.update();
         }
         arm.setPosition(1);
@@ -228,7 +223,7 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
                 sleep(500);
                 intake1.setPower(1);
             }
-            telemetry.addData("motor velocity", Math.abs(launcher.getVelocity()));
+            telemetry.addData("Motor velocity", Math.abs(launcher.getVelocity()));
             telemetry.update();
         }
         arm.setPosition(1);
@@ -239,8 +234,8 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
 
         //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("Tag Id shootBallAprilTagDistance", currentDetections);
-        telemetry.update();
+        //telemetry.addData("Tag Id shootBallAprilTagDistance", currentDetections);
+        //telemetry.update();
         AprilTagDetection desiredTag1 = detectAprilTag(currentDetections);
         AprilTagDetection desiredTag;
 

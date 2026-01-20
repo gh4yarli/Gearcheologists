@@ -17,7 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import java.util.List;
 
 @Autonomous
-public class BlueLoadingBigTriangle extends Auto_CommonFunctions {
+public class BlueLoadingBigTriangle_Strafe extends Auto_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
