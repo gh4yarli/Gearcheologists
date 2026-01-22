@@ -69,9 +69,9 @@ public class CompTeleOp extends BaseTeleOp {
             if (atSpeed) {
                 armServo.setPosition(0);
                 if (launchTimer.milliseconds() > 300) {
-                    intake1.setPower(1);
+                    intake2.setPower(-0.5);
                     if (launchTimer.milliseconds() > 500) {
-                        intake2.setPower(-0.5);
+                        intake1.setPower(1);
                     }
                 } else {
                     intake1.setPower(0);
