@@ -73,13 +73,13 @@ public class RedGoal_Strafe extends Auto_CommonFunctions {
         waitForStart();
 
         if (opModeIsActive()) {
-            startLaunchers(launcher, 1240);
+            startLaunchers(launcher, 1200);
             arm.setPosition(1);
 
             firstShot();
             secondShot();
             thirdShot();
-            fourthShot();
+            //fourthShot();
             exitBigTriangle();
 
             visionPortal.close();
@@ -167,12 +167,8 @@ public class RedGoal_Strafe extends Auto_CommonFunctions {
         telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
         telemetry.update();
          */
-        telemetry.addData("Initial Velocity",Math.abs(launcher.getVelocity()));
-        telemetry.addLine("First Shot");
-        telemetry.update();
         aprilTagShoot();
         updatePoseFromAprilTag();
-        //shootArtifacts();
     }
 
     private void secondShot() {
@@ -184,28 +180,24 @@ public class RedGoal_Strafe extends Auto_CommonFunctions {
          */
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(12, pose.position.y-5))
-                .turnTo(Math.toRadians(-90))
+                .strafeTo(new Vector2d(16, pose.position.y-5))
+                .turnTo(Math.toRadians(-86))
                 .lineToY(-63)
                 .strafeTo(new Vector2d(pose.position.x+10, pose.position.y-10))
                 .turnTo(Math.toRadians(-50))
                 .build();
 
         Actions.runBlocking(path_SecondShot);
-        telemetry.addLine("Second Shot");
-        telemetry.update();
-        updatePoseFromAprilTag();
         aprilTagShoot();
-        //shootArtifacts();
-
+        updatePoseFromAprilTag();
 
     }
     private void thirdShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-16,-40))
-                .turnTo(Math.toRadians(-90))
+                .strafeTo(new Vector2d(-10,-40))
+                .turnTo(Math.toRadians(-84))
                 .lineToY(-75)
                 .lineToY(-59)
                 .strafeTo(new Vector2d(pose.position.x+5,-30))
@@ -214,12 +206,8 @@ public class RedGoal_Strafe extends Auto_CommonFunctions {
                 .build();
 
         Actions.runBlocking(path_thirdShot);
-        telemetry.addLine("Third Shot");
-        telemetry.update();
-        updatePoseFromAprilTag();
         aprilTagShoot();
-        //shootArtifacts();
-
+        updatePoseFromAprilTag();
     }
 
     private void fourthShot() {
@@ -238,11 +226,8 @@ public class RedGoal_Strafe extends Auto_CommonFunctions {
                 .build();
 
         Actions.runBlocking(path_fourthShot);
-        telemetry.addLine("Fourth Shot");
-        telemetry.update();
-        updatePoseFromAprilTag();
-        //shootArtifacts();
         aprilTagShoot();
+        updatePoseFromAprilTag();
     }
 
     private void exitBigTriangle() {
@@ -269,8 +254,8 @@ public class RedGoal_Strafe extends Auto_CommonFunctions {
             if (desiredTag != null && desiredTag.id == tagNumber) {
                 tagFound = true;
                 lastRangeErr = moveToDesiredLocation(desiredTag);
-                telemetry.addData("Tag",desiredTag.id);
-                telemetry.update();
+                //telemetry.addData("Tag",desiredTag.id);
+                //telemetry.update();
                 if (Math.abs(lastRangeErr) < 0.6 &&
                         Math.abs(desiredTag.ftcPose.bearing) < 1.5 &&
                         Math.abs(desiredTag.ftcPose.yaw) < 1.5) {
@@ -288,12 +273,6 @@ public class RedGoal_Strafe extends Auto_CommonFunctions {
             intake2.setPower(0);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, 0, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
-    }
-    private void shootArtifacts()
-    {
-        intake1.setPower(0);
-        intake2.setPower(0);
-        shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, 0, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
     }
     private static final boolean DEBUG = true;
     private void updatePoseFromAprilTag() {
@@ -315,7 +294,7 @@ public class RedGoal_Strafe extends Auto_CommonFunctions {
                     Pose2d pose2d = mecanumDrive.localizer.getPose();
                     //telemetry.addData("Pose Before", "X: %.2f,\nY: %.2f,\nAngle: %.2f", pose2d.position.x, pose2d.position.y, pose2d.heading.toDouble());
                     mecanumDrive.localizer.setPose(newPose);
-                    pose2d = newPose;
+                    //pose2d = newPose;
                     //telemetry.addData("Pose After", "X: %.2f,\nY: %.2f,\nAngle: %.2f", pose2d.position.x, pose2d.position.y, pose2d.heading.toDouble());
                     //telemetry.update();
                     break;

@@ -73,13 +73,13 @@ public class RedLoadingBigTriangle_Spline extends Auto_CommonFunctions {
         waitForStart();
 
         if (opModeIsActive()) {
-            startLaunchers(launcher, 1240);
+            startLaunchers(launcher, 1200);
             arm.setPosition(1);
 
             firstShot();
             secondShot();
             thirdShot();
-            fourthShot();
+            //fourthShot();
             exitBigTriangle();
 
             visionPortal.close();
@@ -167,12 +167,9 @@ public class RedLoadingBigTriangle_Spline extends Auto_CommonFunctions {
         telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
         telemetry.update();
          */
-        telemetry.addData("Initial Velocity",Math.abs(launcher.getVelocity()));
-        telemetry.addLine("First Shot");
-        telemetry.update();
         aprilTagShoot();
         updatePoseFromAprilTag();
-        //shootArtifacts();
+
     }
 
     private void secondShot() {
@@ -190,32 +187,23 @@ public class RedLoadingBigTriangle_Spline extends Auto_CommonFunctions {
                 .build();
 
         Actions.runBlocking(path);
-        telemetry.addLine("Second Shot");
-        telemetry.update();
-        updatePoseFromAprilTag();
         aprilTagShoot();
-        //shootArtifacts();
-
-
+        updatePoseFromAprilTag();
     }
     private void thirdShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path = mecanumDrive.actionBuilder(pose)
-                .splineToLinearHeading(new Pose2d(-27, -40, Math.toRadians(-90)), Math.toRadians(-86))
-                .lineToY(-73)
+                .splineToLinearHeading(new Pose2d(-25, -40, Math.toRadians(-86)), Math.toRadians(-86))
+                .lineToY(-74)
                 .lineToY(-61)
                 .setReversed(true)
                 .splineToLinearHeading(pose, pose.heading.toDouble() - Math.toRadians(5))
                 .build();
 
         Actions.runBlocking(path);
-        telemetry.addLine("Third Shot");
-        telemetry.update();
-        updatePoseFromAprilTag();
         aprilTagShoot();
-        //shootArtifacts();
-
+        updatePoseFromAprilTag();
     }
 
     private void fourthShot() {
@@ -230,21 +218,19 @@ public class RedLoadingBigTriangle_Spline extends Auto_CommonFunctions {
                 .build();
 
         Actions.runBlocking(path);
-        telemetry.addLine("Fourth Shot");
-        telemetry.update();
-        updatePoseFromAprilTag();
-        //shootArtifacts();
         aprilTagShoot();
+        updatePoseFromAprilTag();
     }
 
     private void exitBigTriangle() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        Action path = mecanumDrive.actionBuilder(pose)
-                .splineToConstantHeading(new Vector2d(-36, -40), Math.toRadians(180))
+        Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
+                .strafeTo(new Vector2d(0,-50))
+                .endTrajectory()
                 .build();
 
-        Actions.runBlocking(path);
+        Actions.runBlocking(path_exitBigTri);
     }
 
     private void aprilTagShoot() {
@@ -253,15 +239,15 @@ public class RedLoadingBigTriangle_Spline extends Auto_CommonFunctions {
         ElapsedTime timer = new ElapsedTime();
         double lastRangeErr;
 
-        while (opModeIsActive() && timer.milliseconds() < 700) {
+        while (opModeIsActive() && timer.seconds() < 1.3) {
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             AprilTagDetection desiredTag = detectAprilTag(currentDetections);
 
             if (desiredTag != null && desiredTag.id == tagNumber) {
                 tagFound = true;
                 lastRangeErr = moveToDesiredLocation(desiredTag);
-                telemetry.addData("Tag",desiredTag.id);
-                telemetry.update();
+                //telemetry.addData("Tag",desiredTag.id);
+                //telemetry.update();
                 if (Math.abs(lastRangeErr) < 0.6 &&
                         Math.abs(desiredTag.ftcPose.bearing) < 1.5 &&
                         Math.abs(desiredTag.ftcPose.yaw) < 1.5) {
@@ -279,12 +265,6 @@ public class RedLoadingBigTriangle_Spline extends Auto_CommonFunctions {
             intake2.setPower(0);
             shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, 0, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
-    }
-    private void shootArtifacts()
-    {
-        intake1.setPower(0);
-        intake2.setPower(0);
-        shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, 0, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
     }
     private static final boolean DEBUG = true;
     private void updatePoseFromAprilTag() {
@@ -306,7 +286,7 @@ public class RedLoadingBigTriangle_Spline extends Auto_CommonFunctions {
                     Pose2d pose2d = mecanumDrive.localizer.getPose();
                     //telemetry.addData("Pose Before", "X: %.2f,\nY: %.2f,\nAngle: %.2f", pose2d.position.x, pose2d.position.y, pose2d.heading.toDouble());
                     mecanumDrive.localizer.setPose(newPose);
-                    pose2d = newPose;
+                    //pose2d = newPose;
                     //telemetry.addData("Pose After", "X: %.2f,\nY: %.2f,\nAngle: %.2f", pose2d.position.x, pose2d.position.y, pose2d.heading.toDouble());
                     //telemetry.update();
                     break;

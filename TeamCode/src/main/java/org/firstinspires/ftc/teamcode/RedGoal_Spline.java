@@ -24,7 +24,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "RedGoal_V3_Localized")
+@Autonomous
 @SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression"})
 public class RedGoal_Spline extends Auto_CommonFunctions {
     // Adjust these numbers to suit your robot.
@@ -79,7 +79,7 @@ public class RedGoal_Spline extends Auto_CommonFunctions {
             firstShot();
             secondShot();
             thirdShot();
-            fourthShot();
+            //fourthShot();
             exitBigTriangle();
             
             visionPortal.close();
@@ -167,8 +167,9 @@ public class RedGoal_Spline extends Auto_CommonFunctions {
         telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
         telemetry.update();
          */
-        updatePoseFromAprilTag();
         aprilTagShoot();
+        updatePoseFromAprilTag();
+
     }
 
     private void secondShot() {
@@ -186,25 +187,23 @@ public class RedGoal_Spline extends Auto_CommonFunctions {
                 .build();
 
         Actions.runBlocking(path);
-        telemetry.addLine("Second Shot");
-        telemetry.update();
-        updatePoseFromAprilTag();
         aprilTagShoot();
+        updatePoseFromAprilTag();
     }
     private void thirdShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path = mecanumDrive.actionBuilder(pose)
-                .splineToLinearHeading(new Pose2d(-27, -40, Math.toRadians(-90)), Math.toRadians(-86))
-                .lineToY(-73)
+                .splineToLinearHeading(new Pose2d(-27, -40, Math.toRadians(-86)), Math.toRadians(-86))
+                .lineToY(-74)
                 .lineToY(-61)
                 .setReversed(true)
                 .splineToLinearHeading(pose, pose.heading.toDouble() - Math.toRadians(5))
                 .build();
 
         Actions.runBlocking(path);
-        updatePoseFromAprilTag();
         aprilTagShoot();
+        updatePoseFromAprilTag();
     }
 
     private void fourthShot() {
@@ -219,18 +218,19 @@ public class RedGoal_Spline extends Auto_CommonFunctions {
                 .build();
 
         Actions.runBlocking(path);
-        updatePoseFromAprilTag();
         aprilTagShoot();
+        updatePoseFromAprilTag();
     }
 
     private void exitBigTriangle() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        Action path = mecanumDrive.actionBuilder(pose)
-                .splineToConstantHeading(new Vector2d(-36, -40), Math.toRadians(180))
+        Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
+                .strafeTo(new Vector2d(0,-50))
+                .endTrajectory()
                 .build();
 
-        Actions.runBlocking(path);
+        Actions.runBlocking(path_exitBigTri);
     }
 
     private void aprilTagShoot() {
@@ -246,8 +246,8 @@ public class RedGoal_Spline extends Auto_CommonFunctions {
             if (desiredTag != null && desiredTag.id == tagNumber) {
                 tagFound = true;
                 lastRangeErr = moveToDesiredLocation(desiredTag);
-                telemetry.addData("Tag",desiredTag.id);
-                telemetry.update();
+                //telemetry.addData("Tag",desiredTag.id);
+                //telemetry.update();
                 if (Math.abs(lastRangeErr) < 0.6 && 
                     Math.abs(desiredTag.ftcPose.bearing) < 1.5 && 
                     Math.abs(desiredTag.ftcPose.yaw) < 1.5) {
