@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -20,7 +19,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings({/*"unused",*/ "FieldCanBeLocal", "ParameterCanBeLocal"})
+@SuppressWarnings({ /* "unused", */ "FieldCanBeLocal", "ParameterCanBeLocal" })
 public abstract class Auto_CommonFunctions extends LinearOpMode {
 
     protected DcMotor frontLeftDrive;
@@ -33,32 +32,14 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
     final int BLUE_TAG_ID = 20;
     final int PLUS_OR_MINUS_VEL_THRESHOLD = 40;
 
-    /**
-     * Starts the launchers
-     * @param leftLauncher
-     * left launcher motor
-     * @param rightLauncher
-     * right launcher motor
-     * @param launcherVel
-     * power to shoot balls
-     */
-    public void startLaunchers(DcMotorEx leftLauncher, DcMotorEx rightLauncher, double launcherVel) {
-        leftLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLauncher.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftLauncher.setVelocity(launcherVel);
-        rightLauncher.setVelocity(-launcherVel);
-    }
+
     public void startLaunchers(DcMotorEx launcher, double launcherVel) {
 
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         launcher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(50,0.75,1.0,12.7);
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
@@ -67,120 +48,32 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
     }
 
     /**
-     * Stops the launchers
-     * @param leftLauncher
-     * left launcher motor
-     * @param rightLauncher
-     * right launcher motor
-     */
-    public void stopLaunchers(DcMotorEx leftLauncher, DcMotorEx rightLauncher) {
-        // setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE) tries to stop the DcMotor instead of just letting it spin
-        // when a power of 0 is requested
-        leftLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightLauncher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftLauncher.setVelocity(0);
-        rightLauncher.setVelocity(0);
-    }
-
-    /**
-     * Starts the feeders
-     * @param leftFeeder
-     * left feeder servo
-     * @param rightFeeder
-     * right feeder servo
-     */
-    public void startFeeder(CRServo leftFeeder, CRServo rightFeeder) {
-        leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFeeder.setPower(-1);
-        rightFeeder.setPower(-1);
-    }
-
-    /**
-     * Stops the feeders
-     * @param leftFeeder
-     * left feeder servo
-     * @param rightFeeder
-     * right feeder servo
-     */
-    public void stopFeeder(CRServo leftFeeder, CRServo rightFeeder) {
-        leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFeeder.setPower(0);
-        rightFeeder.setPower(0);
-    }
-
-    /**
      * Starts the intake
+     * 
      * @param intake1
-     * first intake
+     *                first intake
      * @param intake2
-     * second intake
+     *                second intake
      */
     public void startIntake(DcMotor intake1, DcMotor intake2) {
         intake1.setPower(1);
-        //intake2.setPower(-1);
     }
 
-    /**
-     * Stops the intake
-     * @param intake1
-     * first intake
-     * @param intake2
-     * second intake
-     */
-    public void stopIntake(DcMotor intake1, DcMotor intake2) {
-        intake1.setPower(0);
-        intake2.setPower(0);
-    }
-
-    /**
-     * <p></p>
-     * function to shoot balls
-     * @param leftLauncher
-     * left launcher motor
-     * @param rightLauncher
-     * right launcher motor
-     * @param leftFeeder
-     * left feeder servo
-     * @param rightFeeder
-     * right feeder servo
-     * @param intake1
-     * first intake
-     * @param intake2
-     * second intake
-     */
-    public void shootBalls(DcMotorEx leftLauncher, DcMotorEx rightLauncher, CRServo leftFeeder,
-                           CRServo rightFeeder, DcMotor intake1, DcMotor intake2) {
-        DcMotorEx.Direction LeftFeederDirection = leftFeeder.getDirection();
-        DcMotorEx.Direction LeftLauncherDirection = leftLauncher.getDirection();
-        DcMotorEx.Direction RightLauncherDirection = rightLauncher.getDirection();
-        sleep(2000);
-        for (byte i = 0; i < 4; i++) {
-            if (i != 0) {
-                startIntake(intake1, intake2);
-            }
-            startFeeder(leftFeeder, rightFeeder);
-            sleep(1000);
-            stopFeeder(leftFeeder, rightFeeder);
-            sleep(1000);
-        }
-        stopLaunchers(leftLauncher, rightLauncher);
-        stopIntake(intake1, intake2);
-        leftFeeder.setDirection(LeftFeederDirection);
-        leftLauncher.setDirection(LeftLauncherDirection);
-        rightLauncher.setDirection(RightLauncherDirection);
-    }
-    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel, double shootingTime) {
+    public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel,
+            double shootingTime) {
         launcher.setDirection(DcMotorEx.Direction.REVERSE);
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        //launcher.setVelocity(launcherVel);
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(50,0.75,1.0,12.7);
+        // launcher.setVelocity(launcherVel);
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < shootingTime) {
-            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
-            //telemetry.addLine("Setting motor velocity");
+        boolean shotFired = false;
+        while (runtime.seconds() < shootingTime && !shotFired) {
+            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD
+                    && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
+            // telemetry.addLine("Setting motor velocity");
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
@@ -188,6 +81,8 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
                 intake2.setPower(-0.5);
                 sleep(200);
                 intake1.setPower(1);
+                sleep(1000); // Wait for 3 balls to launch
+                shotFired = true;
             }
             telemetry.addData("Motor velocity for Shooting", Math.abs(launcher.getVelocity()));
             telemetry.update();
@@ -196,18 +91,21 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         intake2.setPower(0);
     }
 
-    public void shootArtifactsSmallTriangle(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel, double shootingTime) {
+    public void shootArtifactsSmallTriangle(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm,
+            double launcherVel, double shootingTime) {
 
         launcher.setDirection(DcMotorEx.Direction.REVERSE);
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        //launcher.setVelocity(launcherVel);
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(50,0.75,1.0,12.7);
+        // launcher.setVelocity(launcherVel);
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         ElapsedTime runtime = new ElapsedTime();
-        while (runtime.seconds() < shootingTime) {
-            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
+        boolean shotFired = false;
+        while (runtime.seconds() < shootingTime && !shotFired) {
+            boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD
+                    && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
             telemetry.addLine("Setting motor velocity");
 
             if (launcherAtSpeed) {
@@ -222,6 +120,7 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
                 intake1.setPower(0);
                 sleep(500);
                 intake1.setPower(1);
+                shotFired = true;
             }
             telemetry.addData("Motor velocity", Math.abs(launcher.getVelocity()));
             telemetry.update();
@@ -230,12 +129,13 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         intake2.setPower(0);
     }
 
-    public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range, double shootingTime) {
+    public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm,
+            AprilTagProcessor aprilTag, double range, double shootingTime) {
 
-        //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
+        // double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        //telemetry.addData("Tag Id shootBallAprilTagDistance", currentDetections);
-        //telemetry.update();
+        // telemetry.addData("Tag Id shootBallAprilTagDistance", currentDetections);
+        // telemetry.update();
         AprilTagDetection desiredTag1 = detectAprilTag(currentDetections);
         AprilTagDetection desiredTag;
 
@@ -249,17 +149,19 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
 
         range = desiredTag.ftcPose.range;
 
-        double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
+        //double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
+        double launcherVel = ( 6 * range ) + 932;
         if (range > 90) {
-            launcherVel -= 260;
+            launcherVel -= 40;
         }
         launcher.setVelocity(launcherVel);
         shootArtifacts(launcher, intake1, intake2, arm, launcherVel, shootingTime);
     }
 
-    public void shootBallAprilTagDistance_SmallTriangle(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, AprilTagProcessor aprilTag, double range, double shootingTime) {
+    public void shootBallAprilTagDistance_SmallTriangle(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm,
+            AprilTagProcessor aprilTag, double range, double shootingTime) {
 
-        //double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
+        // double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("Tag Id shootBallAprilTagDistance", currentDetections);
         telemetry.update();
@@ -284,14 +186,14 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         shootArtifactsSmallTriangle(launcher, intake1, intake2, arm, launcherVel, shootingTime);
     }
 
-    public AprilTagDetection detectAprilTag ( List<AprilTagDetection> currentDetections ){
+    public AprilTagDetection detectAprilTag(List<AprilTagDetection> currentDetections) {
 
         // Step through the list of detected tags and look for a matching tag
-        AprilTagDetection dummyTag = new AprilTagDetection(-1, -1 , 1.900F, null, null, null, null, null, null, 123);
+        AprilTagDetection dummyTag = new AprilTagDetection(-1, -1, 1.900F, null, null, null, null, null, null, 123);
         for (AprilTagDetection detection : currentDetections) {
             // Look to see if we have size info on this tag.
             if (detection.metadata != null) {
-                //  Check to see if we want to track towards this tag.
+                // Check to see if we want to track towards this tag.
                 if ((detection.id == RED_TAG_ID) || (detection.id == BLUE_TAG_ID)) {
                     // Yes, we want to use this tag.
                     telemetry.addData("AprilTagDetection ID", detection.id);
@@ -302,22 +204,24 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
                     telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
                 }
             } else {
-                // This tag is NOT in the library, so we don't have enough information to track to it.
+                // This tag is NOT in the library, so we don't have enough information to track
+                // to it.
                 telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
             }
         }
         return dummyTag;
     }
+
     public void initAprilTag() {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();
 
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // e.g. Some typical detection data using a Logitech C920 WebCam
-        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
-        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
-        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
-        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
+        // Decimation = 1 .. Detect 2" Tag from 10 feet away at 10 Frames per second
+        // Decimation = 2 .. Detect 2" Tag from 6 feet away at 22 Frames per second
+        // Decimation = 3 .. Detect 2" Tag from 4 feet away at 30 Frames Per Second
+        // Decimation = 3 .. Detect 5" Tag from 10 feet away at 30 Frames Per Second
         // Note: Decimation can be changed on-the-fly to adapt during a match.
         aprilTag.setDecimation(2);
 
@@ -347,8 +251,7 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         }
 
         // Set camera controls unless we are stopping.
-        if (!isStopRequested())
-        {
+        if (!isStopRequested()) {
             ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
             if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
@@ -374,34 +277,37 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         backRightDrive.setDirection(DcMotor.Direction.FORWARD);
     }
 
-    public double moveToDesiredLocation (AprilTagDetection desiredTag, double desiredDistance, double speedGain, double strafeGain, double turnGain, double maxAutoSpeed, double maxAutoStrafe, double maxAutoTurn){
-        // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-        double rangeError      = (desiredTag.ftcPose.range - desiredDistance);
-        double  headingError    = desiredTag.ftcPose.bearing;
-        double  yawError        = desiredTag.ftcPose.yaw;
+    public double moveToDesiredLocation(AprilTagDetection desiredTag, double desiredDistance, double speedGain,
+            double strafeGain, double turnGain, double maxAutoSpeed, double maxAutoStrafe, double maxAutoTurn) {
+        // Determine heading, range and Yaw (tag image rotation) error so we can use
+        // them to control the robot automatically.
+        double rangeError = (desiredTag.ftcPose.range - desiredDistance);
+        double headingError = desiredTag.ftcPose.bearing;
+        double yawError = desiredTag.ftcPose.yaw;
 
-        double  drive;       // Desired forward power/speed (-1 to +1)
-        double  strafe;      // Desired strafe power/speed (-1 to +1)
-        double  turn;        // Desired turning power/speed (-1 to +1)
+        double drive; // Desired forward power/speed (-1 to +1)
+        double strafe; // Desired strafe power/speed (-1 to +1)
+        double turn; // Desired turning power/speed (-1 to +1)
 
         // Use the speed and turn "gains" to calculate how we want the robot to move.
-        drive  = Range.clip(rangeError * speedGain, -maxAutoSpeed, maxAutoSpeed);
-        turn   = Range.clip(headingError * turnGain, -maxAutoTurn, maxAutoTurn) ;
+        drive = Range.clip(rangeError * speedGain, -maxAutoSpeed, maxAutoSpeed);
+        turn = Range.clip(headingError * turnGain, -maxAutoTurn, maxAutoTurn);
         strafe = Range.clip(-yawError * strafeGain, -maxAutoStrafe, maxAutoStrafe);
 
-        telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
         telemetry.addLine("Starting to move to the desired location");
         telemetry.update();
         moveRobot(drive, strafe, turn);
         sleep(100);
         return rangeError;
     }
+
     public void moveRobot(double x, double y, double h) {
         // Calculate wheel powers.
-        double frontLeftPower    =  x - y - h;
-        double frontRightPower   =  x + y + h;
-        double backLeftPower     =  x + y - h;
-        double backRightPower    =  x - y + h;
+        double frontLeftPower = x - y - h;
+        double frontRightPower = x + y + h;
+        double backLeftPower = x + y - h;
+        double backRightPower = x - y + h;
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
