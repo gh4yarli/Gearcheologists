@@ -62,14 +62,14 @@ import java.util.List;
 @Config
 public final class MecanumDrive {
     public static class Params {
-        public double axialGain = 0.2;
+        public double axialGain = 0.4;
         public double axialVelGain = 0;
-        public double headingGain = 0.1;
+        public double headingGain = 0.2;
         public double headingVelGain = 0;
         public double inPerTick = 0.001979;
-        public double kA = 0.000005;
-        public double kS = 0.8136820285971191;
-        public double kV = 0.00035098090173538014;
+        public double kA = 0.00005;
+        public double kS = 0.7416571160380294;
+        public double kV = 0.00034722736410896686;
         public double lateralGain = 0;
         public double lateralInPerTick = 0.001979;
         public double lateralVelGain = 0;
@@ -86,7 +86,7 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.toRadians(400);
 
         public double minProfileAccel = -30;
-        public double trackWidthTicks = 7100;
+        public double trackWidthTicks = 7518;
 
         // IMU orientation
         // TODO: fill in these values based on

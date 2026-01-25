@@ -58,11 +58,10 @@ public class CompTeleOp extends BaseTeleOp {
             }
 
             double range = tag.ftcPose.range;
-            //double targetVel = 973.7734 * Math.pow(1.00616, range) + 20;
-            double targetVel = ( 6 * range ) + 932;
-            if (range > 90) {
-                targetVel -= 40;
-            }
+            double targetVel = 973.7734 * Math.pow(1.00616, range) + 20;
+
+            if (range > 90) targetVel -= 180;
+
             launcher.setVelocity(targetVel);
 
             boolean atSpeed = Math.abs(launcher.getVelocity() - targetVel) < 60;

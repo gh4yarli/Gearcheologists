@@ -168,7 +168,7 @@ public class RedGoal_V3_Localized_Bkup extends Auto_CommonFunctions {
          */
         updatePoseFromAprilTag();
         aprilTagShoot();
-        //shootArtifacts();
+        //shootArtifactsTest();
     }
 
     private void secondShot() {
@@ -188,7 +188,7 @@ public class RedGoal_V3_Localized_Bkup extends Auto_CommonFunctions {
         Actions.runBlocking(path);
         updatePoseFromAprilTag();
         aprilTagShoot();
-        //shootArtifacts();
+        //shootArtifactsTest();
 
 
     }
@@ -206,7 +206,7 @@ public class RedGoal_V3_Localized_Bkup extends Auto_CommonFunctions {
         Actions.runBlocking(path);
         updatePoseFromAprilTag();
         aprilTagShoot();
-        //shootArtifacts();
+        //shootArtifactsTest();
 
     }
 
@@ -223,7 +223,7 @@ public class RedGoal_V3_Localized_Bkup extends Auto_CommonFunctions {
 
         Actions.runBlocking(path);
         updatePoseFromAprilTag();
-        //shootArtifacts();
+        //shootArtifactsTest();
         aprilTagShoot();
     }
 
