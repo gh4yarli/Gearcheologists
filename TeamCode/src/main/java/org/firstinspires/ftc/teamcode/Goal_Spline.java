@@ -31,7 +31,7 @@ public class Goal_Spline extends Auto_CommonFunctions {
 
     private boolean isBlueAlliance = false;
 
-    private static final double DESIRED_DISTANCE = 45.0;
+    private static final double DESIRED_DISTANCE = 40.0;
     private static final double SPEED_GAIN = 0.035;
     private static final double STRAFE_GAIN = 0.015;
     private static final double TURN_GAIN = 0.02;
@@ -56,9 +56,9 @@ public class Goal_Spline extends Auto_CommonFunctions {
     private final Position cameraPosition = new Position(DistanceUnit.INCH, 0, 0, 0, 0);
     private final YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0, -90, 0, 0);
 
-    private static final double BLUE_X_OFFSET = -10.0; // Blue alliance X offset in inches
-    private static final double BLUE_Y_OFFSET = -20.0; // Blue alliance Y offset in inches
-    private static final double BLUE_HEADING_OFFSET = Math.toRadians(-5.0); // Blue alliance heading offset
+    private static final double BLUE_X_OFFSET = 0; // Blue alliance X offset in inches
+    private static final double BLUE_Y_OFFSET = 0; // Blue alliance Y offset in inches
+    private static final double BLUE_HEADING_OFFSET = Math.toRadians(0); // Blue alliance heading offset
 
     private Pose2d mirrorPose(Pose2d p) {
         if (!isBlueAlliance)
@@ -95,12 +95,13 @@ public class Goal_Spline extends Auto_CommonFunctions {
         if (opModeIsActive()) {
             startLaunchers(launcher, 1200);
             arm.setPosition(1);
+            intake1.setPower(0.5);
 
             telemetry.addLine("Moving back 32 inches...");
             telemetry.update();
 
             Action moveBack = mecanumDrive.actionBuilder(startPose)
-                    .lineToX(-32)
+                    .lineToX(-36)
                     .build();
             Actions.runBlocking(moveBack);
 
@@ -166,28 +167,24 @@ public class Goal_Spline extends Auto_CommonFunctions {
     }
 
     private void firstShot() {
-        intake1.setPower(1);
         updatePoseFromAprilTag();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        /*
-         * Action path = mecanumDrive.actionBuilder(pose)
-         * .lineToX(25)
-         * .turnTo(mirrorHeading(Math.toRadians(30)))
-         * .build();
-         */
-
-        // Actions.runBlocking(path);
-        aprilTagShoot();
+        if (opModeIsActive()) {
+            intake1.setPower(0);
+            intake2.setPower(0);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, 0,
+                    ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
+        }
         updatePoseFromAprilTag();
     }
 
     private void secondShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        Pose2d splineTarget = mirrorPose(new Pose2d(14, -40, Math.toRadians(-90)));
+        Pose2d splineTarget = mirrorPose(new Pose2d(2, -35, Math.toRadians(-100)));
         double splineHeading = mirrorHeading(Math.toRadians(-90));
-        double yTarget = isBlueAlliance ? 61 : -61;
+        double yTarget = isBlueAlliance ? 55 : -55;
 
         Action path = mecanumDrive.actionBuilder(pose)
                 .splineToLinearHeading(splineTarget, splineHeading)
@@ -196,6 +193,7 @@ public class Goal_Spline extends Auto_CommonFunctions {
                 .build();
 
         Actions.runBlocking(path);
+        sleep(200);
         aprilTagShoot();
         updatePoseFromAprilTag();
     }
@@ -203,20 +201,22 @@ public class Goal_Spline extends Auto_CommonFunctions {
     private void thirdShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        Pose2d splineTarget = mirrorPose(new Pose2d(-27, -40, Math.toRadians(-86)));
-        double splineHeading = mirrorHeading(Math.toRadians(-86));
-        double yTarget1 = isBlueAlliance ? 74 : -74;
+        Pose2d splineTarget = mirrorPose(new Pose2d(-24, -40, Math.toRadians(-105)));
+        double splineHeading = mirrorHeading(Math.toRadians(-100));
+        double yTarget1 = isBlueAlliance ? 70 : -70;
         double yTarget2 = isBlueAlliance ? 61 : -61;
 
         Action path = mecanumDrive.actionBuilder(pose)
+                .setReversed(true)
                 .splineToLinearHeading(splineTarget, splineHeading)
                 .lineToY(yTarget1)
                 .lineToY(yTarget2)
-                .setReversed(true)
-                .splineToLinearHeading(pose, pose.heading.toDouble() - mirrorHeading(Math.toRadians(5)))
+                //.splineToLinearHeading(pose, pose.heading.toDouble())
+                .splineToLinearHeading(pose, Math.PI/2)
                 .build();
 
         Actions.runBlocking(path);
+        sleep(200);
         aprilTagShoot();
         updatePoseFromAprilTag();
     }
@@ -292,7 +292,7 @@ public class Goal_Spline extends Auto_CommonFunctions {
             Pose2d rawPose = new Pose2d(
                     detection.robotPose.getPosition().x * -1,
                     detection.robotPose.getPosition().y * -1,
-                    Math.toRadians(detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES) - 80));
+                    Math.toRadians(detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES) - 90));
 
             mecanumDrive.localizer.setPose(rawPose);
         }

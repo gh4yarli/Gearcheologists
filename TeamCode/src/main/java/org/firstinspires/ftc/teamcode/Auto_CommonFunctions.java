@@ -64,7 +64,7 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         launcher.setDirection(DcMotorEx.Direction.REVERSE);
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         // launcher.setVelocity(launcherVel);
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 10.0, 12.7);
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
@@ -78,10 +78,10 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
             if (launcherAtSpeed) {
                 arm.setPosition(0);
                 sleep(300);
-                intake2.setPower(-0.5);
-                sleep(200);
+                intake2.setPower(-0.6);
+                sleep(300);
                 intake1.setPower(1);
-                sleep(1000); // Wait for 3 balls to launch
+                sleep(900); // Wait for 3 balls to launch
                 shotFired = true;
             }
             telemetry.addData("Motor velocity for Shooting", Math.abs(launcher.getVelocity()));
@@ -97,7 +97,7 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         launcher.setDirection(DcMotorEx.Direction.REVERSE);
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         // launcher.setVelocity(launcherVel);
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 10.0, 12.7);
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
@@ -116,7 +116,7 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
                 intake2.setPower(-0.5);
                 sleep(500);
                 intake1.setPower(1);
-                sleep(300);
+                sleep(500);
                 intake1.setPower(0);
                 sleep(500);
                 intake1.setPower(1);
@@ -149,10 +149,9 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
 
         range = desiredTag.ftcPose.range;
 
-        //double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
-        double launcherVel = ( 6 * range ) + 932;
+        double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
         if (range > 90) {
-            launcherVel -= 40;
+            launcherVel -= 160;
         }
         launcher.setVelocity(launcherVel);
         shootArtifacts(launcher, intake1, intake2, arm, launcherVel, shootingTime);
@@ -180,7 +179,7 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
 
         double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
         if (range > 90) {
-            launcherVel -= 260;
+            launcherVel -= 240;
         }
         launcher.setVelocity(launcherVel);
         shootArtifactsSmallTriangle(launcher, intake1, intake2, arm, launcherVel, shootingTime);
