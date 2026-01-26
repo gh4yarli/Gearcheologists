@@ -25,182 +25,171 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous
-@SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression"})
-public class RedGoal_Spline extends Auto_CommonFunctions {
-    // Adjust these numbers to suit your robot.
-    private static final double DESIRED_DISTANCE = 40.0; //  this is how close the camera should get to the target (inches)
+@Autonomous(name = "BlueGoal_Spline", preselectTeleOp = "MecanumTeleOp")
+@SuppressWarnings({ "unused" })
+public class BlueGoal extends Auto_CommonFunctions {
 
-    //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
-    //  applied to the drive motors to correct the error.
-    private static final double SPEED_GAIN  = 0.035;
+    private boolean isBlueAlliance = false;
+
+    private static final double DESIRED_DISTANCE = 40.0;
+    private static final double SPEED_GAIN = 0.035;
     private static final double STRAFE_GAIN = 0.015;
-    private static final double TURN_GAIN   = 0.02;
+    private static final double TURN_GAIN = 0.02;
 
     private static final double MAX_AUTO_SPEED = 0.9;
     private static final double MAX_AUTO_STRAFE = 0.9;
-    private static final double MAX_AUTO_TURN  = 0.6;
-
-    private static final boolean USE_WEBCAM = true;
+    private static final double MAX_AUTO_TURN = 0.7;
 
     private double prevDrive = 0;
     private double prevStrafe = 0;
     private double prevTurn = 0;
-
     private static final double SMOOTHING_FACTOR = 0.3;
     private static final double MAX_ACCEL = 0.08;
-    
-    // Hardware (some inherited from Auto_CommonFunctions)
-    private DcMotor intake1;
-    private DcMotor intake2;
+
+    private static final boolean USE_WEBCAM = true;
+
+    private DcMotor intake1, intake2;
     private DcMotorEx launcher;
     private Servo arm;
-    
-    // Vision / State
     private MecanumDrive mecanumDrive;
 
-    /**
-     * Camera position and orientation on the robot.
-     * Origin: Center of the robot at field height.
-     * Axes: +x right, +y forward, +z upward.
-     */
     private final Position cameraPosition = new Position(DistanceUnit.INCH, 0, 0, 0, 0);
     private final YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES, 0, -90, 0, 0);
+
+    private static final double BLUE_X_OFFSET = 0; // Blue alliance X offset in inches
+    private static final double BLUE_Y_OFFSET = 0; // Blue alliance Y offset in inches
+    private static final double BLUE_HEADING_OFFSET = Math.toRadians(0); // Blue alliance heading offset
+
+    private Pose2d mirrorPose(Pose2d p) {
+        if (!isBlueAlliance)
+            return p;
+        return new Pose2d(
+                p.position.x + BLUE_X_OFFSET,
+                -p.position.y + BLUE_Y_OFFSET,
+                -p.heading.toDouble() + BLUE_HEADING_OFFSET);
+    }
+
+    private Vector2d mirrorVector(Vector2d v) {
+        if (!isBlueAlliance)
+            return v;
+        return new Vector2d(v.x, -v.y);
+    }
+
+    private double mirrorHeading(double h) {
+        return isBlueAlliance ? -h : h;
+    }
 
     @Override
     public void runOpMode() {
         initAprilTag();
         initHardware();
 
-        // Initialize MecanumDrive with the starting pose
         Pose2d startPose = new Pose2d(0, 0, 0);
         mecanumDrive = new MecanumDrive(hardwareMap, startPose);
-
+        telemetry.addData("Status", "Initialized. Waiting for Start.");
+        telemetry.update();
         arm.scaleRange(0.5, 1);
-        
+
         waitForStart();
-        
+
         if (opModeIsActive()) {
             startLaunchers(launcher, 1200);
             arm.setPosition(1);
-            intake1.setPower(1);
+            intake1.setPower(0.5);
+
+            telemetry.addLine("Moving back 32 inches...");
+            telemetry.update();
+
             Action moveBack = mecanumDrive.actionBuilder(startPose)
                     .lineToX(-36)
                     .build();
             Actions.runBlocking(moveBack);
-            
+
+            if (USE_WEBCAM)
+                setManualExposure();
+            detectAllianceAndLocalize();
+
             firstShot();
             secondShot();
             thirdShot();
-            //fourthShot();
+            fourthShot();
             exitBigTriangle();
-            
+
             visionPortal.close();
         }
-        
-        if (isStopRequested()) {
-            stopDrive();
-            launcher.setVelocity(0);
-        }
+
+        mecanumDrive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0));
+        launcher.setVelocity(0);
     }
 
     @Override
     public void initHardware() {
-        super.initHardware(); // Initializes drive motors and directions
-
+        super.initHardware();
         intake1 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.FIRST_INTAKE_MOTOR);
         intake2 = hardwareMap.get(DcMotor.class, ConfigurationConstants.Names.SECOND_INTAKE_MOTOR);
         launcher = hardwareMap.get(DcMotorEx.class, ConfigurationConstants.Names.LAUNCHER_MOTOR);
         arm = hardwareMap.get(Servo.class, ConfigurationConstants.Names.ARM_SERVO);
     }
 
-    public double moveToDesiredLocation(AprilTagDetection tag) {
-        double headingError = tag.ftcPose.bearing;
+    private void detectAllianceAndLocalize() {
+        telemetry.addLine("Detecting Alliance...");
+        telemetry.update();
 
-        double rawTurn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+        ElapsedTime timer = new ElapsedTime();
+        AprilTagDetection detectedTag = null;
 
-        double targetTurn = prevTurn + SMOOTHING_FACTOR * (rawTurn - prevTurn);
-        double turn = clampAcceleration(prevTurn, targetTurn, MAX_ACCEL);
-        prevTurn = turn;
-
-        // Use MecanumDrive's setDrivePowers method
-        // PoseVelocity2d takes (Vector2d linear, double omega)
-        mecanumDrive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), turn));
-        return headingError;
-    }
-
-    private double clampAcceleration(double previous, double target, double maxAccel) {
-        double delta = target - previous;
-        if (Math.abs(delta) > maxAccel) {
-            return previous + Math.signum(delta) * maxAccel;
-        }
-        return target;
-    }
-
-    @Override
-    public void moveRobot(double x, double y, double yaw) {
-        double fl = x - y - yaw;
-        double fr = x + y + yaw;
-        double bl = x + y - yaw;
-        double br = x - y + yaw;
-
-        double max = Math.max(Math.abs(fl), Math.max(Math.abs(fr),
-                     Math.max(Math.abs(bl), Math.abs(br))));
-
-        if (max > 1.0) {
-            fl /= max;
-            fr /= max;
-            bl /= max;
-            br /= max;
+        while (opModeIsActive() && timer.seconds() < 2.0 && detectedTag == null) {
+            List<AprilTagDetection> detections = aprilTag.getDetections();
+            for (AprilTagDetection d : detections) {
+                if (d.metadata != null) {
+                    if (d.id == 20) {
+                        isBlueAlliance = true;
+                        detectedTag = d;
+                        break;
+                    } else if (d.id == 24) {
+                        isBlueAlliance = false;
+                        detectedTag = d;
+                        break;
+                    }
+                }
+            }
         }
 
-        frontLeftDrive.setPower(fl);
-        frontRightDrive.setPower(fr);
-        backLeftDrive.setPower(bl);
-        backRightDrive.setPower(br);
-    }
-
-    private void stopDrive() {
-        frontLeftDrive.setPower(0);
-        frontRightDrive.setPower(0);
-        backLeftDrive.setPower(0);
-        backRightDrive.setPower(0);
+        if (detectedTag != null) {
+            telemetry.addData("Alliance Detected", isBlueAlliance ? "BLUE" : "RED");
+            telemetry.addData("Tag ID", detectedTag.id);
+            updatePoseFromTag(detectedTag);
+        } else {
+            telemetry.log().add("WARNING: No Alliance Tag Detected! Defaulting to RED.");
+            isBlueAlliance = false;
+        }
+        telemetry.update();
     }
 
     private void firstShot() {
-
         updatePoseFromAprilTag();
-        //Pose2d pose = mecanumDrive.localizer.getPose();
+        Pose2d pose = mecanumDrive.localizer.getPose();
 
-        /*
-         * Action path = mecanumDrive.actionBuilder(pose)
-         * .lineToX(25)
-         * .turnTo(mirrorHeading(Math.toRadians(30)))
-         * .build();
-         */
-
-        // Actions.runBlocking(path);
         if (opModeIsActive()) {
             intake1.setPower(0);
             intake2.setPower(0);
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, 0, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, 0,
+                    ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
         updatePoseFromAprilTag();
-
     }
 
     private void secondShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
-        /*
-        telemetry.addData("Pose Second Shot", pose);
-        telemetry.addData("Heading",Math.toDegrees(pose.heading.toDouble()));
-        telemetry.update();
-         */
+
+        Pose2d splineTarget = mirrorPose(new Pose2d(2, -35, Math.toRadians(-90)));
+        double splineHeading = mirrorHeading(Math.toRadians(-90));
+        double yTarget = isBlueAlliance ? 55 : -55;
 
         Action path = mecanumDrive.actionBuilder(pose)
-                .splineToLinearHeading(new Pose2d(2, -35, Math.toRadians(-100)), Math.toRadians(-90))
-                .lineToY(-55)
-                .splineToLinearHeading(pose, pose.heading.toDouble())
+                .splineToLinearHeading(splineTarget, splineHeading)
+                .lineToY(yTarget)
+                .splineToLinearHeading(pose, Math.toRadians(pose.heading.toDouble()))
                 .build();
 
         Actions.runBlocking(path);
@@ -208,15 +197,24 @@ public class RedGoal_Spline extends Auto_CommonFunctions {
         aprilTagShoot();
         updatePoseFromAprilTag();
     }
+
     private void thirdShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
+        Pose2d newPose = new Pose2d(pose.position.x-15, pose.position.y-15, Math.toRadians(pose.heading.toDouble()));
+
+        Pose2d splineTarget = mirrorPose(new Pose2d(-38, -40, Math.toRadians(-90)));
+        double splineHeading = mirrorHeading(Math.toRadians(-90));
+        double yTarget1 = isBlueAlliance ? 70 : -70;
+        double yTarget2 = isBlueAlliance ? 61 : -61;
 
         Action path = mecanumDrive.actionBuilder(pose)
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(-28, -40, Math.toRadians(-105)), Math.toRadians(-100))
-                .lineToY(-70)
-                .lineToY(-61)
-                .splineToLinearHeading(pose, pose.heading.toDouble())
+                //.setReversed(true)
+                .splineToLinearHeading(splineTarget, splineHeading)
+                .lineToY(yTarget1)
+                .lineToY(yTarget2)
+                //.splineToLinearHeading(pose, pose.heading.toDouble())
+                //.splineToLinearHeading(pose, Math.PI/2*-1)
+                .splineToLinearHeading(newPose, Math.PI/2*-1)
                 .build();
 
         Actions.runBlocking(path);
@@ -228,12 +226,18 @@ public class RedGoal_Spline extends Auto_CommonFunctions {
     private void fourthShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
+        Vector2d s1 = mirrorVector(new Vector2d(-58, -40));
+        double t1 = mirrorHeading(Math.toRadians(-86));
+        double y1 = isBlueAlliance ? 60 : -73;
+        double y2 = isBlueAlliance ? 40 : -59;
+        Vector2d s2 = mirrorVector(new Vector2d(0, -50));
+
         Action path = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-40,-40))
-                .turnTo(Math.toRadians(-86))
-                .lineToY(-73)
-                .lineToY(-59)
-                .strafeTo(new Vector2d(0,-50))
+                .strafeTo(s1)
+                .turnTo(t1)
+                .lineToY(y1)
+                .lineToY(y2)
+                .strafeTo(s2)
                 .build();
 
         Actions.runBlocking(path);
@@ -243,17 +247,17 @@ public class RedGoal_Spline extends Auto_CommonFunctions {
 
     private void exitBigTriangle() {
         Pose2d pose = mecanumDrive.localizer.getPose();
+        Vector2d target = mirrorVector(new Vector2d(0, -50));
 
-        Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
-                .strafeToLinearHeading(new Vector2d(0,-50), Math.toRadians(-90))
-                .endTrajectory()
+        Action path = mecanumDrive.actionBuilder(pose)
+                .strafeTo(target)
                 .build();
 
-        Actions.runBlocking(path_exitBigTri);
+        Actions.runBlocking(path);
     }
 
     private void aprilTagShoot() {
-        final int TARGET_ID = 24;
+        final int TARGET_ID = isBlueAlliance ? 20 : 24;
         ElapsedTime timer = new ElapsedTime();
 
         prevDrive = 0;
@@ -285,14 +289,6 @@ public class RedGoal_Spline extends Auto_CommonFunctions {
                 ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
     }
 
-    private void sendPoseTelemetry() {
-        Pose2d pose = mecanumDrive.localizer.getPose();
-        telemetry.addData("x", pose.position.x);
-        telemetry.addData("y", pose.position.y);
-        telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-        telemetry.update();
-    }
-
     private void updatePoseFromTag(AprilTagDetection detection) {
         if (detection.robotPose != null) {
             Pose2d rawPose = new Pose2d(
@@ -312,6 +308,39 @@ public class RedGoal_Spline extends Auto_CommonFunctions {
             }
         }
     }
+
+    public double moveToDesiredLocation(AprilTagDetection tag) {
+        double headingError = tag.ftcPose.bearing;
+
+        double rawTurn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+
+        double targetTurn = prevTurn + SMOOTHING_FACTOR * (rawTurn - prevTurn);
+        double turn = clampAcceleration(prevTurn, targetTurn, MAX_ACCEL);
+        prevTurn = turn;
+
+        // Use MecanumDrive's setDrivePowers method
+        // PoseVelocity2d takes (Vector2d linear, double omega)
+        mecanumDrive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), turn));
+        return headingError;
+    }
+
+    private double clampAcceleration(double previous, double target, double maxAccel) {
+        double delta = target - previous;
+        if (Math.abs(delta) > maxAccel) {
+            return previous + Math.signum(delta) * maxAccel;
+        }
+        return target;
+    }
+
+    private void sendPoseTelemetry() {
+        Pose2d pose = mecanumDrive.localizer.getPose();
+        telemetry.addData("x", pose.position.x);
+        telemetry.addData("y", pose.position.y);
+        telemetry.addData("heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+        telemetry.update();
+    }
+
+    // Removed overridden moveRobot and stopDrive methods as we use mecanumDrive now
 
     @Override
     public void initAprilTag() {
