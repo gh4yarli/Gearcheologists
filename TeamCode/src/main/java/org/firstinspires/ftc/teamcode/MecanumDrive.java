@@ -86,7 +86,8 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.toRadians(400);
 
         public double minProfileAccel = -30;
-        public double trackWidthTicks = 7518;
+        //public double trackWidthTicks = 7518;
+        public double trackWidthTicks = 5750;
 
         // IMU orientation
         // TODO: fill in these values based on
