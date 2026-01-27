@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-@TeleOp(name = "CompTeleOp", group = "Competition")
-public class CompTeleOp extends BaseTeleOp {
+@TeleOp(name = "CompTeleOp_V2", group = "Competition")
+public class CompTeleOp_V2 extends BaseTeleOp {
 
     @Override
     protected void additionalInit() {
@@ -40,13 +41,16 @@ public class CompTeleOp extends BaseTeleOp {
     protected void handleShooter() {
         if (gamepad2.right_trigger > 0.85) {
 
-            if (launchTimer.milliseconds() < 300)
+            if (launchTimer.milliseconds() < 300) {
                 intake1.setPower(0);
+                intake2.setPower(0);
+            }
 
             if (!shootingActive) {
                 launchTimer.reset();
                 shootingActive = true;
             }
+            boolean smallTriangle = false;
 
             stopDrive();
 
@@ -62,13 +66,19 @@ public class CompTeleOp extends BaseTeleOp {
             //double targetVel = 1027.3 * Math.pow(1.00555, range) + 20;
 
 
-            if (range > 90) targetVel -= 180;
+            if (range > 90){
+                targetVel -= 180;
+                smallTriangle = true;
+            }
+            if (range < 42){
+                targetVel += 80;
+            }
 
             launcher.setVelocity(targetVel);
 
             boolean atSpeed = Math.abs(launcher.getVelocity() - targetVel) < 60;
 
-            if (atSpeed) {
+            if (atSpeed && !smallTriangle) {
                 armServo.setPosition(0);
                 if (launchTimer.milliseconds() > 300) {
                     intake1.setPower(1);
@@ -79,6 +89,24 @@ public class CompTeleOp extends BaseTeleOp {
                     intake1.setPower(0);
                 }
                 checkSpeed = true;
+            } else if (atSpeed) {
+                armServo.setPosition(0);
+                telemetry.addLine("Motor at velocity");
+                telemetry.addData("Motor velocity", Math.abs(launcher.getVelocity()));
+                telemetry.update();
+
+                if (launchTimer.milliseconds() > 2800){
+                    shootingActive = false;
+                    checkSpeed = true;
+                } else if (launchTimer.milliseconds() > 2300) {
+                    intake1.setPower(1);
+                } else if (launchTimer.milliseconds() > 1800) {
+                    intake1.setPower(0);
+                } else if (launchTimer.milliseconds() > 1200) {
+                    intake1.setPower(1);
+                } else if (launchTimer.milliseconds() > 700) {
+                    intake2.setPower(-0.5);
+                }
             } else if (!checkSpeed){
                 intake1.setPower(0);
                 intake2.setPower(0);
