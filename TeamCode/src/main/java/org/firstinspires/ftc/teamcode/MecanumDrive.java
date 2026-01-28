@@ -80,14 +80,12 @@ public final class MecanumDrive {
         public double maxWheelVel = 70.0;
 
          */
-        public double maxWheelVel = 100.0;
-        public double maxProfileAccel = 100.0;
-        public double maxAngVel = Math.toRadians(400);
-        public double maxAngAccel = Math.toRadians(400);
-
+        public double maxAngAccel = Math.toRadians(300);
+        public double maxAngVel = Math.toRadians(300);
+        public double maxProfileAccel = 60.0;
+        public double maxWheelVel = 55.0;
         public double minProfileAccel = -30;
-        //public double trackWidthTicks = 7518;
-        public double trackWidthTicks = 5750;
+        public double trackWidthTicks = 6040;
 
         // IMU orientation
         // TODO: fill in these values based on

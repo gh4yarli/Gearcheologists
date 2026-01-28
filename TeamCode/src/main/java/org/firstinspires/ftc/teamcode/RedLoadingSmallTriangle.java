@@ -86,15 +86,16 @@ public class RedLoadingSmallTriangle extends Auto_CommonFunctions {
         arm.scaleRange(0.5, 1);
 
         waitForStart();
-        startLaunchers(launcher, 1520);
+        startLaunchers(launcher, 1600);
         if (opModeIsActive()) {
             arm.setPosition(1);
-            startIntake(intake1, intake2);
+            intake1.setPower(1);
             firstShot();
             secondShot(mecanumDrive);
-            thirdShot(mecanumDrive);
-            fourthShot(mecanumDrive);
-            stop();
+            //thirdShot(mecanumDrive);
+            //fourthShot(mecanumDrive);
+            //exitBigTriangle(mecanumDrive);
+            exitSmallTriangle(mecanumDrive);
         }
         if (isStopRequested()) {
             telemetry.addData("Status", "Stopping");
@@ -171,7 +172,7 @@ public class RedLoadingSmallTriangle extends Auto_CommonFunctions {
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(-53)
-                .turn(Math.toRadians(-20))
+                .turn(Math.toRadians(-22))
                 .build();
 
         if (USE_WEBCAM)
@@ -190,29 +191,25 @@ public class RedLoadingSmallTriangle extends Auto_CommonFunctions {
     }
 
     private void secondShot(@NonNull MecanumDrive mecanumDrive){
-        //launcher.setVelocity(1500);
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .splineTo(new Vector2d(-38, -30), Math.toRadians(-120))
+                .splineTo(new Vector2d(-32, -30), Math.toRadians(-100))
                 .lineToY(-65)
                 .lineToY(-35)
-                .splineToLinearHeading(new Pose2d(-64, -30, Math.toRadians(-20)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(-60, -30, Math.toRadians(-22)), Math.toRadians(-90))
                 .build();
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
             intake1.setPower(0);
             intake2.setPower(0);
-            sleep(200);
+            sleep(300);
             shootBallAprilTagDistance_SmallTriangle(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         }
 
         launcher.setVelocity(1300);
-
-
-
     }
 
     private void thirdShot(@NonNull MecanumDrive mecanumDrive){
@@ -222,13 +219,12 @@ public class RedLoadingSmallTriangle extends Auto_CommonFunctions {
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
 
-                .splineTo(new Vector2d(-12,-25),Math.toRadians(-100))
+                .splineTo(new Vector2d(-24,-25),Math.toRadians(-110))
                 .lineToY(-63)
-                .lineToY(-50)
-                .strafeTo(new Vector2d(pose.position.x + 78, -35))
-                //.turnTo(Math.toRadians(pose.heading.toDouble())
-                //.strafeTo(new Vector2d(15,-25))
-                .turnTo(Math.toRadians(-55))
+                /*.strafeTo(new Vector2d(30, -30))
+                .turnTo(Math.toRadians(-50))*/
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(20,-20, Math.toRadians(-50)), Math.toRadians(-50))
                 .build();
 
         if (opModeIsActive()) {
@@ -244,9 +240,9 @@ public class RedLoadingSmallTriangle extends Auto_CommonFunctions {
         telemetry.addData("Third Shot Pose", pose);
         telemetry.update();
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(12, pose.position.y-5))
-                .turnTo(Math.toRadians(-90))
-                .lineToY(-61)
+                .strafeTo(new Vector2d(16, pose.position.y-5))
+                .turnTo(Math.toRadians(-86))
+                .lineToY(-63)
                 .strafeTo(new Vector2d(pose.position.x+10, pose.position.y-10))
                 .turnTo(Math.toRadians(-50))
                 .build();
@@ -277,11 +273,9 @@ public class RedLoadingSmallTriangle extends Auto_CommonFunctions {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("Exit Big Triangle", pose);
-        telemetry.update();
 
         Action path_exitSmallTri = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(pose.position.x,-40))
+                .strafeTo(new Vector2d(pose.position.x+4,-46))
                 .endTrajectory()
                 .build();
 

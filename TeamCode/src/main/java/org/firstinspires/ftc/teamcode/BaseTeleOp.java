@@ -46,6 +46,7 @@ public abstract class BaseTeleOp extends OpMode {
     protected boolean emergencyStop = false;
 
     protected boolean checkSpeed = false;
+    protected double prevTurn = 0;
 
     @Override
     public void init() {

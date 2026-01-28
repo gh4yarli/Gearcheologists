@@ -40,6 +40,6 @@ public final class ConfigurationConstants {
 
         public static final String ODOMETRY_COMPUTER = "pinpoint";
     }
-    public static final double SMALL_TRI_SHOOTING_TIME = 3.8;
-    public static final double BIG_TRI_SHOOTING_TIME = 2.0;
+    public static final double SMALL_TRI_SHOOTING_TIME = 4.0;
+    public static final double BIG_TRI_SHOOTING_TIME = 2.6;
 }

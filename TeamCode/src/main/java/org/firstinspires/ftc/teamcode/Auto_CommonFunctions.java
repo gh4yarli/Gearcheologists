@@ -39,32 +39,22 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         launcher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
-
+        //PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 1.0, 12.7);
+        //PIDFCoefficients pid_right_new = new PIDFCoefficients(2.0, 0.0, 0.1, 0.6);
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(80, 0.75, 10.0, 12.7);
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
         launcher.setDirection(DcMotorSimple.Direction.REVERSE);
         launcher.setVelocity(launcherVel);
     }
 
-    /**
-     * Starts the intake
-     * 
-     * @param intake1
-     *                first intake
-     * @param intake2
-     *                second intake
-     */
-    public void startIntake(DcMotor intake1, DcMotor intake2) {
-        intake1.setPower(1);
-    }
 
     public void shootArtifacts(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm, double launcherVel,
             double shootingTime) {
         launcher.setDirection(DcMotorEx.Direction.REVERSE);
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         // launcher.setVelocity(launcherVel);
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 10.0, 12.7);
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(80, 0.75, 10.0, 12.7);
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
@@ -78,10 +68,10 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
             if (launcherAtSpeed) {
                 arm.setPosition(0);
                 sleep(300);
-                intake2.setPower(-0.6);
+                intake2.setPower(-0.5);
                 sleep(300);
                 intake1.setPower(1);
-                sleep(900); // Wait for 3 balls to launch
+                sleep(1500); // Wait for 3 balls to launch
                 shotFired = true;
             }
             telemetry.addData("Motor velocity for Shooting", Math.abs(launcher.getVelocity()));
@@ -94,10 +84,15 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
     public void shootArtifactsSmallTriangle(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm,
             double launcherVel, double shootingTime) {
 
+        telemetry.addLine("At shootArtifactsSmallTriangle");
+        telemetry.update();
+
         launcher.setDirection(DcMotorEx.Direction.REVERSE);
         launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        // launcher.setVelocity(launcherVel);
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(50, 0.75, 10.0, 12.7);
+        //PIDFCoefficients pid_right_new = new PIDFCoefficients(80, 0.75, 10.0, 12.7);
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(80, 0.75, 10.0, 12.7);
+        //PIDFCoefficients pid_right_new = new PIDFCoefficients(2.0, 0.0, 0.1, 0.6);
+
 
         launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
 
@@ -106,20 +101,23 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         while (runtime.seconds() < shootingTime && !shotFired) {
             boolean launcherAtSpeed = Math.abs(launcher.getVelocity()) >= launcherVel - PLUS_OR_MINUS_VEL_THRESHOLD
                     && Math.abs(launcher.getVelocity()) <= launcherVel + PLUS_OR_MINUS_VEL_THRESHOLD;
-            telemetry.addLine("Setting motor velocity");
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
-                telemetry.addLine("Motor at velocity");
+                /*
+                telemetry.addLine("Motor at velocity Inside launcher at speed");
+                telemetry.addData("Motor velocity", Math.abs(launcher.getVelocity()));
                 telemetry.update();
+                */
                 sleep(700);
                 intake2.setPower(-0.5);
                 sleep(500);
                 intake1.setPower(1);
-                sleep(500);
+                sleep(600);
                 intake1.setPower(0);
                 sleep(500);
                 intake1.setPower(1);
+                sleep(500);
                 shotFired = true;
             }
             telemetry.addData("Motor velocity", Math.abs(launcher.getVelocity()));
@@ -129,10 +127,42 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         intake2.setPower(0);
     }
 
+    public void shootArtifactsSmallTriangle_FirstShot(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm,
+                                            double launcherVel, double shootingTime) {
+
+
+        launcher.setDirection(DcMotorEx.Direction.REVERSE);
+        launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        PIDFCoefficients pid_right_new = new PIDFCoefficients(80, 0.75, 10.0, 12.7);
+        launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
+        launcher.setVelocity(launcherVel);
+
+        ElapsedTime runtime = new ElapsedTime();
+        boolean shotFired = false;
+        while (runtime.seconds() < shootingTime && !shotFired)
+        {
+            telemetry.addData("Motor velocity for Shooting", Math.abs(launcher.getVelocity()));
+            telemetry.update();
+            arm.setPosition(0);
+            sleep(700);
+            intake2.setPower(-0.5);
+            sleep(500);
+            intake1.setPower(1);
+            sleep(600);
+            intake1.setPower(0);
+            sleep(500);
+            intake1.setPower(1);
+            sleep(500);
+            shotFired = true;
+        }
+
+        arm.setPosition(1);
+        intake2.setPower(0);
+    }
     public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm,
             AprilTagProcessor aprilTag, double range, double shootingTime) {
 
-        // double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         // telemetry.addData("Tag Id shootBallAprilTagDistance", currentDetections);
         // telemetry.update();
@@ -148,8 +178,9 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         }
 
         range = desiredTag.ftcPose.range;
-
         double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
+
+        //double launcherVel = 1027.3 * Math.pow(1.00555, range) + 20;
         if (range > 90) {
             launcherVel -= 160;
         }
@@ -160,12 +191,18 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
     public void shootBallAprilTagDistance_SmallTriangle(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm,
             AprilTagProcessor aprilTag, double range, double shootingTime) {
 
-        // double launcherVel = 828.52473 * Math.pow(1.00875, range) + 60;
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("Tag Id shootBallAprilTagDistance", currentDetections);
+        telemetry.addLine("At shootBallAprilTagDistance_SmallTriangle");
         telemetry.update();
+        sleep(100);
+
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+
         AprilTagDetection desiredTag1 = detectAprilTag(currentDetections);
         AprilTagDetection desiredTag;
+
+        telemetry.addData("desiredTag1 ID",desiredTag1.id);
+        telemetry.update();
+        sleep(100);
 
         if (desiredTag1.id == RED_TAG_ID || desiredTag1.id == BLUE_TAG_ID) {
             desiredTag = desiredTag1;
@@ -177,7 +214,15 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
 
         range = desiredTag.ftcPose.range;
 
+        telemetry.addData("Tag",desiredTag.id);
+        telemetry.addData("Range",range);
+        telemetry.update();
+        sleep(100);
+
         double launcherVel = 973.7734 * Math.pow(1.00616, range) + 20;
+        telemetry.addData("Calculated launcher Velocity before subtraction",launcherVel);
+        telemetry.update();
+        sleep(100);
         if (range > 90) {
             launcherVel -= 240;
         }

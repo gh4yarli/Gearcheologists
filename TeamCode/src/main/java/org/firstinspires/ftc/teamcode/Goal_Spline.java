@@ -180,6 +180,8 @@ public class Goal_Spline extends Auto_CommonFunctions {
     }
 
     private void secondShot() {
+        updatePoseFromAprilTag();
+
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Pose2d splineTarget = mirrorPose(new Pose2d(2, -35, Math.toRadians(-100)));
@@ -199,8 +201,8 @@ public class Goal_Spline extends Auto_CommonFunctions {
     }
 
     private void thirdShot() {
+        updatePoseFromAprilTag();
         Pose2d pose = mecanumDrive.localizer.getPose();
-
         Pose2d splineTarget = mirrorPose(new Pose2d(-24, -40, Math.toRadians(-105)));
         double splineHeading = mirrorHeading(Math.toRadians(-100));
         double yTarget1 = isBlueAlliance ? 70 : -70;

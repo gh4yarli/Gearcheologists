@@ -25,9 +25,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "BlueGoal")
+@Autonomous(name = "RedLoadingBigTriangle", preselectTeleOp = "MecanumTeleOp")
 @SuppressWarnings({ "unused" })
-public class BlueGoal extends Auto_CommonFunctions {
+public class RedLoadingBigTriangle extends Auto_CommonFunctions {
 
     private boolean isBlueAlliance = false;
 
@@ -93,17 +93,15 @@ public class BlueGoal extends Auto_CommonFunctions {
         waitForStart();
 
         if (opModeIsActive()) {
-            startLaunchers(launcher, 1200);
+            startLaunchers(launcher, 1300);
             arm.setPosition(1);
             intake1.setPower(0.5);
 
-            telemetry.addLine("Moving back 32 inches...");
-            telemetry.update();
-
-            Action moveBack = mecanumDrive.actionBuilder(startPose)
-                    .lineToX(-36)
+            Action moveFront = mecanumDrive.actionBuilder(startPose)
+                    .lineToX(78)
+                    .turnTo(Math.toRadians(-60))
                     .build();
-            Actions.runBlocking(moveBack);
+            Actions.runBlocking(moveFront);
 
             if (USE_WEBCAM)
                 setManualExposure();
@@ -180,43 +178,40 @@ public class BlueGoal extends Auto_CommonFunctions {
     }
 
     private void secondShot() {
+        mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
-        Pose2d newPose = new Pose2d(pose.position.x,pose.position.y, Math.toRadians(Math.toDegrees(pose.heading.toDouble())+12));
+        Pose2d newPose = new Pose2d(pose.position.x,pose.position.y, Math.toRadians(Math.toDegrees(pose.heading.toDouble())+16));
 
         Pose2d splineTarget = mirrorPose(new Pose2d(8, -35, Math.toRadians(-90)));
         double splineHeading = mirrorHeading(Math.toRadians(-90));
-        double yTarget = isBlueAlliance ? 55 : -55;
+        double yTarget = isBlueAlliance ? 55 : -61;
 
         Action path = mecanumDrive.actionBuilder(pose)
                 .splineToLinearHeading(splineTarget, splineHeading)
                 .lineToY(yTarget)
-                .lineToY(45)
-                .splineToLinearHeading(pose, Math.toRadians(pose.heading.toDouble()))
+                .lineToY(-45)
+                .splineToLinearHeading(pose,Math.toRadians(90))
                 .build();
-
 
         Actions.runBlocking(path);
         sleep(200);
         aprilTagShoot();
-        updatePoseFromAprilTag();
     }
 
     private void thirdShot() {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
-        Pose2d newPose = new Pose2d(pose.position.x-15, pose.position.y-15, pose.heading.toDouble());
-
-        Pose2d splineTarget = mirrorPose(new Pose2d(-24, -40, Math.toRadians(-90)));
+        Pose2d splineTarget = mirrorPose(new Pose2d(-20, -40, Math.toRadians(-90)));
         double splineHeading = mirrorHeading(Math.toRadians(-90));
-        double yTarget1 = isBlueAlliance ? 65 : -70;
+        double yTarget1 = isBlueAlliance ? 70 : -70;
         double yTarget2 = isBlueAlliance ? 61 : -61;
 
         Action path = mecanumDrive.actionBuilder(pose)
-                //.setReversed(true)
+                .setReversed(true)
                 .splineToLinearHeading(splineTarget, splineHeading)
                 .lineToY(yTarget1)
                 .lineToY(yTarget2)
-                .splineToLinearHeading(pose, Math.PI/2*-1)
+                .splineToLinearHeading(pose, Math.PI/2)
                 .build();
 
         Actions.runBlocking(path);
@@ -227,10 +222,10 @@ public class BlueGoal extends Auto_CommonFunctions {
     private void fourthShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        Vector2d s1 = mirrorVector(new Vector2d(-58, -40));
+        Vector2d s1 = mirrorVector(new Vector2d(-40, -40));
         double t1 = mirrorHeading(Math.toRadians(-86));
-        double y1 = isBlueAlliance ? 60 : -73;
-        double y2 = isBlueAlliance ? 40 : -59;
+        double y1 = isBlueAlliance ? 73 : -73;
+        double y2 = isBlueAlliance ? 59 : -59;
         Vector2d s2 = mirrorVector(new Vector2d(0, -50));
 
         Action path = mecanumDrive.actionBuilder(pose)
@@ -275,7 +270,7 @@ public class BlueGoal extends Auto_CommonFunctions {
                     break;
                 }
             } else {
-                mecanumDrive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), -0.2));
+                mecanumDrive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0.2));
                 sendPoseTelemetry();
             }
         }
@@ -295,7 +290,7 @@ public class BlueGoal extends Auto_CommonFunctions {
             Pose2d rawPose = new Pose2d(
                     detection.robotPose.getPosition().x * -1,
                     detection.robotPose.getPosition().y * -1,
-                    Math.toRadians(detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES) - 90));
+                    Math.toRadians(detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES) - 85));
 
             mecanumDrive.localizer.setPose(rawPose);
         }

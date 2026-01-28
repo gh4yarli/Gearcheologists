@@ -85,7 +85,6 @@ public final class PathTest extends Auto_CommonFunctions {
                     .lineToY(0)
                     .turn(Math.toRadians(90))
                     .build();
-            intake1.setPower(1);
             Actions.runBlocking(test);
             
             //firstShot();

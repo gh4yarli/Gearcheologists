@@ -25,7 +25,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "RedGoal", preselectTeleOp = "MecanumTeleOp")
+@Autonomous(name = "RedGoal")
 @SuppressWarnings({ "unused" })
 public class RedGoal extends Auto_CommonFunctions {
 
@@ -112,7 +112,7 @@ public class RedGoal extends Auto_CommonFunctions {
             firstShot();
             secondShot();
             thirdShot();
-            fourthShot();
+            //fourthShot();
             exitBigTriangle();
 
             visionPortal.close();
@@ -168,6 +168,7 @@ public class RedGoal extends Auto_CommonFunctions {
 
     private void firstShot() {
         updatePoseFromAprilTag();
+        mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         if (opModeIsActive()) {
@@ -176,34 +177,35 @@ public class RedGoal extends Auto_CommonFunctions {
             shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, 0,
                     ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
-        updatePoseFromAprilTag();
     }
 
     private void secondShot() {
+        mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
+        Pose2d newPose = new Pose2d(pose.position.x,pose.position.y, Math.toRadians(Math.toDegrees(pose.heading.toDouble())+12));
 
-        Pose2d splineTarget = mirrorPose(new Pose2d(2, -35, Math.toRadians(-105)));
+        Pose2d splineTarget = mirrorPose(new Pose2d(6, -35, Math.toRadians(-105)));
         double splineHeading = mirrorHeading(Math.toRadians(-90));
-        double yTarget = isBlueAlliance ? 55 : -55;
+        double yTarget = isBlueAlliance ? 55 : -57;
 
         Action path = mecanumDrive.actionBuilder(pose)
                 .splineToLinearHeading(splineTarget, splineHeading)
                 .lineToY(yTarget)
-                .splineToLinearHeading(pose, pose.heading.toDouble())
+                .lineToY(-45)
+                .splineToLinearHeading(newPose,Math.toRadians(90))
                 .build();
 
         Actions.runBlocking(path);
         sleep(200);
         aprilTagShoot();
-        updatePoseFromAprilTag();
     }
 
     private void thirdShot() {
+        mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
-
-        Pose2d splineTarget = mirrorPose(new Pose2d(-24, -40, Math.toRadians(-105)));
+        Pose2d splineTarget = mirrorPose(new Pose2d(-20, -40, Math.toRadians(-110)));
         double splineHeading = mirrorHeading(Math.toRadians(-100));
-        double yTarget1 = isBlueAlliance ? 70 : -70;
+        double yTarget1 = isBlueAlliance ? 70 : -68;
         double yTarget2 = isBlueAlliance ? 61 : -61;
 
         Action path = mecanumDrive.actionBuilder(pose)
@@ -211,14 +213,12 @@ public class RedGoal extends Auto_CommonFunctions {
                 .splineToLinearHeading(splineTarget, splineHeading)
                 .lineToY(yTarget1)
                 .lineToY(yTarget2)
-                //.splineToLinearHeading(pose, pose.heading.toDouble())
                 .splineToLinearHeading(pose, Math.PI/2)
                 .build();
 
         Actions.runBlocking(path);
         sleep(200);
         aprilTagShoot();
-        updatePoseFromAprilTag();
     }
 
     private void fourthShot() {
