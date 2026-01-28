@@ -20,8 +20,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous
-@SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression", "FieldCanBeLocal"})
+@Autonomous(name = "BlueSmallTriangle")
+
 public class BlueLoadingSmallTriangle extends Auto_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
@@ -89,12 +89,13 @@ public class BlueLoadingSmallTriangle extends Auto_CommonFunctions {
         startLaunchers(launcher, 1520);
         if (opModeIsActive()) {
             arm.setPosition(1);
-            startIntake(intake1, intake2);
+            intake1.setPower(1);
             firstShot();
             secondShot(mecanumDrive);
             thirdShot(mecanumDrive);
+            //fourthShot(mecanumDrive);
             exitBigTriangle(mecanumDrive);
-            stop();
+            //exitSmallTriangle(mecanumDrive);
         }
         if (isStopRequested()) {
             telemetry.addData("Status", "Stopping");
@@ -171,7 +172,7 @@ public class BlueLoadingSmallTriangle extends Auto_CommonFunctions {
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(-53)
-                .turn(Math.toRadians(18))
+                .turn(Math.toRadians(16))
                 .build();
 
         if (USE_WEBCAM)
@@ -182,6 +183,8 @@ public class BlueLoadingSmallTriangle extends Auto_CommonFunctions {
             Actions.runBlocking(new SequentialAction(path));
             intake1.setPower(0);
             intake2.setPower(0);
+            telemetry.addData("Motor Velocity", launcher.getVelocity());
+            telemetry.update();
             sleep(300);
             shootBallAprilTagDistance_SmallTriangle(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         }
@@ -191,43 +194,43 @@ public class BlueLoadingSmallTriangle extends Auto_CommonFunctions {
 
     private void secondShot(@NonNull MecanumDrive mecanumDrive){
         //launcher.setVelocity(1500);
-        mecanumDrive.updatePoseEstimate();
+        //mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .splineTo(new Vector2d(-36, 30), Math.toRadians(105))
-                .lineToY(65)
+                .splineTo(new Vector2d(-40, 30), Math.toRadians(120))
+                .lineToY(60)
                 .lineToY(35)
-                .splineToLinearHeading(new Pose2d(-67, 30, Math.toRadians(30)), Math.toRadians(30))
+                .splineToLinearHeading(new Pose2d(-66, 25, Math.toRadians(18)), Math.toRadians(90))
                 .build();
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
             intake1.setPower(0);
             intake2.setPower(0);
+            sleep(500);
             shootBallAprilTagDistance_SmallTriangle(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         }
 
         launcher.setVelocity(1300);
-
-
-
     }
 
     private void thirdShot(@NonNull MecanumDrive mecanumDrive){
 
-        mecanumDrive.updatePoseEstimate();
+        //mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-
-                .splineTo(new Vector2d(-17,25),Math.toRadians(100))
-                .lineToY(63)
-                .lineToY(50)
-                .strafeTo(new Vector2d(pose.position.x + 78, 35))
-                //.turnTo(Math.toRadians(pose.heading.toDouble())
-                //.strafeTo(new Vector2d(15,-25))
-                .turnTo(Math.toRadians(55))
+                //.splineToLinearHeading(new Pose2d(-16,25, Math.toRadians(90)),Math.toRadians(90))
+                .lineToX(-20)
+                .turnTo(Math.toRadians(100))
+                //.strafeToLinearHeading(new Vector2d(-16,25), Math.toRadians(90))
+                .lineToY(62)
+                .lineToY(45)
+                /*.strafeTo(new Vector2d(30, -30))
+                .turnTo(Math.toRadians(-50))*/
+                //.setReversed(true)
+                .splineToLinearHeading(new Pose2d(40,45, Math.toRadians(50)), Math.toRadians(135))
                 .build();
 
         if (opModeIsActive()) {
@@ -243,9 +246,9 @@ public class BlueLoadingSmallTriangle extends Auto_CommonFunctions {
         telemetry.addData("Third Shot Pose", pose);
         telemetry.update();
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(12, pose.position.y+5))
-                .turnTo(Math.toRadians(90))
-                .lineToY(61)
+                .strafeTo(new Vector2d(16, pose.position.y+5))
+                .turnTo(Math.toRadians(86))
+                .lineToY(63)
                 .strafeTo(new Vector2d(pose.position.x+10, pose.position.y+10))
                 .turnTo(Math.toRadians(50))
                 .build();
@@ -264,7 +267,7 @@ public class BlueLoadingSmallTriangle extends Auto_CommonFunctions {
         telemetry.update();
 
         Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(0,50))
+                .strafeTo(new Vector2d(-36,40))
                 .endTrajectory()
                 .build();
 
@@ -276,11 +279,9 @@ public class BlueLoadingSmallTriangle extends Auto_CommonFunctions {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("Exit Big Triangle", pose);
-        telemetry.update();
 
         Action path_exitSmallTri = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(pose.position.x,40))
+                .strafeTo(new Vector2d(pose.position.x+4,46))
                 .endTrajectory()
                 .build();
 

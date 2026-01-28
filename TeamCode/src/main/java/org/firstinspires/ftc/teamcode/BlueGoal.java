@@ -25,7 +25,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name = "BlueGoal_Spline", preselectTeleOp = "MecanumTeleOp")
+@Autonomous(name = "BlueGoal")
 @SuppressWarnings({ "unused" })
 public class BlueGoal extends Auto_CommonFunctions {
 
@@ -250,7 +250,7 @@ public class BlueGoal extends Auto_CommonFunctions {
         Vector2d target = mirrorVector(new Vector2d(0, -50));
 
         Action path = mecanumDrive.actionBuilder(pose)
-                .strafeTo(target)
+                .strafeToLinearHeading(target, Math.toRadians(90))
                 .build();
 
         Actions.runBlocking(path);
@@ -274,7 +274,7 @@ public class BlueGoal extends Auto_CommonFunctions {
                     break;
                 }
             } else {
-                mecanumDrive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), 0.2));
+                mecanumDrive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), -0.2));
                 sendPoseTelemetry();
             }
         }

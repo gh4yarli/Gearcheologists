@@ -201,7 +201,7 @@ public class RedGoal extends Auto_CommonFunctions {
     private void thirdShot() {
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        Pose2d splineTarget = mirrorPose(new Pose2d(-24, -40, Math.toRadians(-115)));
+        Pose2d splineTarget = mirrorPose(new Pose2d(-24, -40, Math.toRadians(-105)));
         double splineHeading = mirrorHeading(Math.toRadians(-100));
         double yTarget1 = isBlueAlliance ? 70 : -70;
         double yTarget2 = isBlueAlliance ? 61 : -61;
