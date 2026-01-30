@@ -114,6 +114,7 @@ public class RedGoal extends Auto_CommonFunctions {
             thirdShot();
             //fourthShot();
             exitBigTriangle();
+            //TempShot();
 
             visionPortal.close();
         }
@@ -251,6 +252,15 @@ public class RedGoal extends Auto_CommonFunctions {
 
         Action path = mecanumDrive.actionBuilder(pose)
                 .strafeTo(target)
+                .build();
+
+        Actions.runBlocking(path);
+    }
+
+    private void TempShot() {
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+        Action path = mecanumDrive.actionBuilder(pose)
                 .build();
 
         Actions.runBlocking(path);

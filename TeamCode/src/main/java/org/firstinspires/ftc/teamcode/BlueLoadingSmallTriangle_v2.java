@@ -96,6 +96,7 @@ public class BlueLoadingSmallTriangle_v2 extends Auto_CommonFunctions {
             //fourthShot(mecanumDrive);
             //exitBigTriangle(mecanumDrive);
             exitSmallTriangle(mecanumDrive);
+            //TempShot(mecanumDrive);
         }
         if (isStopRequested()) {
             telemetry.addData("Status", "Stopping");
@@ -282,6 +283,20 @@ public class BlueLoadingSmallTriangle_v2 extends Auto_CommonFunctions {
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_exitSmallTri));
+        }
+    }
+
+    private void TempShot(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+
+        Action path = mecanumDrive.actionBuilder(pose)
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path));
         }
     }
     private void aprilTagShoot(){

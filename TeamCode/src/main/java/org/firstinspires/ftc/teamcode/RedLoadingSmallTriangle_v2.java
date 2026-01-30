@@ -96,6 +96,7 @@ public class RedLoadingSmallTriangle_v2 extends Auto_CommonFunctions {
             //fourthShot(mecanumDrive);
             //exitBigTriangle(mecanumDrive);
             exitSmallTriangle(mecanumDrive);
+            //TempShot(mecanumDrive);
         }
         if (isStopRequested()) {
             telemetry.addData("Status", "Stopping");
@@ -111,8 +112,8 @@ public class RedLoadingSmallTriangle_v2 extends Auto_CommonFunctions {
     public double MoveToDesiredLocation (AprilTagDetection desiredTag){
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
         double rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-        double  headingError    = desiredTag.ftcPose.bearing;
-        double  yawError        = desiredTag.ftcPose.yaw;
+        double headingError    = desiredTag.ftcPose.bearing;
+        double yawError        = desiredTag.ftcPose.yaw;
 
         double  drive;       // Desired forward power/speed (-1 to +1)
         double  strafe;      // Desired strafe power/speed (-1 to +1)
@@ -282,6 +283,20 @@ public class RedLoadingSmallTriangle_v2 extends Auto_CommonFunctions {
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_exitSmallTri));
+        }
+    }
+
+    private void TempShot(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+
+        Action path = mecanumDrive.actionBuilder(pose)
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path));
         }
     }
     private void aprilTagShoot(){
