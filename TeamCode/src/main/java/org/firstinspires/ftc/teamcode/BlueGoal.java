@@ -206,7 +206,7 @@ public class BlueGoal extends Auto_CommonFunctions {
         Pose2d pose = mecanumDrive.localizer.getPose();
         Pose2d newPose = new Pose2d(pose.position.x-15, pose.position.y-15, pose.heading.toDouble());
 
-        Pose2d splineTarget = mirrorPose(new Pose2d(-24, -40, Math.toRadians(-90)));
+        Pose2d splineTarget = mirrorPose(new Pose2d(-26, -40, Math.toRadians(-90)));
         double splineHeading = mirrorHeading(Math.toRadians(-90));
         double yTarget1 = isBlueAlliance ? 65 : -70;
         double yTarget2 = isBlueAlliance ? 61 : -61;

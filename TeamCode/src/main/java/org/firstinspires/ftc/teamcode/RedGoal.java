@@ -182,11 +182,11 @@ public class RedGoal extends Auto_CommonFunctions {
     private void secondShot() {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
-        Pose2d newPose = new Pose2d(pose.position.x,pose.position.y, Math.toRadians(Math.toDegrees(pose.heading.toDouble())+12));
+        Pose2d newPose = new Pose2d(pose.position.x,pose.position.y - 5, Math.toRadians(Math.toDegrees(pose.heading.toDouble())+12));
 
-        Pose2d splineTarget = mirrorPose(new Pose2d(6, -35, Math.toRadians(-105)));
+        Pose2d splineTarget = mirrorPose(new Pose2d(6, -35, Math.toRadians(-100)));
         double splineHeading = mirrorHeading(Math.toRadians(-90));
-        double yTarget = isBlueAlliance ? 55 : -57;
+        double yTarget = isBlueAlliance ? 55: -57;
 
         Action path = mecanumDrive.actionBuilder(pose)
                 .splineToLinearHeading(splineTarget, splineHeading)
@@ -203,17 +203,19 @@ public class RedGoal extends Auto_CommonFunctions {
     private void thirdShot() {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
-        Pose2d splineTarget = mirrorPose(new Pose2d(-20, -40, Math.toRadians(-110)));
+        Pose2d newPose = new Pose2d(pose.position.x,pose.position.y-10, Math.toRadians(Math.toDegrees(pose.heading.toDouble())+6));
+
+        Pose2d splineTarget = mirrorPose(new Pose2d(-24, -40, Math.toRadians(-100)));
         double splineHeading = mirrorHeading(Math.toRadians(-100));
-        double yTarget1 = isBlueAlliance ? 70 : -68;
-        double yTarget2 = isBlueAlliance ? 61 : -61;
+        double yTarget1 = isBlueAlliance ? 70: -68;
+        double yTarget2 = isBlueAlliance ? 61: -61;
 
         Action path = mecanumDrive.actionBuilder(pose)
-                .setReversed(true)
+                //.setReversed(true)
                 .splineToLinearHeading(splineTarget, splineHeading)
                 .lineToY(yTarget1)
                 .lineToY(yTarget2)
-                .splineToLinearHeading(pose, Math.PI/2)
+                .splineToLinearHeading(newPose, Math.PI/2)
                 .build();
 
         Actions.runBlocking(path);

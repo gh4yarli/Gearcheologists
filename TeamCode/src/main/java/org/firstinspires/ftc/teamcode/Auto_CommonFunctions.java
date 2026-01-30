@@ -104,11 +104,6 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
 
             if (launcherAtSpeed) {
                 arm.setPosition(0);
-                /*
-                telemetry.addLine("Motor at velocity Inside launcher at speed");
-                telemetry.addData("Motor velocity", Math.abs(launcher.getVelocity()));
-                telemetry.update();
-                */
                 sleep(700);
                 intake2.setPower(-0.5);
                 sleep(500);
@@ -127,39 +122,6 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         intake2.setPower(0);
     }
 
-    public void shootArtifactsSmallTriangle_FirstShot(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm,
-                                            double launcherVel, double shootingTime) {
-
-
-        launcher.setDirection(DcMotorEx.Direction.REVERSE);
-        launcher.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
-        PIDFCoefficients pid_right_new = new PIDFCoefficients(80, 0.75, 10.0, 12.7);
-        launcher.setPIDFCoefficients(DcMotorEx.RunMode.RUN_USING_ENCODER, pid_right_new);
-        launcher.setVelocity(launcherVel);
-
-        ElapsedTime runtime = new ElapsedTime();
-        boolean shotFired = false;
-        while (runtime.seconds() < shootingTime && !shotFired)
-        {
-            telemetry.addData("Motor velocity for Shooting", Math.abs(launcher.getVelocity()));
-            telemetry.update();
-            arm.setPosition(0);
-            sleep(700);
-            intake2.setPower(-0.5);
-            sleep(500);
-            intake1.setPower(1);
-            sleep(600);
-            intake1.setPower(0);
-            sleep(500);
-            intake1.setPower(1);
-            sleep(500);
-            shotFired = true;
-        }
-
-        arm.setPosition(1);
-        intake2.setPower(0);
-    }
     public void shootBallAprilTagDistance(DcMotorEx launcher, DcMotor intake1, DcMotor intake2, Servo arm,
             AprilTagProcessor aprilTag, double range, double shootingTime) {
 
@@ -223,6 +185,7 @@ public abstract class Auto_CommonFunctions extends LinearOpMode {
         telemetry.addData("Calculated launcher Velocity before subtraction",launcherVel);
         telemetry.update();
         sleep(100);
+
         if (range > 90) {
             launcherVel -= 240;
         }

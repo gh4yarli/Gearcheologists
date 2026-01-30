@@ -206,11 +206,11 @@ public class BlueLoadingBigTriangle extends Auto_CommonFunctions {
         double yTarget2 = isBlueAlliance ? 61 : -61;
 
         Action path = mecanumDrive.actionBuilder(pose)
-                .setReversed(true)
+                //.setReversed(true)
                 .splineToLinearHeading(splineTarget, splineHeading)
                 .lineToY(yTarget1)
                 .lineToY(yTarget2)
-                .splineToLinearHeading(pose, Math.PI/2)
+                .splineToLinearHeading(pose, Math.PI/2*-1)
                 .build();
 
         Actions.runBlocking(path);
