@@ -8,7 +8,6 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,22 +21,22 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @Autonomous
-@Disabled
-@SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression"})
-public class M3_BlueGoal_Backup extends M3_CommonFunctions {
+@SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression", "FieldCanBeLocal"})
+public class BlueLoadingSmallTriangle_v2 extends Auto_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  = 0.025;  //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN = 0.01;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double TURN_GAIN   = 0.01;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.025  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  0.01 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double TURN_GAIN   =  0.01  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.75;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE = 0.75;   //  Clip the strafing speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.45;   //  Clip the turn speed to this max value (adjust for your robot)
+
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private VisionPortal visionPortal;               // Used to manage the video source.
     AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
@@ -51,7 +50,7 @@ public class M3_BlueGoal_Backup extends M3_CommonFunctions {
     Servo arm;
     double rangeError = 5000;
     int tagFound = 0;
-    int tagNumber = 20;
+    int tagNumber = 24;
     AprilTagDetection desiredTag;
     double range;
 
@@ -81,20 +80,23 @@ public class M3_BlueGoal_Backup extends M3_CommonFunctions {
 
         //arm.scaleRange(0.5, 1);
 
-        Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(50));
+
+        Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
+        arm.scaleRange(0.5, 1);
+
         waitForStart();
-        startLaunchers(launcher, 1240);
+        startLaunchers(launcher, 1550);
         if (opModeIsActive()) {
             arm.setPosition(1);
             intake1.setPower(1);
-            telemetry.addData("Status", "First Shot");
-            telemetry.update();
             firstShot();
             secondShot(mecanumDrive);
-            thirdShot(mecanumDrive);
-            fourthShot(mecanumDrive);
-            stop();
+            thirdShot_smallTri(mecanumDrive);
+            //fourthShot(mecanumDrive);
+            //exitBigTriangle(mecanumDrive);
+            exitSmallTriangle(mecanumDrive);
+            //TempShot(mecanumDrive);
         }
         if (isStopRequested()) {
             telemetry.addData("Status", "Stopping");
@@ -126,6 +128,7 @@ public class M3_BlueGoal_Backup extends M3_CommonFunctions {
         telemetry.addLine("Starting to move to the desired location");
         telemetry.update();
         moveRobot(drive, strafe, turn);
+        //sleep(1000);
         return rangeError;
         //moveRobot(0,0,0);
     }
@@ -158,7 +161,7 @@ public class M3_BlueGoal_Backup extends M3_CommonFunctions {
             backRightPower /= max;
         }
 
-        // Send powers to the wheels.
+
         frontLeftDrive.setPower(frontLeftPower);
         frontRightDrive.setPower(frontRightPower);
         backLeftDrive.setPower(backLeftPower);
@@ -166,132 +169,179 @@ public class M3_BlueGoal_Backup extends M3_CommonFunctions {
     }
 
     private void firstShot(){
-        Pose2d startingPose = new Pose2d(58, 58, Math.toRadians(52));
+        Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
-                .lineToX(26)
-                .turnTo(Math.toRadians(47))
+                .lineToX(-53)
+                .turn(Math.toRadians(20))
                 .build();
 
         if (USE_WEBCAM)
             setManualExposure();  // Use low exposure time to reduce motion blur
 
-        // Wait for driver to press start
-        telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch START to start OpMode");
-        telemetry.update();
-
-        //waitForStart();
 
         if (opModeIsActive()) {
-            Pose2d newPose = mecanumDrive.localizer.getPose();
-            telemetry.addData("X", newPose.position.x);
-            telemetry.addData("Y", newPose.position.y);
-            telemetry.addData("A", Math.toDegrees(newPose.heading.toDouble()));
-            telemetry.update();
             Actions.runBlocking(new SequentialAction(path));
+            intake1.setPower(0);
+            intake2.setPower(0);
+            sleep(1000);
+            shootBallAprilTagDistance_SmallTriangle(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         }
-        aprilTagShoot();
+
+
     }
+
     private void secondShot(@NonNull MecanumDrive mecanumDrive){
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("First Shot Pose", pose);
-        telemetry.update();
-
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .lineToX(17)
-                .turnTo(Math.toRadians(90))
-                .lineToY(64)
+                .splineTo(new Vector2d(-40, 5), Math.toRadians(105))
+                .lineToY(30)
                 .lineToY(20)
-                .turnTo(Math.toRadians(50))
+                .splineToLinearHeading(new Pose2d(-56, -5, Math.toRadians(10)), Math.toRadians(90))
                 .build();
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
+            intake1.setPower(0);
+            intake2.setPower(0);
+            sleep(500);
+            shootBallAprilTagDistance_SmallTriangle(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         }
-
-        aprilTagShoot();
 
     }
 
-    private void thirdShot(@NonNull MecanumDrive mecanumDrive){
+    private void thirdShot_smallTri(@NonNull MecanumDrive mecanumDrive){
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("Second Shot Pose", pose);
-        telemetry.update();
-
+        // Third shot to go to small triangle
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-17,30))
-                .turnTo(Math.toRadians(93))
-                .lineToY(73)
-                .lineToY(59)
-                .strafeTo(new Vector2d(pose.position.x+5,30))
-                .turnTo(pose.heading.toDouble())
+
+                .splineTo(new Vector2d(-21,5),Math.toRadians(107))
+                .lineToY(38)
+                .lineToY(30)
+                .splineToLinearHeading(new Pose2d(-61, 0, Math.toRadians(30)), Math.toRadians(90))
                 .build();
+
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
+            intake1.setPower(0);
+            intake2.setPower(0);
+            sleep(500);
+            shootBallAprilTagDistance_SmallTriangle(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         }
-        aprilTagShoot();
     }
+
     private void fourthShot(@NonNull MecanumDrive mecanumDrive ){
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         telemetry.addData("Third Shot Pose", pose);
         telemetry.update();
-
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(-36,30))
-                .turnTo(Math.toRadians(-90))
-                .lineToY(65)
-                .lineToY(60)
-                .strafeTo(new Vector2d(pose.position.x,30))
-                .endTrajectory()
+                .strafeTo(new Vector2d(16, pose.position.y-5))
+                .turnTo(Math.toRadians(-86))
+                .lineToY(-63)
+                .strafeTo(new Vector2d(pose.position.x+10, pose.position.y-10))
+                .turnTo(Math.toRadians(-50))
                 .build();
+
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_fourthShot));
-        }
-        if (opModeIsActive()) {
             aprilTagShoot();
+        }
+    }
+
+    private void exitBigTriangle(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+        telemetry.addData("Exit Big Triangle", pose);
+        telemetry.update();
+
+        Action path_exitBigTri = mecanumDrive.actionBuilder(pose)
+                .strafeTo(new Vector2d(-36,-40))
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path_exitBigTri));
+        }
+    }
+    private void exitSmallTriangle(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+
+        Action path_exitSmallTri = mecanumDrive.actionBuilder(pose)
+                .strafeTo(new Vector2d(pose.position.x+4,20))
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path_exitSmallTri));
+        }
+    }
+
+    private void TempShot(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+
+        Action path = mecanumDrive.actionBuilder(pose)
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path));
         }
     }
     private void aprilTagShoot(){
         tagFound = 0;
         rangeError = 2.01;
+        telemetry.addData("RangeError Initial", rangeError);
         while (rangeError > 2) {
+            telemetry.addLine("Inside While loop");
+            telemetry.update();
             desiredTag = null;
             tagFound = 0;
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
             desiredTag = detectAprilTag(currentDetections);
             if (desiredTag.id == tagNumber) {
                 rangeError = MoveToDesiredLocation(desiredTag);
+
                 tagFound = 1;
                 telemetry.addData("Found", "ID %d (%s), Range %5.1f inches, Bearing %3.0f degrees,  Yaw %3.0f degrees", desiredTag.id, desiredTag.metadata.name, desiredTag.ftcPose.range, desiredTag.ftcPose.bearing, desiredTag.ftcPose.yaw);
                 telemetry.addData("range error inside", rangeError);
                 telemetry.update();
             } else {
                 telemetry.addData("Tag Not Found, ID %d (%s)", desiredTag.id);
+                telemetry.addData("RangeError", rangeError);
                 telemetry.update();
                 tagFound = 0;
             }
             if (tagFound == 0) {
-                moveRobot(0, 0, -0.1);
+                moveRobot(0, 0, 0.1);
                 telemetry.addData("Tag Not Found, ID %d (%s) and Rotating", desiredTag.id);
+                telemetry.addData("range error inside", rangeError);
                 telemetry.update();
                 sleep(10);
                 moveRobot(0, 0, 0);
             }
+
         }
+
         moveRobot(0, 0, 0);
         if (opModeIsActive()) {
             intake1.setPower(0);
             intake2.setPower(0);
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError, ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
+            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError,ConfigurationConstants.BIG_TRI_SHOOTING_TIME);
         }
     }
+
+
     public void initAprilTag() {
         // Create the AprilTag processor by using a builder.
         aprilTag = new AprilTagProcessor.Builder().build();

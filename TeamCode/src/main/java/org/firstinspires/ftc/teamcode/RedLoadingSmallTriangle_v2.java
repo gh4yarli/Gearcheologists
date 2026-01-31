@@ -22,7 +22,7 @@ import java.util.List;
 
 @Autonomous
 @SuppressWarnings({"unused", "CommentedOutCode", "RedundantSuppression", "FieldCanBeLocal"})
-public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
+public class RedLoadingSmallTriangle_v2 extends Auto_CommonFunctions {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 53.0; //  this is how close the camera should get to the target (inches)
 
@@ -83,17 +83,20 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
 
         Pose2d startingPose = new Pose2d(-60, -12, Math.toRadians(0));
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
+        arm.scaleRange(0.5, 1);
+
         waitForStart();
-        startLaunchers(launcher, 1520);
+        startLaunchers(launcher, 1550);
         if (opModeIsActive()) {
             arm.setPosition(1);
-            startIntake(intake1, intake2);
+            intake1.setPower(1);
             firstShot();
             secondShot(mecanumDrive);
-            thirdShot(mecanumDrive);
-            exitBigTriangle(mecanumDrive);
+            thirdShot_smallTri(mecanumDrive);
             //fourthShot(mecanumDrive);
-            stop();
+            //exitBigTriangle(mecanumDrive);
+            exitSmallTriangle(mecanumDrive);
+            //TempShot(mecanumDrive);
         }
         if (isStopRequested()) {
             telemetry.addData("Status", "Stopping");
@@ -109,8 +112,8 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
     public double MoveToDesiredLocation (AprilTagDetection desiredTag){
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
         double rangeError      = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
-        double  headingError    = desiredTag.ftcPose.bearing;
-        double  yawError        = desiredTag.ftcPose.yaw;
+        double headingError    = desiredTag.ftcPose.bearing;
+        double yawError        = desiredTag.ftcPose.yaw;
 
         double  drive;       // Desired forward power/speed (-1 to +1)
         double  strafe;      // Desired strafe power/speed (-1 to +1)
@@ -170,7 +173,7 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
         MecanumDrive mecanumDrive = new MecanumDrive(hardwareMap, startingPose);
         Action path = mecanumDrive.actionBuilder(startingPose)
                 .lineToX(-53)
-                .turn(Math.toRadians(-24))
+                .turn(Math.toRadians(-20))
                 .build();
 
         if (USE_WEBCAM)
@@ -179,55 +182,56 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path));
-            sleep(300);
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
+            intake1.setPower(0);
+            intake2.setPower(0);
+            sleep(400);
+            shootBallAprilTagDistance_SmallTriangle(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         }
 
 
     }
 
     private void secondShot(@NonNull MecanumDrive mecanumDrive){
-        //launcher.setVelocity(1500);
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         Action path_SecondShot = mecanumDrive.actionBuilder(pose)
-                .splineTo(new Vector2d(-34, -30), Math.toRadians(-94))
-                .lineToY(-65)
+                .splineTo(new Vector2d(-34, -30), Math.toRadians(-95))
+                .lineToY(-62)
                 .lineToY(-35)
-                .splineToLinearHeading(new Pose2d(-57, -30, Math.toRadians(-27.5)), Math.toRadians(-27.5))
+                .splineToLinearHeading(new Pose2d(-60, -30, Math.toRadians(-25)), Math.toRadians(-90))
                 .build();
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_SecondShot));
-            shootBallAprilTagDistance(launcher, intake1, intake2, arm,aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
+            intake1.setPower(0);
+            intake2.setPower(0);
+            sleep(300);
+            shootBallAprilTagDistance_SmallTriangle(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         }
-
-        launcher.setVelocity(1300);
-
-
 
     }
 
-    private void thirdShot(@NonNull MecanumDrive mecanumDrive){
+    private void thirdShot_smallTri(@NonNull MecanumDrive mecanumDrive){
 
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
+        // Third shot to go to small triangle
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
 
-                .splineTo(new Vector2d(-16,-25),Math.toRadians(-94))
-                .lineToY(-63)
-                .lineToY(-50)
-                .strafeTo(new Vector2d(pose.position.x + 78, -22))
-                //.turnTo(Math.toRadians(pose.heading.toDouble())
-                //.strafeTo(new Vector2d(15,-25))
-                .turnTo(Math.toRadians(-55))
+                .splineTo(new Vector2d(-17,-25),Math.toRadians(-95))
+                .lineToY(-56)
+                .lineToY(-46)
+                .splineToLinearHeading(new Pose2d(-60, -28, Math.toRadians(-33)), Math.toRadians(-90))
                 .build();
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_thirdShot));
-            aprilTagShoot();
+            intake1.setPower(0);
+            intake2.setPower(0);
+            sleep(300);
+            shootBallAprilTagDistance_SmallTriangle(launcher, intake1, intake2, arm, aprilTag, rangeError,ConfigurationConstants.SMALL_TRI_SHOOTING_TIME);
         }
     }
 
@@ -238,10 +242,11 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
         telemetry.addData("Third Shot Pose", pose);
         telemetry.update();
         Action path_fourthShot = mecanumDrive.actionBuilder(pose)
-                .turnTo(Math.toRadians(-90))
-                .lineToY(-62)
-                // .lineToY(-20)
-                //.turnTo(Math.toRadians(-50))
+                .strafeTo(new Vector2d(16, pose.position.y-5))
+                .turnTo(Math.toRadians(-86))
+                .lineToY(-63)
+                .strafeTo(new Vector2d(pose.position.x+10, pose.position.y-10))
+                .turnTo(Math.toRadians(-50))
                 .build();
 
         if (opModeIsActive()) {
@@ -270,16 +275,28 @@ public class M3_RedLoadingSmallTriangle extends M3_CommonFunctions {
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
-        telemetry.addData("Exit Big Triangle", pose);
-        telemetry.update();
 
         Action path_exitSmallTri = mecanumDrive.actionBuilder(pose)
-                .strafeTo(new Vector2d(pose.position.x,-40))
+                .strafeTo(new Vector2d(pose.position.x+4,-46))
                 .endTrajectory()
                 .build();
 
         if (opModeIsActive()) {
             Actions.runBlocking(new SequentialAction(path_exitSmallTri));
+        }
+    }
+
+    private void TempShot(@NonNull MecanumDrive mecanumDrive ){
+        mecanumDrive.updatePoseEstimate();
+        Pose2d pose = mecanumDrive.localizer.getPose();
+
+
+        Action path = mecanumDrive.actionBuilder(pose)
+                .endTrajectory()
+                .build();
+
+        if (opModeIsActive()) {
+            Actions.runBlocking(new SequentialAction(path));
         }
     }
     private void aprilTagShoot(){
