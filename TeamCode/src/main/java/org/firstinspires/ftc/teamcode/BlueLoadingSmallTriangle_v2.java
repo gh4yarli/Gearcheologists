@@ -213,17 +213,16 @@ public class BlueLoadingSmallTriangle_v2 extends Auto_CommonFunctions {
     }
 
     private void thirdShot_smallTri(@NonNull MecanumDrive mecanumDrive){
-
         mecanumDrive.updatePoseEstimate();
         Pose2d pose = mecanumDrive.localizer.getPose();
 
         // Third shot to go to small triangle
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
 
-                .splineTo(new Vector2d(-20,5),Math.toRadians(105))
-                .lineToY(40)
+                .splineTo(new Vector2d(-21,5),Math.toRadians(107))
+                .lineToY(38)
                 .lineToY(30)
-                .splineToLinearHeading(new Pose2d(-60, 0, Math.toRadians(25)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(-61, 0, Math.toRadians(30)), Math.toRadians(90))
                 .build();
 
         if (opModeIsActive()) {

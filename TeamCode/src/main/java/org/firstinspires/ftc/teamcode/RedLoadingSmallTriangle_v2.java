@@ -220,10 +220,10 @@ public class RedLoadingSmallTriangle_v2 extends Auto_CommonFunctions {
         // Third shot to go to small triangle
         Action path_thirdShot = mecanumDrive.actionBuilder(pose)
 
-                .splineTo(new Vector2d(-16,-25),Math.toRadians(-95))
+                .splineTo(new Vector2d(-17,-25),Math.toRadians(-95))
                 .lineToY(-56)
                 .lineToY(-46)
-                .splineToLinearHeading(new Pose2d(-60, -30, Math.toRadians(-30)), Math.toRadians(-90))
+                .splineToLinearHeading(new Pose2d(-60, -28, Math.toRadians(-33)), Math.toRadians(-90))
                 .build();
 
         if (opModeIsActive()) {

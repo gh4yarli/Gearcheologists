@@ -41,7 +41,7 @@ public class CompTeleOp_Latest extends BaseTeleOp {
         // User Tuned: P=80, D=10.0
         launcher.setPIDFCoefficients(
                 DcMotorEx.RunMode.RUN_USING_ENCODER,
-                new com.qualcomm.robotcore.hardware.PIDFCoefficients(80, 0.75, 10.0, 12.7));
+                new com.qualcomm.robotcore.hardware.PIDFCoefficients(80, 0.75, 2, 13.1));
     }
 
     @Override
