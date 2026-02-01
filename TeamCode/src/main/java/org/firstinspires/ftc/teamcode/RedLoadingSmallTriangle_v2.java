@@ -91,8 +91,8 @@ public class RedLoadingSmallTriangle_v2 extends Auto_CommonFunctions {
             arm.setPosition(1);
             intake1.setPower(1);
             firstShot();
-            secondShot(mecanumDrive);
-            thirdShot_smallTri(mecanumDrive);
+            //secondShot(mecanumDrive);
+            //thirdShot_smallTri(mecanumDrive);
             //fourthShot(mecanumDrive);
             //exitBigTriangle(mecanumDrive);
             exitSmallTriangle(mecanumDrive);
